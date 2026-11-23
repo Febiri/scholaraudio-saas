@@ -371,7 +371,8 @@ async def execute_processing_pipeline(
                 api_key=gemini_key or os.getenv("GEMINI_API_KEY", GEMINI_API_KEY),
                 model=gemini_model or os.getenv("GEMINI_MODEL", GEMINI_MODEL)
             )
-            briefing_script = summarizer.generate_briefing(
+            briefing_script = await asyncio.to_thread(
+                summarizer.generate_briefing,
                 title=paper.title,
                 text=extracted_text,
                 authors=paper.authors,
