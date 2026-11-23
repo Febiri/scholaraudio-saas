@@ -120,6 +120,7 @@ class Paper(Base):
     __tablename__ = "papers"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(String(64), index=True, nullable=True)
     zotero_item_key = Column(String(64), unique=True, index=True, nullable=True)
     title = Column(String(512), nullable=False, index=True)
     authors = Column(String(512), default="")
@@ -175,6 +176,7 @@ class Paper(Base):
 
         d = {
             "id": self.id,
+            "user_id": self.user_id,
             "zotero_item_key": self.zotero_item_key,
             "title": self.title,
             "authors": self.authors,
@@ -208,6 +210,58 @@ class Paper(Base):
         return d
 
 
+class Note(Base):
+    __tablename__ = "notes"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(String(64), index=True, nullable=True)
+    paper_id = Column(Integer, index=True, nullable=True)
+    content = Column(Text, nullable=False)
+    tags = Column(String(256), default="")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "paper_id": self.paper_id,
+            "content": self.content,
+            "tags": self.tags,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
+
+
+class ConferenceWatchlist(Base):
+    __tablename__ = "conference_watchlists"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(String(64), index=True, nullable=True)
+    conference_name = Column(String(512), nullable=False)
+    acronym = Column(String(64), default="")
+    core_rank = Column(String(32), default="")
+    submission_deadline = Column(String(128), default="")
+    location = Column(String(256), default="")
+    travel_grant = Column(String(256), default="")
+    notes = Column(Text, default="")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "conference_name": self.conference_name,
+            "acronym": self.acronym,
+            "core_rank": self.core_rank,
+            "submission_deadline": self.submission_deadline,
+            "location": self.location,
+            "travel_grant": self.travel_grant,
+            "notes": self.notes,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }
+
+
 def init_db():
     try:
         Base.metadata.create_all(bind=engine)
@@ -222,6 +276,7 @@ def init_db():
             cursor.execute("PRAGMA table_info(papers)")
             existing_cols = [row[1] for row in cursor.fetchall()]
             new_cols = [
+                ("user_id", "VARCHAR(64)"),
                 ("full_text", "TEXT"),
                 ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
                 ("summary_audio_path", "VARCHAR(512)"),

@@ -1,103 +1,90 @@
-# 🎓 febPhD — My PhD Corner & Academic Research Workstation
+# 🎓 ProfFeb — Neural Audio Research Workstation & AI Academic Copilot
 
-A comprehensive, **100% free-tier doctoral research platform** that empowers PhD candidates and academic researchers with two specialized engines:
-1. **📖 Paper Reader & Spoken Research Studio (`/app`)**: Ingests papers from your [Zotero](https://www.zotero.org/) library or PDF uploads, narrates 100% verbatim or synthesizes 4-part senior briefings with natural West African neural voices (Ghanaian Abeo & Ezinne), vocalizes complex mathematical formulas phonetically, and synchronizes real-time text and extracted figures.
-2. **🌐 Intelligent Conference & Academic Event Scout (`/conferences`)**: Scans all over academic registries, CORE rankings (A*, A, B), and academic networks to discover upcoming conferences, doctoral consortiums / PhD tracks, and student travel grants tailored to your exact research area with live submission countdowns.
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![Supabase](https://img.shields.io/badge/Auth%20%26%20Database-Supabase%20PostgreSQL-3ECF8E.svg)](https://supabase.com/)
+[![Gemini Flash](https://img.shields.io/badge/LLM-Gemini%202.5%20Flash-4285F4.svg)](https://deepmind.google/technologies/gemini/)
+[![Edge-TTS](https://img.shields.io/badge/Audio-Edge--TTS%20Neural-blue.svg)](https://github.com/rany2/edge-tts)
 
-> **Zero Cloud Costs ($0.00/month):** Powered entirely by Google Gemini Flash free tier, Microsoft Edge-TTS neural speech, PyMuPDF, and local SQLite.
-
----
-
-## 🏛️ System Architecture
-
-```
-                                  🎓 MY PHD CORNER HOME
-                                           (/)
-                                            │
-              ┌─────────────────────────────┴─────────────────────────────┐
-              │                                                           │
-              ▼                                                           ▼
-     [ Engine Card 01 ]                                          [ Engine Card 02 ]
-  📖 Paper Reader Studio (/app)                               🌐 Conference Scout (/conferences)
-  • 100% Verbatim & 4-Part Briefings                          • Live Academic Search
-  • 🇬🇭 Ghanaian Abeo & Ezinne Voices                          • 🎓 Doctoral Consortiums / PhD Tracks
-  • Scientific Math & Symbol Phonetics                        • ✈️ Student Travel Grants & Waivers
-  • Extracted Figures & Diagram Viewer                        • 🏛️ CORE A*, IEEE, ACM & WikiCFP Rankings
-  • Interactive Seek-to-Paragraph                             • ⏳ Live Submission Countdown Badges
-  • Zotero Web Sync + Drag & Drop PDFs                        • ⭐ "My PhD Watchlist" & Calendar Export
-```
+**ProfFeb** is a high-performance, multi-tenant AI academic workstation designed for global doctoral researchers, professors, and scholarly labs. It transforms academic paper consumption through multimodal neural audio narration, phonetic mathematical deconstruction, figure extraction, conference scouting, simulated peer reviews, research idea novelty auditing, and an autonomous Academic Co-Pilot.
 
 ---
 
-## ⚡ Core Features
+## 🏛️ Platform Architecture & 7 Intelligence Engines
 
-### 1. 📖 Paper Reader & Spoken Audio Mentor (`/app`)
-* **100% Verbatim Full Paper Reading**: Reads entire papers word-for-word without skipping derivations, citations, or equations.
+```
+                                      🌐 PROFFEB GLOBAL SAAS
+                                               (/)
+                                                │
+         ┌───────────────────┬──────────────────┼──────────────────┬──────────────────┐
+         ▼                   ▼                  ▼                  ▼                  ▼
+  [ Engine 01 ]       [ Engine 02 ]      [ Engine 03 ]      [ Engine 04 ]      [ Engine 05-07 ]
+  📖 Research Studio  🌐 Event Scout     🛰️ Research Radar  ⚖️ Peer Reviewer    💰 Grants (/grants)
+  (/app)              (/conferences)     (/radar)           (/reviewer)        🔬 Labs (/lab-connector)
+  • Verbatim Audio    • CORE Rankings    • Novelty scoring  • Rigor scoring    🎓 Co-Pilot (/agent)
+  • 4-Part Briefings  • PhD consortiums  • Literature gaps  • Camera-ready     • Thesis tracking
+  • Math phonetics    • Travel grants    • Pivot roadmap      rubric audits    • Dispatched briefs
+```
+
+### 1. 📖 Spoken Research Studio & Paper Reader (`/app`)
+* **100% Verbatim Full-Paper Narration**: Complete mathematical derivations and citations without skipping.
 * **4-Part Senior Mentor Briefings**:
-  1. 🎯 *The Core Problem & Theoretical Foundation*
-  2. 🔬 *Methodology & Architectural Formulation*
-  3. 📊 *Empirical Results, Benchmarks & Statistical Significance*
-  4. ⚠️ *Critical Limitations, Theoretical Bounds & Future Research*
-* **Expressive West African Neural Voices**:
-  * 🇬🇭 **Abeo** (West Africa / Ghana - Male, natural scholarly cadence)
-  * 🇬🇭 **Ezinne** (West Africa / Ghana - Female, melodic and clear)
-  * Additional African and international voices (Kenya, South Africa, UK, US).
-* **Phonetic Scientific Normalizer**: Correctly vocalizes mathematical symbols ($\alpha, \beta, \theta, \sum, \int$), powers of 10 ($10^{-5}$), statistical metrics ($p < 0.001$, $R^2$), and Greek nomenclature for auditory clarity.
-* **Synchronized Reading & Visuals**: Follow along with paragraph-by-paragraph highlights, skip backward/forward by 10s/30s, seek by chapters, and inspect extracted in-document figures and diagrams.
+  1. 🎯 *Theoretical Foundations & Problem Formulation*
+  2. 🔬 *Methodological Framework & Architecture*
+  3. 📊 *Empirical Results, Benchmarks & Statistical Proofs*
+  4. ⚠️ *Critical Limitations, Theoretical Bounds & Future Horizons*
+* **Phonetic Mathematical Normalizer**: Vocalizes complex LaTeX equations, Greek symbols ($\alpha, \beta, \theta$), integrations ($\int$), and statistical metrics ($p < 0.001$, $R^2$) for auditory clarity.
+* **Extracted Visuals & Interactive Player**: Real-time paragraph synchronization, in-document figure inspection, and chapter seeking.
+* **Global Voices**: Natural West African neural speech (Ghanaian Abeo & Ezinne), plus East African, South African, and international scholarly accents.
 
-### 2. 🌐 Intelligent Conference & Academic Event Scout (`/conferences`)
-* **Dedicated PhD Event Search**: Enter any research topic (e.g. *Natural Language Processing for African Languages, Computer Vision, Microgrids, Healthcare AI*).
-* **PhD Opportunities**:
-  * 🎓 **Doctoral Consortiums**: Dedicated mentorship tracks where PhD students receive 1-on-1 thesis reviews from distinguished professors.
-  * ✈️ **Student Travel Grants**: Direct visibility into ACM, IEEE, USENIX, and NSF travel stipends and registration fee waivers.
-  * 🏛️ **CORE Ranking (A*, A, B)**: Objective venue prestige indicators.
-* **Dynamic Calendar & Live Countdowns**:
-  * Live color-coded submission countdowns (`⏰ Closing Soon • 21d left`, `🟢 Open CFP • 88d left`).
-  * Direct links to official Call for Papers (CFP) portals and conference homepages.
-* **⭐ My PhD Watchlist**: Pin conferences to track deadlines and copy key dates directly to your calendar or thesis notes.
+### 2. 🌐 Intelligent Conference & Event Scout (`/conferences`)
+* **Global Academic Discovery**: Scans international academic registries, CORE A*/A rankings, IEEE, ACM, and computational venues.
+* **Doctoral Opportunities**: Pinpoint Doctoral Consortiums, thesis mentoring workshops, and student travel grants with live countdown badges.
+* **Personalized Watchlist**: Save upcoming conferences to track deadlines and export key dates to your academic calendar.
 
----
+### 3. 🛰️ Research Radar & Idea Validator (`/radar`)
+* **Novelty & Feasibility Auditing**: Stress-tests paper ideas against the latest state of the art to prevent reinventing existing literature.
+* **Risk Analysis & Pivot Roadmap**: Highlights methodological pitfalls before submitting to top-tier conferences.
 
-## 🛠️ Tech Stack
+### 4. ⚖️ Virtual Peer Reviewer & Paper Auditor (`/reviewer`)
+* **Simulated Program Committee Review**: Simulates strict NeurIPS/ICLR/IEEE reviewer committees with 5-score criteria (Soundness, Novelty, Presentation, Empirical Rigor).
+* **Direct PDF Upload**: Audits manuscript PDFs and highlights actionable camera-ready revisions.
 
-* **Backend:** Python 3.10+ with [FastAPI](https://fastapi.tiangolo.com/) and [Uvicorn](https://www.uvicorn.org/)
-* **AI & LLM:** [Google GenAI SDK](https://github.com/googleapis/python-genai) (`google-genai`) with `gemini-2.5-flash`
-* **Speech Synthesis:** [edge-tts](https://github.com/rany2/edge-tts) (Microsoft Edge high-fidelity neural voices)
-* **PDF Extraction:** [PyMuPDF](https://pymupdf.readthedocs.io/) (`fitz`) for text sanitization and figure rendering
-* **Zotero Integration:** [pyzotero](https://pyzotero.readthedocs.io/) for library sync and PDF attachment downloading
-* **Database:** SQLite with [SQLAlchemy](https://www.sqlalchemy.org/) ORM
-* **Frontend:** Modern responsive UI with Tailwind CSS, KaTeX formula rendering, Newsreader editorial serif typography, and vanilla JavaScript
+### 5. 💰 Global Grant & Fellowship Finder (`/grants`)
+* Curated research funding, post-doctoral fellowships, and equipment grants across NSF, ERC, and private foundations.
+
+### 6. 🔬 Lab Connector & Collaborative Network (`/lab-connector`)
+* Matches research groups, finding complementary labs and potential academic co-authors across international institutions.
+
+### 7. 🎓 Academic Co-Pilot & Research Digital Twin (`/agent`)
+* **Autonomous Scholar Assistant**: Tracks research deliverables, drafts dissertation chapters, summarizes daily ArXiv trends, and dispatches weekly briefings.
 
 ---
 
-## 📁 Repository Structure
+## 🔒 Security & Multi-Tenant Database Architecture
 
-```
-febPhD/
-├── backend/
-│   ├── __init__.py
-│   ├── config.py             # Environment config, directory paths, and voice registries
-│   ├── database.py           # SQLAlchemy Paper models, SQLite engine, and DB session
-│   ├── zotero_sync.py        # Pyzotero integration, item fetching, and PDF attachment download
-│   ├── processor.py          # PyMuPDF text cleaning, phonetic formula normalizer, Edge-TTS audio
-│   ├── conference_scout.py   # Intelligent conference scout service (CORE registry + Gemini scan)
-│   └── main.py               # FastAPI application, REST endpoints, and static file routers
-├── frontend/
-│   ├── home.html             # "My PhD Corner" clean white landing hub & dual engine cards
-│   ├── conferences.html      # Dedicated full-page Conference & Academic Event Scout
-│   └── index.html            # Paper Reader & Spoken Research Studio with interactive player
-├── static/
-│   ├── favicon.ico
-│   ├── favicon.svg
-│   ├── audio/                # Generated audio briefing tracks (.gitkeep)
-│   ├── pdfs/                 # Ingested PDF papers (.gitkeep)
-│   ├── figures/              # Extracted figures and diagrams (.gitkeep)
-│   └── diagrams/             # Architectural diagrams (.gitkeep)
-├── .env.example              # Configuration template
-├── .gitignore                # Comprehensive exclusion rules (protects credentials & large binaries)
-├── requirements.txt          # Python dependencies
-└── README.md                 # Project documentation
-```
+ProfFeb is architected for enterprise multi-tenancy and data isolation:
+
+* **Authentication**: Supabase Auth supporting Google OAuth 2.0, Magic Links, and Email/Password.
+* **Row-Level Security (RLS)**: Enforced directly at the PostgreSQL layer via `auth.uid()`.
+  * `public.profiles`: User tier, institution, and voice preferences.
+  * `public.papers`: Scoped strictly to `user_id = auth.uid()`.
+  * `public.notes`: User annotations and paper takeaways scoped to `user_id`.
+  * `public.conference_watchlists`: Personal conference tracking.
+* **Hybrid Storage Support**: Seamlessly falls back to local SQLite with dynamic schema migration during offline or test environments.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python 3.10+, FastAPI, Uvicorn, SQLAlchemy |
+| **Authentication & DB** | Supabase Auth, PostgreSQL with Row-Level Security (RLS) |
+| **Artificial Intelligence** | Google GenAI SDK (`google-genai`), Gemini 2.5 Flash |
+| **Neural Speech Engine** | Microsoft Edge-TTS (Zero-cost neural audio synthesis) |
+| **PDF Extraction** | PyMuPDF (`fitz`) with vector figure extraction |
+| **Frontend** | Modern glassmorphic responsive UI, Tailwind CSS, KaTeX, Marked.js |
 
 ---
 
@@ -105,15 +92,17 @@ febPhD/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Febiri/febPhD.git
-cd febPhD
+git clone https://github.com/Febiri/scholaraudio-saas.git
+cd scholaraudio-saas
 ```
 
 ### 2. Set Up Virtual Environment & Dependencies
 ```bash
 python -m venv venv
+
 # On Windows:
 .\venv\Scripts\activate
+
 # On macOS/Linux:
 source venv/bin/activate
 
@@ -123,27 +112,63 @@ pip install -r requirements.txt
 ### 3. Configure Environment Variables
 Copy `.env.example` to `.env`:
 ```bash
-copy .env.example .env
+cp .env.example .env
 ```
-Add your free Google Gemini API key:
+
+Set your configuration keys:
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
+# Application Brand
+APP_NAME=ProfFeb
+APP_TAGLINE="Neural Research Briefings & Multi-Modal Academic Workstation"
+
+# AI Engine
+GEMINI_API_KEY=your_google_gemini_api_key
 GEMINI_MODEL=gemini-2.5-flash
+
+# Supabase Multi-Tenant SaaS
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_anon_public_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_optional
+
+# Audio Preferences
 DEFAULT_TTS_VOICE=en-NG-AbeoNeural
 ```
-*(Optional) If using Zotero sync, add your Zotero User ID and API Key.*
 
-### 4. Run the Platform
+### 4. Apply Database Migrations (Supabase)
+Run the queries in `supabase_schema.sql` directly inside your **Supabase SQL Editor** to establish the multi-tenant tables, trigger functions, and Row-Level Security policies.
+
+### 5. Run the SaaS Server
 ```bash
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Open your browser:
-* **PhD Corner (Home):** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+Navigate to:
+* **Landing Page:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+* **Research Studio:** [http://127.0.0.1:8000/app](http://127.0.0.1:8000/app)
 * **Conference Scout:** [http://127.0.0.1:8000/conferences](http://127.0.0.1:8000/conferences)
-* **Paper Reader Studio:** [http://127.0.0.1:8000/app](http://127.0.0.1:8000/app)
+* **Academic Co-Pilot:** [http://127.0.0.1:8000/agent](http://127.0.0.1:8000/agent)
+* **API Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
-## 📜 License
-MIT License. Free for academic researchers, PhD candidates, and universities worldwide.
+## 🧪 Testing & Verification
+
+Run the comprehensive SaaS automated test suite:
+```bash
+python tests/test_pdf_engines.py
+```
+This tests:
+1. All public HTML frontend routes.
+2. Configuration & Supabase public keys (`/api/config`).
+3. Authentication session verification (`/api/auth/me`).
+4. Peer Reviewer simulation (`/api/reviewer/simulate`).
+5. Research Radar idea auditing (`/api/radar/analyze`).
+6. PDF upload & PyMuPDF extraction.
+7. Conference watchlist CRUD.
+8. Academic Co-Pilot profile endpoints.
+9. System health check (`/api/health`).
+
+---
+
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).

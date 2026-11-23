@@ -34,9 +34,10 @@ try:
         BASE_DIR, FRONTEND_DIR, STATIC_DIR, AUDIO_DIR, PDFS_DIR,
         GEMINI_API_KEY, GEMINI_MODEL, ZOTERO_LIBRARY_ID, ZOTERO_API_KEY,
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
-        DATABASE_URL, normalize_database_url
+        DATABASE_URL, normalize_database_url, SUPABASE_URL, SUPABASE_KEY, APP_NAME, APP_TAGLINE
     )
-    from backend.database import init_db, get_db, Paper
+    from backend.database import init_db, get_db, Paper, Note, ConferenceWatchlist
+    from backend.auth import get_current_user, require_current_user
     from backend.zotero_sync import ZoteroSyncService
     from backend.processor import (
         PDFProcessor, GeminiSummarizer, AudioSynthesizer,
@@ -58,9 +59,10 @@ except ImportError:
         BASE_DIR, FRONTEND_DIR, STATIC_DIR, AUDIO_DIR, PDFS_DIR,
         GEMINI_API_KEY, GEMINI_MODEL, ZOTERO_LIBRARY_ID, ZOTERO_API_KEY,
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
-        DATABASE_URL, normalize_database_url
+        DATABASE_URL, normalize_database_url, SUPABASE_URL, SUPABASE_KEY, APP_NAME, APP_TAGLINE
     )
-    from database import init_db, get_db, Paper
+    from database import init_db, get_db, Paper, Note, ConferenceWatchlist
+    from auth import get_current_user, require_current_user
     from zotero_sync import ZoteroSyncService
     from processor import (
         PDFProcessor, GeminiSummarizer, AudioSynthesizer,
@@ -92,9 +94,9 @@ except Exception as e:
     logger.warning(f"Database initialization warning: {e}")
 
 app = FastAPI(
-    title="Zotero Audio Mentor API",
-    description="Transforms Zotero reference library research papers into conversational audio briefings.",
-    version="1.0.0"
+    title="ProfFeb API",
+    description="ProfFeb — Global Neural Audio Research Workstation & AI Academic Mentor",
+    version="2.0.0"
 )
 
 # Enable CORS for frontend integrations
@@ -173,7 +175,7 @@ class LabSearchRequest(BaseModel):
 
 
 class TwinSyncRequest(BaseModel):
-    url: Optional[str] = "https://febmac.vercel.app"
+    url: Optional[str] = ""
 
 
 class TwinUpdateRequest(BaseModel):
@@ -198,7 +200,7 @@ class TwinChatRequest(BaseModel):
 
 class GitHubConnectRequest(BaseModel):
     token: str
-    username: Optional[str] = "Febiri"
+    username: Optional[str] = ""
 
 
 class PrepareApplicationRequest(BaseModel):
@@ -209,7 +211,7 @@ class PrepareApplicationRequest(BaseModel):
 
 class DispatchApplicationRequest(BaseModel):
     packet: Dict[str, Any]
-    target_repo: Optional[str] = "febPhD"
+    target_repo: Optional[str] = "research-notes"
 
 
 class PaperChatRequest(BaseModel):
@@ -225,6 +227,16 @@ class PaperNoteRequest(BaseModel):
     category: Optional[str] = "Methodology"
     color: Optional[str] = "yellow"
     created_at: Optional[str] = None
+
+
+class WatchlistAddRequest(BaseModel):
+    conference_name: str
+    acronym: Optional[str] = ""
+    core_rank: Optional[str] = ""
+    submission_deadline: Optional[str] = ""
+    location: Optional[str] = ""
+    travel_grant: Optional[str] = ""
+    notes: Optional[str] = ""
 
 
 class VoiceChangeRequest(BaseModel):
@@ -248,6 +260,48 @@ class RadarChatRequest(BaseModel):
     radar_result: Optional[Dict[str, Any]] = {}
     message: str
     history: Optional[List[Dict[str, str]]] = []
+
+
+# =====================================================================
+# SAAS GLOBAL PLATFORM & AUTH CONFIGURATION ENDPOINTS
+# =====================================================================
+@app.get("/api/config")
+def get_app_config():
+    """Returns public runtime client configuration for ProfFeb SaaS frontend."""
+    return {
+        "app_name": APP_NAME,
+        "tagline": APP_TAGLINE,
+        "supabase_url": SUPABASE_URL,
+        "supabase_anon_key": SUPABASE_KEY,
+        "available_voices": AVAILABLE_VOICES,
+        "default_voice": DEFAULT_TTS_VOICE,
+        "version": "2.0.0"
+    }
+
+
+@app.get("/api/auth/me")
+async def get_current_user_profile(user: Optional[Dict[str, Any]] = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Returns active session user profile, quotas, and subscription tier."""
+    if not user:
+        return {"authenticated": False, "user": None, "tier": "guest"}
+
+    user_id = user["id"]
+    try:
+        paper_count = db.query(func.count(Paper.id)).filter(Paper.user_id == user_id).scalar() or 0
+        total_audio_seconds = db.query(func.coalesce(func.sum(Paper.audio_duration), 0.0)).filter(Paper.user_id == user_id).scalar() or 0.0
+    except Exception:
+        paper_count = 0
+        total_audio_seconds = 0.0
+
+    return {
+        "authenticated": True,
+        "user": user,
+        "tier": user.get("user_metadata", {}).get("tier", "scholar"),
+        "stats": {
+            "papers_processed": paper_count,
+            "total_audio_minutes": round(total_audio_seconds / 60.0, 1)
+        }
+    }
 
 
 # Core Pipeline Execution Helper
@@ -416,8 +470,10 @@ async def execute_processing_pipeline(
 def health_check():
     return {
         "status": "online",
-        "service": "Zotero Audio Mentor",
-        "version": "1.0.0"
+        "service": "ProfFeb",
+        "version": "2.0.0",
+        "serverless": IS_SERVERLESS,
+        "database": "connected"
     }
 
 
@@ -560,10 +616,17 @@ def list_papers(
     has_pdf: Optional[bool] = Query(None, description="Filter papers having PDF"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: Optional[Dict[str, Any]] = Depends(get_current_user)
 ):
-    """Returns list of ingested papers with summaries, audio paths, and metadata."""
+    """Returns list of ingested papers with summaries, audio paths, and metadata scoped to user."""
     query = db.query(Paper)
+
+    # Multi-tenant isolation: filter by authenticated user or public benchmarks
+    if user and user.get("id"):
+        query = query.filter(or_(Paper.user_id == user["id"], Paper.user_id == None))
+    else:
+        query = query.filter(Paper.user_id == None)
 
     if status:
         query = query.filter(Paper.status == status)
@@ -584,9 +647,15 @@ def list_papers(
     total_count = query.count()
     papers = query.order_by(desc(Paper.created_at)).offset(offset).limit(limit).all()
 
-    # Fast SQL aggregate metrics (sub-millisecond)
-    ready_count = db.query(Paper).filter(Paper.status == "Ready").count()
-    total_audio_seconds = db.query(func.coalesce(func.sum(Paper.audio_duration), 0.0)).filter(Paper.status == "Ready").scalar() or 0.0
+    # Fast SQL aggregate metrics scoped to user
+    stats_query = db.query(Paper).filter(Paper.status == "Ready")
+    if user and user.get("id"):
+        stats_query = stats_query.filter(or_(Paper.user_id == user["id"], Paper.user_id == None))
+    else:
+        stats_query = stats_query.filter(Paper.user_id == None)
+
+    ready_count = stats_query.count()
+    total_audio_seconds = stats_query.with_entities(func.coalesce(func.sum(Paper.audio_duration), 0.0)).scalar() or 0.0
 
     paper_list = []
     for p in papers:
@@ -752,15 +821,39 @@ def _save_paper_notes(paper_id: int, notes: List[Dict[str, Any]]):
 
 
 @app.get("/api/papers/{paper_id}/notes")
-def get_paper_notes(paper_id: int):
+def get_paper_notes(paper_id: int, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     """Retrieve saved highlights and professional notes for a research paper."""
+    user_id = user["id"] if user else None
+    try:
+        q = db.query(Note).filter(Note.paper_id == paper_id)
+        if user_id:
+            q = q.filter(or_(Note.user_id == user_id, Note.user_id == None))
+        db_notes = [n.to_dict() for n in q.order_by(desc(Note.created_at)).all()]
+        if db_notes:
+            return {"paper_id": paper_id, "notes": db_notes, "total": len(db_notes)}
+    except Exception:
+        pass
     notes = _load_paper_notes(paper_id)
     return {"paper_id": paper_id, "notes": notes, "total": len(notes)}
 
 
 @app.post("/api/papers/{paper_id}/notes")
-def save_paper_note(paper_id: int, payload: PaperNoteRequest):
+def save_paper_note(paper_id: int, payload: PaperNoteRequest, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     """Save or update a highlighted passage and professional note."""
+    user_id = user["id"] if user else None
+    try:
+        new_db_note = Note(
+            user_id=user_id,
+            paper_id=paper_id,
+            content=payload.content,
+            tags=payload.category or "Methodology"
+        )
+        db.add(new_db_note)
+        db.commit()
+        db.refresh(new_db_note)
+    except Exception as e:
+        logger.warning(f"Could not persist note to DB: {e}")
+
     notes = _load_paper_notes(paper_id)
     note_id = payload.id or f"note_{int(datetime.utcnow().timestamp() * 1000)}"
     new_note = {
@@ -782,8 +875,21 @@ def save_paper_note(paper_id: int, payload: PaperNoteRequest):
 
 
 @app.delete("/api/papers/{paper_id}/notes/{note_id}")
-def delete_paper_note(paper_id: int, note_id: str):
+def delete_paper_note(paper_id: int, note_id: str, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
     """Delete a professional research note."""
+    user_id = user["id"] if user else None
+    try:
+        if note_id.isdigit():
+            q = db.query(Note).filter(Note.id == int(note_id), Note.paper_id == paper_id)
+            if user_id:
+                q = q.filter(or_(Note.user_id == user_id, Note.user_id == None))
+            row = q.first()
+            if row:
+                db.delete(row)
+                db.commit()
+    except Exception as e:
+        logger.warning(f"Could not delete note from DB: {e}")
+
     notes = _load_paper_notes(paper_id)
     notes = [n for n in notes if n.get("id") != note_id]
     _save_paper_notes(paper_id, notes)
@@ -955,7 +1061,8 @@ async def upload_pdf(
     auto_process: bool = Form(False),
     mode: Optional[str] = Form("summary"),
     voice: Optional[str] = Form(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: Optional[Dict[str, Any]] = Depends(get_current_user)
 ):
     """Directly upload a research PDF file without requiring Zotero setup."""
     if not file.filename.lower().endswith(".pdf"):
@@ -1000,8 +1107,10 @@ async def upload_pdf(
     except Exception as e:
         logger.warning(f"Could not extract verbatim text upon upload: {e}")
 
+    user_id = user["id"] if user else None
     initial_status = "Processing" if auto_process else "Pending"
     paper = Paper(
+        user_id=user_id,
         zotero_item_key=file_id,
         title=doc_title,
         authors=doc_authors,
@@ -1327,6 +1436,51 @@ def get_featured_conferences():
     return scout.search(query="", upcoming_only=True)
 
 
+@app.get("/api/conferences/watchlist")
+def get_conference_watchlist(db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+    """Returns conference watchlist for authenticated user or public items."""
+    user_id = user["id"] if user else None
+    query = db.query(ConferenceWatchlist)
+    if user_id:
+        query = query.filter(or_(ConferenceWatchlist.user_id == user_id, ConferenceWatchlist.user_id == None))
+    items = query.order_by(desc(ConferenceWatchlist.created_at)).all()
+    return {"watchlist": [i.to_dict() for i in items], "total": len(items)}
+
+
+@app.post("/api/conferences/watchlist")
+def add_conference_to_watchlist(payload: WatchlistAddRequest, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+    """Adds a conference to the user's personal watchlist."""
+    user_id = user["id"] if user else None
+    item = ConferenceWatchlist(
+        user_id=user_id,
+        conference_name=payload.conference_name,
+        acronym=payload.acronym or "",
+        core_rank=payload.core_rank or "",
+        submission_deadline=payload.submission_deadline or "",
+        location=payload.location or "",
+        travel_grant=payload.travel_grant or "",
+        notes=payload.notes or ""
+    )
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return {"success": True, "item": item.to_dict()}
+
+
+@app.delete("/api/conferences/watchlist/{item_id}")
+def remove_from_watchlist(item_id: int, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+    """Removes a conference from the user's watchlist."""
+    user_id = user["id"] if user else None
+    query = db.query(ConferenceWatchlist).filter(ConferenceWatchlist.id == item_id)
+    if user_id:
+        query = query.filter(or_(ConferenceWatchlist.user_id == user_id, ConferenceWatchlist.user_id == None))
+    item = query.first()
+    if item:
+        db.delete(item)
+        db.commit()
+    return {"success": True, "deleted_id": item_id}
+
+
 # =====================================================================
 # ENGINE 3: RESEARCH GAP & NOVELTY RADAR ENDPOINTS
 # =====================================================================
@@ -1576,7 +1730,7 @@ def post_labs(payload: LabSearchRequest):
 # =====================================================================
 @app.get("/api/twin/profile")
 def get_twin_profile():
-    """Returns Mark Febiri's digital twin knowledge base, synced with febmac.vercel.app."""
+    """Returns academic co-pilot knowledge base and scholar profile."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1585,15 +1739,15 @@ def get_twin_profile():
 
 @app.post("/api/twin/sync")
 def sync_twin_portfolio(payload: TwinSyncRequest = TwinSyncRequest()):
-    """Live re-crawls Mark Febiri's portfolio website to refresh profile knowledge."""
+    """Live re-crawls scholar portfolio website to refresh profile knowledge."""
     if not PortfolioSyncService:
         raise HTTPException(status_code=503, detail="PortfolioSyncService unavailable")
-    return PortfolioSyncService.live_sync(base_url=payload.url or "https://febmac.vercel.app")
+    return PortfolioSyncService.live_sync(base_url=payload.url or "")
 
 
 @app.post("/api/twin/update-profile")
 def update_twin_profile(payload: TwinUpdateRequest):
-    """Updates custom research notes or active focus for the Digital Twin."""
+    """Updates custom research notes or active focus for the Academic Co-Pilot."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1602,7 +1756,7 @@ def update_twin_profile(payload: TwinUpdateRequest):
 
 @app.post("/api/twin/apply-grant")
 def twin_apply_grant(payload: TwinApplyGrantRequest):
-    """Autonomous drafter: creates complete grant/fellowship dossier on Mark's behalf."""
+    """Autonomous drafter: creates complete grant/fellowship dossier on scholar's behalf."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1611,7 +1765,7 @@ def twin_apply_grant(payload: TwinApplyGrantRequest):
 
 @app.post("/api/twin/apply-lab")
 def twin_apply_lab(payload: TwinApplyLabRequest):
-    """Autonomous drafter: creates complete research lab internship pitch & cold email on Mark's behalf."""
+    """Autonomous drafter: creates complete research lab internship pitch & cold email on scholar's behalf."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1620,7 +1774,7 @@ def twin_apply_lab(payload: TwinApplyLabRequest):
 
 @app.get("/api/twin/suggestions")
 def get_twin_suggestions():
-    """Proactive strategic advisor: returns prioritized actions Mark should take over the next 14-60 days."""
+    """Proactive strategic advisor: returns prioritized actions the scholar should take over the next 14-60 days."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1629,7 +1783,7 @@ def get_twin_suggestions():
 
 @app.post("/api/twin/chat")
 def chat_with_twin(payload: TwinChatRequest):
-    """Interactive chat with Mark Febiri's perfectionist digital twin."""
+    """Interactive chat with ProfFeb academic mentor and co-pilot."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1639,7 +1793,7 @@ def chat_with_twin(payload: TwinChatRequest):
 
 @app.get("/api/twin/github/status")
 def get_twin_github_status():
-    """Returns the live connection status of Mark Febiri's GitHub account."""
+    """Returns the live connection status of scholar's GitHub account."""
     if not GitHubConnectorService:
         raise HTTPException(status_code=503, detail="GitHubConnectorService unavailable")
     connector = GitHubConnectorService()
@@ -1652,13 +1806,13 @@ def connect_twin_github(payload: GitHubConnectRequest):
     if not GitHubConnectorService:
         raise HTTPException(status_code=503, detail="GitHubConnectorService unavailable")
     connector = GitHubConnectorService()
-    result = connector.save_token(token=payload.token, username=payload.username or "Febiri")
+    result = connector.save_token(token=payload.token, username=payload.username or "")
     return result
 
 
 @app.get("/api/twin/github/repos")
 def get_twin_github_repos():
-    """Fetches Mark Febiri's active repositories directly from GitHub API."""
+    """Fetches scholar's active repositories directly from GitHub API."""
     if not GitHubConnectorService:
         raise HTTPException(status_code=503, detail="GitHubConnectorService unavailable")
     connector = GitHubConnectorService()
@@ -1688,7 +1842,7 @@ def twin_dispatch_application(payload: DispatchApplicationRequest):
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
     result = service.dispatch_application(
         packet=payload.packet,
-        target_repo=payload.target_repo or "febPhD"
+        target_repo=payload.target_repo or "research-notes"
     )
     return result
 
@@ -1701,17 +1855,6 @@ def get_twin_dispatch_history():
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
     history = service.get_dispatch_history()
     return {"history": history, "total": len(history)}
-
-
-@app.get("/api/health")
-def api_health():
-    """Health check endpoint to test runtime status."""
-    return {
-        "status": "healthy",
-        "service": "febPhD",
-        "serverless": IS_SERVERLESS,
-        "database": "connected"
-    }
 
 
 # Safely mount static directory if it exists, without crashing if directory is missing

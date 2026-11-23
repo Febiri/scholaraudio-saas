@@ -93,11 +93,19 @@ try:
 except Exception:
     pass
 
+# ProfFeb Platform Metadata
+APP_NAME = "ProfFeb"
+APP_TAGLINE = "The Global Neural Audio Research Workstation & AI Academic Mentor"
+
+# Supabase Configuration (Multi-Tenant Auth & Storage)
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://lbwdlisjvrlbfqonioed.supabase.co").strip()
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxid2RsaXNqdnJsYmZxb25pb2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0NDg0NDksImV4cCI6MjExMTAyNDQ0OX0.HpHr1J7UHEI49Oekk_Wzlo050MI5KukHaU1b-NQvN6g").strip()
+
 # Gemini API Configuration
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
-# Zotero API Configuration
+# Zotero API Configuration (Optional Global Fallback)
 ZOTERO_LIBRARY_ID = os.getenv("ZOTERO_LIBRARY_ID", "")
 ZOTERO_API_KEY = os.getenv("ZOTERO_API_KEY", "")
 ZOTERO_LIBRARY_TYPE = os.getenv("ZOTERO_LIBRARY_TYPE", "user")
@@ -105,9 +113,9 @@ ZOTERO_LIBRARY_TYPE = os.getenv("ZOTERO_LIBRARY_TYPE", "user")
 # Text-to-Speech Configuration (edge-tts voices)
 DEFAULT_TTS_VOICE = os.getenv("DEFAULT_TTS_VOICE", "en-NG-AbeoNeural")
 
-# GitHub Personal Access Token (PAT) for Autonomous Digital Twin Execution
+# GitHub Personal Access Token (PAT) for Autonomous Co-Pilot Execution
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "").strip()
-GITHUB_USERNAME = os.getenv("GITHUB_USERNAME", "Febiri").strip()
+GITHUB_USERNAME = os.getenv("GITHUB_USERNAME", "").strip()
 
 AVAILABLE_VOICES = [
     {"id": "en-NG-AbeoNeural", "name": "🇬🇭 Abeo (West Africa / Ghana - Male, Expressive & Natural)", "gender": "Male", "region": "Africa"},

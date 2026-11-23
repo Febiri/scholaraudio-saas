@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My PhD Corner — Research Command Center & Engines</title>
+  <title>ProfFeb — Global Neural Audio Research Workstation & AI Academic Mentor</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
@@ -52,6 +52,10 @@
       }
     }
   </script>
+
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
 
   <style>
     /* Custom scrollbars */
@@ -110,41 +114,44 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg tracking-tight text-slate-900 group-hover:text-brand-700 transition">My PhD Corner</span>
-            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 font-bold">Command Center</span>
+            <span class="font-extrabold text-xl tracking-tight text-slate-900 group-hover:text-brand-700 transition">ProfFeb</span>
+            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 font-bold">Global SaaS</span>
           </div>
-          <p class="text-[11px] text-slate-500 font-medium">Intelligent Engines for Smooth, Focused Doctoral Research</p>
+          <p class="text-[11px] text-slate-500 font-medium hidden sm:block">The Neural Audio Research Workstation & AI Academic Mentor</p>
         </div>
       </a>
 
       <!-- Center Navigation Links -->
-      <nav class="hidden lg:flex items-center gap-4 text-xs font-semibold text-slate-600">
-        <a href="#phd-engines" class="hover:text-brand-600 transition flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>7 PhD Engines</span>
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="/app" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <span>📖</span>
+          <span>Paper Studio</span>
         </a>
-        <a href="/agent" class="text-brand-700 font-bold hover:text-brand-800 transition flex items-center gap-1 bg-brand-50 px-2.5 py-1 rounded-lg border border-brand-200">
-          <span>🧠 Digital Twin</span>
+        <a href="/conferences" class="hover:text-scholar-600 transition flex items-center gap-1.5">
+          <span>🌐</span>
+          <span>Conference Scout</span>
         </a>
-        <a href="/app" class="hover:text-brand-600 transition">📖 Audio Reader</a>
-        <a href="/conferences" class="hover:text-scholar-600 transition">🌐 Conference Scout</a>
-        <a href="/radar" class="hover:text-purple-600 transition">🔬 Novelty Radar</a>
-        <a href="/reviewer" class="hover:text-rose-600 transition">⚖️ Reviewer #2</a>
-        <a href="/grants" class="hover:text-emerald-600 transition">💰 Funding Radar</a>
-        <a href="/lab-connector" class="hover:text-indigo-600 transition">🚀 Lab Connector</a>
+        <a href="/reviewer" class="hover:text-rose-600 transition flex items-center gap-1.5">
+          <span>⚖️</span>
+          <span>Reviewer #2</span>
+        </a>
+        <a href="/radar" class="hover:text-purple-600 transition flex items-center gap-1.5">
+          <span>🔬</span>
+          <span>Novelty Radar</span>
+        </a>
+        <a href="/agent" class="hover:text-cyan-600 transition flex items-center gap-1.5">
+          <span>🎓</span>
+          <span>Academic Co-Pilot</span>
+        </a>
+        <a href="#pricing" class="hover:text-slate-900 transition flex items-center gap-1.5 text-brand-700">
+          <span>💎</span>
+          <span>Pricing</span>
+        </a>
       </nav>
 
-      <!-- Right Action CTA -->
+      <!-- Right Action CTA & Auth Container -->
       <div class="flex items-center gap-3">
-        <a 
-          href="/app" 
-          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white text-xs sm:text-sm font-semibold shadow-md shadow-brand-500/20 hover:shadow-lg hover:shadow-brand-500/30 transition transform active:scale-95"
-        >
-          <span>Open Library & Audio</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </a>
+        <div id="user-nav-container"></div>
       </div>
 
     </div>
@@ -158,23 +165,32 @@
       <!-- Pill Badge -->
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-200/90 text-xs font-semibold text-slate-700 shadow-sm mb-6 animate-fade-in">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="font-bold text-slate-800">PhD Research Command Center</span>
+        <span class="font-bold text-slate-800">Global Academic Research Platform</span>
         <span class="text-slate-300">•</span>
-        <span class="text-brand-700 font-mono">100% Free Forever</span>
+        <span class="text-brand-700 font-mono">Edge-TTS & Gemini AI</span>
         <span class="text-slate-300">•</span>
-        <span class="text-scholar-700 font-mono">Gemini & Edge-TTS</span>
+        <span class="text-scholar-700 font-mono">Supabase Multi-Tenant</span>
       </div>
 
       <!-- Main Headline -->
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15] max-w-4xl">
-        Make Your PhD Journey <br class="hidden sm:inline" />
-        <span class="bg-gradient-to-r from-brand-600 via-emerald-600 to-scholar-600 bg-clip-text text-transparent">Easy, Simple & Smooth</span>.
+        Eliminate Academic Paper Fatigue. <br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-brand-600 via-emerald-600 to-scholar-600 bg-clip-text text-transparent">Neural Audio & Senior Briefings</span>.
       </h1>
 
       <!-- Subtitle -->
       <p class="mt-5 text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl leading-relaxed font-normal">
-        Your dedicated doctoral workstation. Ingest and listen to dense scientific literature with natural West African voices, or scout upcoming conferences, doctoral consortiums, call-for-papers, and student travel grants tailored to your thesis research.
+        Ingest and listen to dense research papers word-for-word or synthesize 4-part senior briefings with natural West African neural voices, vocalize mathematical formulas phonetically, inspect extracted figure architectures, and scout global conferences with travel grants.
       </p>
+
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <button onclick="ProfFebAuth.openModal('signup')" class="px-6 py-3 rounded-full bg-slate-900 hover:bg-brand-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition">
+          Get Started Free
+        </button>
+        <a href="/app" class="px-6 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm shadow-sm transition flex items-center gap-2">
+          <span>🎧 Launch Paper Studio</span>
+        </a>
+      </div>
 
       <!-- Quick Metrics Strip -->
       <div class="mt-10 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-4 rounded-2xl bg-white/80 backdrop-blur border border-slate-200 shadow-sm text-left">
@@ -183,12 +199,12 @@
           <span class="text-sm sm:text-base font-bold text-slate-900 mt-1 flex items-center gap-1.5">
             <span>🇬🇭 Abeo & Ezinne</span>
           </span>
-          <span class="text-[11px] text-slate-400">West African Cadence</span>
+          <span class="text-[11px] text-slate-400">Natural African Cadence</span>
         </div>
         <div class="p-2 sm:p-3 border-l border-slate-200/80 pl-3 sm:pl-4">
           <span class="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">Academic Audio</span>
           <span class="text-sm sm:text-base font-bold text-slate-900 mt-1">100% Verbatim & Briefing</span>
-          <span class="text-[11px] text-slate-400">Math & Symbol Phonetics</span>
+          <span class="text-[11px] text-slate-400">KaTeX Math Phonetics</span>
         </div>
         <div class="p-2 sm:p-3 border-l border-slate-200/80 pl-3 sm:pl-4">
           <span class="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">Event Scout</span>
@@ -196,9 +212,9 @@
           <span class="text-[11px] text-slate-400">CORE A* & Travel Grants</span>
         </div>
         <div class="p-2 sm:p-3 border-l border-slate-200/80 pl-3 sm:pl-4">
-          <span class="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">Platform Cost</span>
-          <span class="text-sm sm:text-base font-bold text-emerald-600 mt-1">$0.00 (Zero API Fees)</span>
-          <span class="text-[11px] text-slate-400">Community & Open Free</span>
+          <span class="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">Architecture</span>
+          <span class="text-sm sm:text-base font-bold text-emerald-600 mt-1">Multi-Tenant Cloud</span>
+          <span class="text-[11px] text-slate-400">Supabase Auth & RLS</span>
         </div>
       </div>
 
@@ -658,11 +674,11 @@
                   <div>
                     <div class="flex items-center gap-2">
                       <span class="text-[11px] font-mono uppercase font-bold text-brand-700 bg-brand-100 px-2.5 py-0.5 rounded border border-brand-200">Engine 07</span>
-                      <span class="text-[11px] font-mono text-cyan-700 font-bold bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">● Autonomous Executive Twin</span>
-                      <span class="hidden sm:inline-block text-[10px] font-mono text-slate-500">febmac.vercel.app</span>
+                      <span class="text-[11px] font-mono text-cyan-700 font-bold bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">● Academic Co-Pilot</span>
+                      <span class="hidden sm:inline-block text-[10px] font-mono text-slate-500">Autonomous Dossier Engine</span>
                     </div>
                     <h3 class="text-xl sm:text-2xl font-black text-slate-900 group-hover:text-brand-700 transition mt-1">
-                      PhD Digital Twin & Executive Co-Pilot <span class="text-brand-600 font-light text-base">(Mark Febiri AI)</span>
+                      Academic Co-Pilot & Profile Mentor <span class="text-brand-600 font-light text-base">(Prof. Feb AI)</span>
                     </h3>
                   </div>
                 </div>
@@ -672,20 +688,20 @@
               </div>
 
               <p class="text-slate-600 text-sm leading-relaxed mb-6 font-normal">
-                Your personal AI alter ego operating in <strong>higher perfection</strong>. Ingests your entire portfolio (CTO at DevSpace Systems, Neuro-Symbolic RAG, ClawBio Multi-Omics). <strong>Autonomously writes and formats full grant and fellowship applications on your behalf</strong>, drafts cold outreach pitches to lab directors, and proactively guides your weekly doctoral roadmap.
+                Your personal AI alter ego operating with doctoral mastery. Synchronizes with your scholar profile, publications, and GitHub repositories. <strong>Autonomously writes and packages full grant and fellowship applications</strong>, generates tailored outreach pitches to lab directors, and provides proactive publication strategy.
               </p>
 
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-700 mb-6">
-                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Applies on your behalf</span></div>
-                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Synced with portfolio</span></div>
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Pre-fills grant dossiers</span></div>
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Multi-tenant profile</span></div>
                 <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Proactive advisory radar</span></div>
-                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Interactive Twin Chat</span></div>
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-xs"><span class="text-brand-600 font-bold">✔</span><span class="font-medium">Interactive Mentor Chat</span></div>
               </div>
             </div>
 
             <div class="mt-2 pt-4 border-t border-slate-200/60">
               <div class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 group-hover:bg-brand-600 text-white font-bold text-sm shadow-md shadow-brand-500/10 transition-colors">
-                <span>Enter Digital Twin & Co-Pilot Studio (/agent)</span>
+                <span>Enter Academic Co-Pilot Studio (/agent)</span>
                 <svg class="w-4 h-4 text-cyan-400 group-hover:text-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
               </div>
             </div>
@@ -801,20 +817,124 @@
 
     </section>
 
+    <!-- ================= GLOBAL SAAS PRICING SECTION ================= -->
+    <section id="pricing" class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-100">
+      
+      <div class="text-center mb-12">
+        <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+          Transparent Academic Plans
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-3">
+          Elevate Your Research Velocity
+        </h2>
+        <p class="text-sm sm:text-base text-slate-600 mt-2 max-w-xl mx-auto">
+          Built for PhD scholars, postdoctoral fellows, and university research labs worldwide.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+        
+        <!-- Tier 1: Scholar (Free Forever) -->
+        <div class="rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold uppercase text-slate-500 bg-slate-100 px-3 py-1 rounded-full">Free Scholar</span>
+            </div>
+            <div class="flex items-baseline gap-1 mb-4">
+              <span class="text-4xl font-extrabold text-slate-900">$0</span>
+              <span class="text-xs text-slate-500 font-medium">/ month</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-6">
+              Essential neural audio synthesis and academic conference discovery for students and independent scholars.
+            </p>
+            <ul class="space-y-3 text-xs text-slate-700 mb-8">
+              <li class="flex items-center gap-2.5"><span class="text-emerald-500 font-bold">✔</span> 3 Full Paper Neural Audio Briefings / mo</li>
+              <li class="flex items-center gap-2.5"><span class="text-emerald-500 font-bold">✔</span> Ghanaian Abeo & Ezinne Neural Voices</li>
+              <li class="flex items-center gap-2.5"><span class="text-emerald-500 font-bold">✔</span> 4-Part Senior Academic Synthesis</li>
+              <li class="flex items-center gap-2.5"><span class="text-emerald-500 font-bold">✔</span> CORE A* Conference & CFP Radar</li>
+              <li class="flex items-center gap-2.5"><span class="text-emerald-500 font-bold">✔</span> KaTeX LaTeX Math Vocalization</li>
+            </ul>
+          </div>
+          <button onclick="ProfFebAuth.openModal('signup')" class="w-full py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs transition">
+            Start Free
+          </button>
+        </div>
+
+        <!-- Tier 2: Fellow Pro (Most Popular) -->
+        <div class="rounded-3xl bg-slate-900 text-white p-6 sm:p-8 flex flex-col justify-between shadow-xl shadow-brand-500/10 border-2 border-brand-500 relative transform md:-translate-y-2">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-500 to-emerald-400 text-slate-950 text-[10px] font-mono uppercase font-black px-3.5 py-0.5 rounded-full shadow-sm">
+            Most Popular &bull; 95% Gross Margin
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-4 mt-2">
+              <span class="text-xs font-mono font-bold uppercase text-brand-400 bg-brand-950/80 px-3 py-1 rounded-full border border-brand-500/30">Fellow Pro</span>
+              <span class="text-[10px] font-mono text-emerald-400">Save 25% yearly ($79/yr)</span>
+            </div>
+            <div class="flex items-baseline gap-1 mb-4">
+              <span class="text-4xl font-extrabold text-white">$9</span>
+              <span class="text-xs text-slate-400 font-medium">/ month</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-6">
+              Complete doctoral research workstation with unlimited neural synthesis, high-res figure sync, and grant discovery.
+            </p>
+            <ul class="space-y-3 text-xs text-slate-200 mb-8">
+              <li class="flex items-center gap-2.5"><span class="text-brand-400 font-bold">✔</span> <strong>Unlimited</strong> Verbatim & Briefing Synthesis</li>
+              <li class="flex items-center gap-2.5"><span class="text-brand-400 font-bold">✔</span> All 18 Global & African Neural Voices</li>
+              <li class="flex items-center gap-2.5"><span class="text-brand-400 font-bold">✔</span> Extracted Figures & Architecture Sync</li>
+              <li class="flex items-center gap-2.5"><span class="text-brand-400 font-bold">✔</span> Student Travel Grants & PhD Consortium Alerts</li>
+              <li class="flex items-center gap-2.5"><span class="text-brand-400 font-bold">✔</span> Reviewer #2 Rebuttal Simulator & Gap Radar</li>
+              <li class="flex items-center gap-2.5"><span class="text-brand-400 font-bold">✔</span> Priority Audio Generation Queue</li>
+            </ul>
+          </div>
+          <button onclick="ProfFebAuth.openModal('signup')" class="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs shadow-md transition transform active:scale-95">
+            Upgrade to Fellow Pro
+          </button>
+        </div>
+
+        <!-- Tier 3: Research Lab -->
+        <div class="rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold uppercase text-scholar-600 bg-scholar-50 px-3 py-1 rounded-full border border-scholar-200">Research Lab</span>
+            </div>
+            <div class="flex items-baseline gap-1 mb-4">
+              <span class="text-4xl font-extrabold text-slate-900">$29</span>
+              <span class="text-xs text-slate-500 font-medium">/ month</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-6">
+              Designed for Principal Investigators (PIs), doctoral cohorts, and university laboratories.
+            </p>
+            <ul class="space-y-3 text-xs text-slate-700 mb-8">
+              <li class="flex items-center gap-2.5"><span class="text-scholar-600 font-bold">✔</span> Up to 10 Researcher Seats</li>
+              <li class="flex items-center gap-2.5"><span class="text-scholar-600 font-bold">✔</span> Shared Lab Library & Joint Annotations</li>
+              <li class="flex items-center gap-2.5"><span class="text-scholar-600 font-bold">✔</span> Dedicated Supabase DB Air-Gap Separation</li>
+              <li class="flex items-center gap-2.5"><span class="text-scholar-600 font-bold">✔</span> Automated Thesis Literature Synthesis</li>
+              <li class="flex items-center gap-2.5"><span class="text-scholar-600 font-bold">✔</span> Custom Voice Model Cloning Integration</li>
+            </ul>
+          </div>
+          <button onclick="ProfFebAuth.openModal('signup')" class="w-full py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs transition">
+            Contact Lab Sales
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
   </main>
 
   <!-- ================= FOOTER ================= -->
   <footer class="border-t border-slate-200 bg-white py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-800">My PhD Corner</span>
-        <span>— Free Open Academic Command Center</span>
+        <span class="font-bold text-slate-900">ProfFeb</span>
+        <span>&bull; Global AI Research Workstation & Spoken Paper Studio</span>
       </div>
       <div class="flex items-center gap-6">
+        <a href="/app" class="text-brand-600 hover:underline font-semibold">Paper Studio (/app)</a>
         <a href="/conferences" class="text-scholar-600 hover:underline font-semibold">Conference Scout (/conferences)</a>
-        <a href="/app" class="text-brand-600 hover:underline font-semibold">Paper Reader Workspace (/app)</a>
-        <a href="https://github.com" target="_blank" class="hover:text-slate-800 transition">GitHub</a>
-        <a href="https://aistudio.google.com" target="_blank" class="hover:text-slate-800 transition">Gemini API</a>
+        <a href="/reviewer" class="text-rose-600 hover:underline font-semibold">Reviewer #2 (/reviewer)</a>
+        <a href="/agent" class="text-cyan-600 hover:underline font-semibold">Academic Co-Pilot (/agent)</a>
       </div>
     </div>
   </footer>

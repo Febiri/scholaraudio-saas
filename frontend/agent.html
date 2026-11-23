@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous PhD Digital Twin & Executive Co-Pilot — Mark Febiri</title>
+  <title>ProfFeb — Autonomous Academic Co-Pilot & Profile Studio</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
 
   <!-- KaTeX for Scientific Formula Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -154,23 +158,26 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-extrabold text-base tracking-tight text-slate-900">PhD Digital Twin & Co-Pilot</span>
+              <span class="font-extrabold text-base tracking-tight text-slate-900">ProfFeb Co-Pilot</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-50 text-brand-700 font-bold border border-brand-200">Engine 07</span>
             </div>
-            <p class="text-[11px] text-slate-500">Autonomous Mark Febiri AI • GitHub & Portfolio Connected</p>
+            <p class="text-[11px] text-slate-500">Autonomous Academic Mentor & Research Dossier Engine</p>
           </div>
         </a>
       </div>
 
       <nav class="hidden md:flex items-center gap-5 text-xs font-semibold text-slate-600">
-        <a href="/" class="hover:text-brand-600 transition">🏠 Home Corner</a>
-        <a href="/app" class="hover:text-brand-600 transition">📖 Audio Reader</a>
+        <a href="/" class="hover:text-brand-600 transition">🏠 Home</a>
+        <a href="/app" class="hover:text-brand-600 transition">📖 Paper Studio</a>
         <a href="/conferences" class="hover:text-brand-600 transition">🌐 Conference Scout</a>
         <a href="/radar" class="hover:text-brand-600 transition">🔬 Novelty Radar</a>
         <a href="/reviewer" class="hover:text-brand-600 transition">⚖️ Reviewer #2</a>
         <a href="/grants" class="hover:text-brand-600 transition">💰 Funding Radar</a>
-        <a href="/lab-connector" class="hover:text-brand-600 transition">🚀 Lab Connector</a>
       </nav>
+
+      <div class="flex items-center gap-3">
+        <div id="user-nav-container"></div>
+      </div>
     </div>
   </header>
 
@@ -182,27 +189,27 @@
         <div class="flex items-center gap-2 flex-wrap mb-3">
           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-xs font-mono font-bold text-brand-300">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>AUTONOMOUS EXECUTIVE TWIN</span>
+            <span>AUTONOMOUS ACADEMIC CO-PILOT</span>
           </span>
-          <span class="text-xs text-slate-400 font-mono">Linked to febmac.vercel.app & github.com/Febiri</span>
+          <span class="text-xs text-slate-400 font-mono">Multi-Tenant Scholar Brain & Connected Repositories</span>
         </div>
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-          Mark Febiri <span class="text-brand-400 font-light">Digital Twin Studio</span>
+          ProfFeb <span class="text-brand-400 font-light">Academic Co-Pilot Studio</span>
         </h1>
         <p class="mt-2 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-          Your personal AI executive alter ego operating in <strong>higher perfection</strong>. Autonomous human-in-the-loop pipeline: pre-fills online applications, presents them for your review, and dispatches tracking issues directly to your GitHub (<code class="text-brand-300">github.com/Febiri/febPhD</code>) upon your <strong>"Proceed"</strong> command.
+          Your personal AI academic mentor operating with publication mastery. Autonomous human-in-the-loop pipeline: pre-fills grant and fellowship applications, presents them for your review, and logs dossiers directly to your GitHub repository upon your <strong>"Proceed"</strong> command.
         </p>
       </div>
 
       <!-- Sync Status & GitHub Connector Control Box -->
       <div class="shrink-0 p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 flex flex-col gap-2.5 sm:min-w-[280px]">
         <div class="flex items-center justify-between text-xs">
-          <span class="text-slate-400">Knowledge Brain:</span>
-          <span class="text-emerald-400 font-bold font-mono">100% Synced</span>
+          <span class="text-slate-400">Scholar Profile:</span>
+          <span class="text-emerald-400 font-bold font-mono">Active Session</span>
         </div>
         <div class="text-[11px] text-slate-300 font-mono truncate flex items-center justify-between">
-          <span>🔗 febmac.vercel.app</span>
-          <span class="text-slate-500">CTO Profile</span>
+          <span>🔗 Multi-Tenant Cloud</span>
+          <span class="text-slate-500">Supabase Auth</span>
         </div>
         <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-700/60">
           <span class="text-slate-400">GitHub Pipeline:</span>
@@ -301,7 +308,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
           <div class="flex items-center gap-2 text-xs text-slate-500">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Pre-fills: Mark Febiri • DevSpace Systems CTO • Neuro-Symbolic RAG • ClawBio</span>
+            <span>Pre-fills: Verified Scholar Profile • Research Focus • Publications & Dossiers</span>
           </div>
 
           <div class="flex items-center gap-2">
@@ -432,7 +439,7 @@
           <!-- THE PROCEED BUTTON -->
           <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="text-xs text-slate-500">
-              <span class="font-bold text-slate-800">Autonomous Target Repo:</span> <code class="font-mono text-purple-700 font-semibold">Febiri/febPhD</code> (or connected PAT repository).
+              <span class="font-bold text-slate-800">Autonomous Target Repo:</span> <code class="font-mono text-purple-700 font-semibold">connected repository</code> (or local audit log).
             </div>
 
             <button 
@@ -455,7 +462,7 @@
         <!-- Action Header -->
         <div class="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span class="text-[10px] font-mono uppercase text-brand-300 block mb-1">Generated by Mark Febiri Digital Twin</span>
+            <span class="text-[10px] font-mono uppercase text-brand-300 block mb-1">Generated by ProfFeb Academic Co-Pilot</span>
             <h3 id="app-result-title" class="text-xl font-bold text-white">Full Application Dossier</h3>
             <p class="text-xs text-slate-400 mt-0.5">Written in first-person executive voice citing your DevSpace CTO achievements, Neuro-Symbolic RAG, and publications.</p>
           </div>
@@ -569,8 +576,8 @@
       <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
           <span class="text-[10px] font-mono uppercase text-brand-600 font-bold">Proactive Doctoral Radar</span>
-          <h3 class="text-lg font-bold text-slate-900 mt-0.5">High-Leverage Strategic Moves for Mark Febiri</h3>
-          <p class="text-xs text-slate-500">Calculated by your Twin based on your publications, DevSpace Systems CTO role, and upcoming funding windows.</p>
+          <h3 class="text-lg font-bold text-slate-900 mt-0.5">High-Leverage Strategic Moves for Your Research</h3>
+          <p class="text-xs text-slate-500">Calculated by ProfFeb based on your publications, research focus, and upcoming funding windows.</p>
         </div>
         <button onclick="loadStrategicSuggestions()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition">
           🔄 Refresh Suggestions
@@ -588,28 +595,23 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div class="flex items-center gap-4">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-cyan-500 text-white font-extrabold text-2xl flex items-center justify-center shadow-md">
-              MF
+              🎓
             </div>
             <div>
-              <h3 id="brain-name" class="text-xl font-bold text-slate-900">Mark Febiri</h3>
-              <p id="brain-title" class="text-xs text-slate-500 font-medium">Co-Founder & CTO at DevSpace Systems</p>
+              <h3 id="brain-name" class="text-xl font-bold text-slate-900">Dr. Scholar</h3>
+              <p id="brain-title" class="text-xs text-slate-500 font-medium">PhD Researcher & Scientific Author</p>
               <div class="flex items-center gap-3 text-xs text-slate-600 mt-1">
-                <span>📍 Vadodara, India & Sunyani, Ghana</span>
+                <span>📍 Global Academic Network</span>
                 <span>•</span>
-                <span>📧 Febirimark27@gmail.com</span>
+                <span id="brain-email">📧 scholar@proffeb.ai</span>
               </div>
             </div>
           </div>
 
           <div class="flex items-center gap-2">
-            <a href="https://febmac.vercel.app/" target="_blank" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
-              <span>🌐 Portfolio</span>
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
-            <a href="https://github.com/Febiri" target="_blank" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-brand-600 text-white text-xs font-bold transition flex items-center gap-1.5">
-              <span>💻 GitHub (@Febiri)</span>
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
+            <button onclick="ProfFebAuth.openModal('signin')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-brand-600 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <span>👤 Account Profile</span>
+            </button>
           </div>
         </div>
 
@@ -686,8 +688,8 @@
               ⚡
             </div>
             <div>
-              <h4 class="text-sm font-bold text-slate-900">Mark Febiri Executive Twin</h4>
-              <p class="text-[10px] text-slate-400">High-perfection alter ego with full portfolio & GitHub recall</p>
+              <h4 class="text-sm font-bold text-slate-900">ProfFeb Academic Mentor</h4>
+              <p class="text-[10px] text-slate-400">Autonomous co-pilot with deep research reasoning and literature recall</p>
             </div>
           </div>
           <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-slate-600">Clear</button>
@@ -696,9 +698,9 @@
         <!-- Message History -->
         <div id="chat-messages" class="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1 text-xs">
           <div class="flex items-start gap-2.5">
-            <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-[10px] shrink-0">MF</span>
+            <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-[10px] shrink-0">FEB</span>
             <div class="p-3.5 rounded-2xl bg-slate-100 text-slate-800 max-w-xl leading-relaxed">
-              Hello Mark! I am your Autonomous Digital Twin, synced with your portfolio at <a href="https://febmac.vercel.app/" target="_blank" class="text-brand-600 font-bold underline">febmac.vercel.app</a> and your GitHub (<a href="https://github.com/Febiri" target="_blank" class="text-brand-600 font-bold underline">github.com/Febiri</a>). I know your work across Neuro-Symbolic RAG, the ClawBio multi-omics orchestrator, and your leadership as CTO of DevSpace Systems. What task can I prepare or dispatch for you today?
+              Hello scholar! I am your Autonomous Academic Mentor & Co-Pilot. I can assist you with research proposal formulations, fellowship and travel grant applications, peer review rebuttal strategies, and literature synthesis. How can I advance your research agenda today?
             </div>
           </div>
         </div>
@@ -749,14 +751,14 @@
           </div>
           <div>
             <h3 class="font-extrabold text-slate-900 text-base">GitHub Autonomous Pipeline</h3>
-            <p class="text-xs text-slate-500">Programmatic execution pipeline for @Febiri</p>
+            <p class="text-xs text-slate-500">Programmatic execution pipeline for research repositories</p>
           </div>
         </div>
         <button onclick="closeGitHubModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
       </div>
 
       <div class="p-3.5 rounded-2xl bg-brand-50/80 border border-brand-200/70 text-xs text-brand-900 leading-relaxed">
-        <strong>Direct Autonomous Execution:</strong> Enter your GitHub Personal Access Token (PAT) with <code class="bg-white px-1.5 py-0.5 rounded border border-brand-200 text-brand-700 font-mono">repo</code> scope. This empowers your Twin to autonomously open tracking issues, log dossiers to <code class="font-bold">Febiri/febPhD</code>, and sync repositories.
+        <strong>Direct Autonomous Execution:</strong> Enter your GitHub Personal Access Token (PAT) with <code class="bg-white px-1.5 py-0.5 rounded border border-brand-200 text-brand-700 font-mono">repo</code> scope. This empowers ProfFeb to open tracking issues, log application dossiers, and sync repositories.
       </div>
 
       <div class="space-y-3.5">
@@ -767,7 +769,7 @@
           <input 
             type="text" 
             id="gh-username-input" 
-            value="Febiri"
+            placeholder="e.g. your-github-handle"
             class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
           >
         </div>
@@ -779,8 +781,8 @@
           <input 
             type="text" 
             id="gh-repo-input" 
-            value="febPhD"
-            placeholder="e.g. febPhD"
+            value="research-notes"
+            placeholder="e.g. research-notes"
             class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
           >
         </div>
@@ -790,7 +792,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
               Personal Access Token (PAT)
             </label>
-            <a href="https://github.com/settings/tokens/new?scopes=repo&description=febPhD_Twin_Agent" target="_blank" class="text-[11px] text-brand-600 font-bold hover:underline">
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=ProfFeb_Academic_Agent" target="_blank" class="text-[11px] text-brand-600 font-bold hover:underline">
               Generate Token ↗
             </a>
           </div>
@@ -868,7 +870,7 @@
         </div>
         <div class="flex items-center justify-between">
           <span class="text-slate-500">GitHub Log:</span>
-          <span id="receipt-github-link" class="text-brand-600 font-bold underline truncate max-w-[200px]">github.com/Febiri/febPhD</span>
+          <span id="receipt-github-link" class="text-brand-600 font-bold underline truncate max-w-[200px]">Audited & Logged</span>
         </div>
       </div>
 
@@ -883,7 +885,7 @@
 
         <a 
           id="receipt-direct-issue-btn"
-          href="https://github.com/Febiri/febPhD/issues"
+          href="#"
           target="_blank"
           class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center justify-center gap-1.5"
         >
@@ -1024,7 +1026,7 @@
 
     async function saveGitHubCredentials() {
       const token = document.getElementById('gh-token-input').value.trim();
-      const username = document.getElementById('gh-username-input').value.trim() || 'Febiri';
+      const username = document.getElementById('gh-username-input').value.trim();
       const btn = document.getElementById('gh-save-btn');
       const statusBox = document.getElementById('gh-modal-status-box');
 
@@ -1070,7 +1072,7 @@
                   </a>
                   <span class="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-600">★ ${r.stargazers_count || 0}</span>
                 </div>
-                <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">${r.description || 'Mark Febiri open-source research and engineering repository.'}</p>
+                <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">${r.description || 'Open-source scientific and engineering research repository.'}</p>
               </div>
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-brand-700 font-bold">${r.language || 'Python'}</span>
@@ -1111,15 +1113,15 @@
         latestDossier = packet.dossier || packet;
 
         // Populate Check & Proceed form fields
-        const info = packet.applicant_info || {};
-        document.getElementById('cp-name').value = info.name || 'Mark Febiri';
-        document.getElementById('cp-email').value = info.email || 'Febirimark27@gmail.com';
-        document.getElementById('cp-phone').value = info.phone || '+91 97730 46421';
-        document.getElementById('cp-org').value = info.affiliation || 'Co-Founder & CTO at DevSpace Systems';
-        document.getElementById('cp-location').value = info.location || 'Vadodara, India • Sunyani, Ghana';
-        document.getElementById('cp-portfolio').value = info.portfolio || 'https://febmac.vercel.app/';
-        document.getElementById('cp-github').value = info.github || 'https://github.com/Febiri';
-        document.getElementById('cp-repos').value = (info.featured_repos || []).join(', ') || 'neuro-symbolic-rag, ClawBio-Pipeline, febPhD';
+        const info = packet.applicant_info || packet.applicant || {};
+        document.getElementById('cp-name').value = info.name || 'Scholar Researcher';
+        document.getElementById('cp-email').value = info.email || 'scholar@university.edu';
+        document.getElementById('cp-phone').value = info.phone || '';
+        document.getElementById('cp-org').value = info.affiliation || info.title || 'Department of Computer Science & AI';
+        document.getElementById('cp-location').value = info.location || 'Global Academic Community';
+        document.getElementById('cp-portfolio').value = info.portfolio || '';
+        document.getElementById('cp-github').value = info.github || '';
+        document.getElementById('cp-repos').value = (info.featured_repos || []).join(', ') || 'multimodal-ai, scientific-computing';
 
         document.getElementById('cp-target-title').value = packet.opportunity_title || oppTitle;
         document.getElementById('cp-target-award').value = packet.requested_award || '$50,000 / Travel Grant';
@@ -1169,7 +1171,7 @@
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             packet: latestPacket,
-            target_repo: document.getElementById('gh-repo-input')?.value || 'febPhD'
+            target_repo: document.getElementById('gh-repo-input')?.value || 'research-notes'
           })
         });
         const result = await res.json();
@@ -1208,14 +1210,16 @@
         alert('Please prepare an application packet first.');
         return;
       }
+      const candName = document.getElementById('cp-name')?.value || 'Applicant';
+      const candEmail = document.getElementById('cp-email')?.value || 'scholar@university.edu';
+      const candGithub = document.getElementById('cp-github')?.value || '';
       const script = latestPacket.form_autofill_script || (
         "javascript:(function(){" +
         "function s(sel,val){var el=document.querySelector(sel);if(el){el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));}}" +
-        "s('input[name*=\"name\" i], input[id*=\"name\" i]', 'Mark Febiri');" +
-        "s('input[name*=\"email\" i], input[id*=\"email\" i]', 'Febirimark27@gmail.com');" +
-        "s('input[name*=\"github\" i], input[id*=\"github\" i]', 'https://github.com/Febiri');" +
-        "s('input[name*=\"website\" i], input[id*=\"website\" i]', 'https://febmac.vercel.app/');" +
-        "alert('Mark Febiri application data injected successfully!');" +
+        `s('input[name*="name" i], input[id*="name" i]', '${candName.replace(/'/g, "\\'")}');` +
+        `s('input[name*="email" i], input[id*="email" i]', '${candEmail.replace(/'/g, "\\'")}');` +
+        (candGithub ? `s('input[name*="github" i], input[id*="github" i]', '${candGithub.replace(/'/g, "\\'")}');` : '') +
+        "alert('Application data injected successfully!');" +
         "})();"
       );
       navigator.clipboard.writeText(script).then(() => {
@@ -1264,12 +1268,12 @@
                 <span class="text-[11px] text-slate-400 font-mono">${new Date(item.dispatched_at).toLocaleString()}</span>
               </div>
               <h4 class="text-base font-bold text-slate-900">${item.title}</h4>
-              <p class="text-xs text-slate-500">${item.organization || 'Selection Committee'} • Applicant: ${item.applicant || 'Mark Febiri'}</p>
+              <p class="text-xs text-slate-500">${item.organization || 'Selection Committee'} • Applicant: ${item.applicant || 'Scholar Researcher'}</p>
             </div>
 
             <div class="flex items-center gap-2 shrink-0">
               <a 
-                href="${item.github_log?.issue_url || ('https://github.com/' + (item.github_log?.target_repo || 'Febiri/febPhD') + '/issues')}"
+                href="${item.github_log?.issue_url || '#'}"
                 target="_blank"
                 class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-brand-600 text-white font-bold text-xs transition flex items-center gap-1.5"
               >
@@ -1338,7 +1342,7 @@
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `mark_febiri_${title}_dossier.md`;
+      link.download = `proffeb_${title}_dossier.md`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1347,11 +1351,11 @@
     async function syncPortfolio() {
       const btn = document.getElementById('sync-btn');
       btn.disabled = true;
-      btn.innerHTML = `<span>⏳ Crawling febmac.vercel.app...</span>`;
+      btn.innerHTML = `<span>⏳ Crawling portfolio...</span>`;
       try {
         const res = await fetch('/api/twin/sync', { method: 'POST' });
         const data = await res.json();
-        alert('Digital Twin brain successfully re-synced with https://febmac.vercel.app/!');
+        alert('Scholar profile successfully refreshed!');
         loadBrainProfile();
       } catch (err) {
         console.warn('Sync failed:', err);
@@ -1401,8 +1405,8 @@
       try {
         const res = await fetch('/api/twin/profile');
         const p = await res.json();
-        document.getElementById('brain-name').textContent = p.name || 'Mark Febiri';
-        document.getElementById('brain-title').textContent = p.title || 'CTO at DevSpace Systems';
+        document.getElementById('brain-name').textContent = p.name || 'Dr. Scholar';
+        document.getElementById('brain-title').textContent = p.title || 'PhD Researcher & Scientific Author';
         document.getElementById('brain-notes-input').value = p.custom_notes || '';
       } catch (err) {
         console.warn('Could not load profile:', err);
@@ -1562,8 +1566,8 @@
         <div class="flex items-start gap-2.5">
           <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0 font-mono shadow-sm" title="Prof. Feb">FEB</span>
           <div class="p-4 rounded-2xl bg-slate-100 text-slate-800 max-w-xl leading-relaxed twin-prose text-xs shadow-sm">
-            <p class="font-bold text-brand-700 mb-1">Hello Mark! I am Prof. Feb, your Autonomous Digital Twin & Executive Co-Pilot.</p>
-            <p>I am synced with your verified portfolio (<a href="https://febmac.vercel.app/" target="_blank" class="text-brand-600 font-bold underline">febmac.vercel.app</a>) and GitHub (<a href="https://github.com/Febiri" target="_blank" class="text-brand-600 font-bold underline">github.com/Febiri</a>). I know your foundational research across Neuro-Symbolic Agentic RAG, the ClawBio multi-omics workflow orchestrator, and your leadership as CTO of DevSpace Systems.</p>
+            <p class="font-bold text-brand-700 mb-1">Hello scholar! I am Prof. Feb, your Autonomous Academic Co-Pilot & Research Mentor.</p>
+            <p>I am synced with your verified academic profile, publications, and connected research repositories. I can assist you with proposal formulation, peer review defenses, grant applications, and literature synthesis.</p>
             <p class="mt-2 text-slate-600">All chat sessions are saved automatically so you can resume where you left off. What grant, lab outreach, or research milestone shall we execute?</p>
           </div>
         </div>

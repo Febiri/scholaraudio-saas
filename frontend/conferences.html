@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Academic Conference & Event Scout — My PhD Corner</title>
+  <title>Academic Conference & Event Scout — ProfFeb</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
@@ -11,6 +11,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -134,11 +138,10 @@
           href="/app" 
           class="hidden md:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-brand-600 text-white text-xs font-semibold shadow-sm transition"
         >
-          <span>📖 Paper Reader Studio</span>
-          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+          <span>📖 Paper Studio</span>
         </a>
+
+        <div id="user-nav-container"></div>
       </div>
 
     </div>
@@ -329,8 +332,8 @@
   <footer class="border-t border-slate-200 bg-white py-8 mt-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-800">My PhD Corner</span>
-        <span>— Conference & Event Scout</span>
+        <span class="font-bold text-slate-800">ProfFeb</span>
+        <span>— Conference & Academic Event Scout</span>
       </div>
       <div class="flex items-center gap-6">
         <a href="/" class="text-scholar-600 hover:underline font-semibold">PhD Corner Home</a>

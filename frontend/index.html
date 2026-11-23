@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zotero Audio Mentor — Conversational Research Briefings</title>
+  <title>ProfFeb — Neural Research Briefings & Multi-Modal Academic Workstation</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <!-- Supabase JS Client & ProfFeb Auth -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
 
   <!-- Google Fonts: Inter (UI), Newsreader (Academic Serif), JetBrains Mono (Formulas/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -241,9 +245,9 @@
       
       <!-- Back to Home Page & Brand Logo -->
       <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        <a href="/" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Return to PhD Corner">
+        <a href="/" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Return to Overview">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          <span class="hidden sm:inline">PhD Corner</span>
+          <span class="hidden sm:inline">Overview</span>
         </a>
         <a href="/conferences" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-indigo-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Open Conference & Event Scout">
           <span>🌐</span>
@@ -251,7 +255,7 @@
         </a>
         <a href="/agent" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-purple-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="PhD Digital Twin & Co-Pilot">
           <span>🧠</span>
-          <span class="hidden md:inline">Digital Twin</span>
+          <span class="hidden md:inline">Academic Co-Pilot</span>
         </a>
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-brand-500/20 flex items-center justify-center">
           <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
@@ -262,7 +266,7 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-bold text-base sm:text-lg tracking-tight text-white">Zotero Audio Mentor</span>
+            <span class="font-bold text-base sm:text-lg tracking-tight text-white">ProfFeb</span>
             <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-semibold hidden sm:inline">Research Studio</span>
           </div>
           <p class="text-[11px] text-slate-400 hidden sm:block">Conversational AI Research Briefings & Spoken Mentorship</p>
@@ -331,6 +335,11 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
+
+        <div class="h-5 w-px bg-dark-700/80 mx-0.5 hidden sm:block"></div>
+
+        <!-- Global SaaS User Navigation / Profile Pill -->
+        <div id="user-nav-container"></div>
       </div>
 
     </div>
@@ -1202,7 +1211,7 @@
                 <span>📝 Professional Research Notes & Highlighted Passages</span>
                 <span id="notes-badge-count" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">0 Notes</span>
               </h3>
-              <p class="text-[11px] text-slate-400">Structured annotations, critical commentary, and theoretical evaluations recorded by Mark Febiri.</p>
+              <p class="text-[11px] text-slate-400">Structured annotations, critical commentary, and theoretical evaluations recorded by the researcher.</p>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="openNoteModalForSelection()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
@@ -1620,7 +1629,7 @@
           <textarea 
             id="note-input-content" 
             rows="4"
-            placeholder="Record your critical evaluation, theoretical implications, or connection to Mark Febiri's research..."
+            placeholder="Record your critical evaluation, theoretical implications, or connection to your doctoral research..."
             class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-sans leading-relaxed"
           ></textarea>
         </div>
@@ -1774,6 +1783,11 @@
       fetchPapers();
       setupAudioListeners();
       initTextSelectionWatcher();
+
+      // Reactive data refresh when user signs in or out via Supabase
+      window.addEventListener('proffeb-auth-changed', () => {
+        fetchPapers();
+      });
     });
 
     // View Mode Toggle (Grid vs Table)
@@ -3939,7 +3953,7 @@
           <span class="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 font-mono shadow-sm border border-brand-400/40" title="Prof. Feb (Academic Research Mentor)">FEB</span>
           <div class="p-4 rounded-2xl bg-dark-850 text-slate-200 border border-dark-750 leading-relaxed max-w-xl academic-prose text-xs shadow-sm">
             <p class="font-bold text-brand-300 text-[13px] mb-1">🎓 Academic Mentorship Session with Prof. Feb</p>
-            <p class="text-slate-300">I am <strong>Prof. Feb</strong> (Professor Febiri), your Senior Research Mentor for <em>"${escapeHtml(title.slice(0, 90))}${title.length > 90 ? '...' : ''}"</em>.</p>
+            <p class="text-slate-300">I am <strong>Prof. Feb</strong>, your Senior Research Mentor for <em>"${escapeHtml(title.slice(0, 90))}${title.length > 90 ? '...' : ''}"</em>.</p>
             <p class="mt-2 text-slate-400">Ask me to break down mathematical formulas ($...$, $$...$$), deconstruct architectural figures and diagrams, analyze baseline benchmarks, or brainstorm extensions for your thesis. Every conversation is automatically saved so you can resume where you left off.</p>
           </div>
         </div>
@@ -4477,7 +4491,7 @@
   <div class="meta">
     <strong>Authors:</strong> ${escapeHtml(paper.authors || 'Unknown')}<br/>
     <strong>Year:</strong> ${escapeHtml(paper.publication_year || 'N/A')} | <strong>Journal:</strong> ${escapeHtml(paper.journal || 'N/A')}<br/>
-    <strong>Curated by:</strong> Mark Febiri &bull; Zotero Audio Mentor
+    <strong>Curated by:</strong> ProfFeb &bull; Neural Audio Mentor
   </div>
 
   <div class="section-title">Executive 4-Part Structured Breakdown</div>
@@ -4526,7 +4540,7 @@
       md += `**Authors:** ${paper.authors || 'Unknown'}\n`;
       md += `**Year:** ${paper.publication_year || 'N/A'} | **Journal:** ${paper.journal || 'N/A'}\n`;
       md += `**Zotero Key:** \`${paper.zotero_item_key || 'N/A'}\`\n`;
-      md += `**Curator:** Mark Febiri (Zotero Audio Mentor)\n\n`;
+      md += `**Curator:** ProfFeb (Neural Audio Mentor)\n\n`;
       md += `---\n\n`;
 
       md += `## Abstract\n${paper.abstract || 'No abstract preview available.'}\n\n`;

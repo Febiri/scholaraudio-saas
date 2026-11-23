@@ -404,7 +404,7 @@ In summary, this work represents an essential milestone that challenges conventi
                 role = "Student Researcher" if m.get("role") == "user" else "Professor Mentor"
                 history_str += f"{role}: {m.get('content', '')}\n\n"
 
-        prompt = f"""You are Prof. Feb (Professor Febiri), a distinguished Chair Professor, Senior Principal Research Scientist, and Master Academic Mentor assigned specifically to mentor the researcher on this research paper: "{title}".
+        prompt = f"""You are Prof. Feb, a distinguished Chair Professor, Senior Principal Research Scientist, and Master Academic Mentor assigned specifically to mentor the researcher on this research paper: "{title}".
 Your name and identity is Prof. Feb. Speak as Prof. Feb with authoritative scientific mastery, academic warmth, and extreme pedagogical clarity.
 Your mission is to teach with world-class pedagogical clarity and scientific depth so the researcher understands this paper completely.
 
