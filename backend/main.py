@@ -34,7 +34,8 @@ try:
         BASE_DIR, FRONTEND_DIR, STATIC_DIR, AUDIO_DIR, PDFS_DIR,
         GEMINI_API_KEY, GEMINI_MODEL, ZOTERO_LIBRARY_ID, ZOTERO_API_KEY,
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
-        DATABASE_URL, normalize_database_url
+        DATABASE_URL, normalize_database_url,
+        APP_NAME, APP_TAGLINE, SUPABASE_URL, SUPABASE_KEY
     )
     from backend.database import init_db, get_db, Paper
     from backend.zotero_sync import ZoteroSyncService
@@ -48,6 +49,11 @@ try:
         FundingScoutService, IndustryLabService
     )
     try:
+        from backend.auth import get_current_user, require_current_user
+    except Exception:
+        get_current_user = None
+        require_current_user = None
+    try:
         from backend.twin_agent import TwinAgentService, PortfolioSyncService, GitHubConnectorService
     except Exception as _e:
         TwinAgentService = None
@@ -58,7 +64,8 @@ except ImportError:
         BASE_DIR, FRONTEND_DIR, STATIC_DIR, AUDIO_DIR, PDFS_DIR,
         GEMINI_API_KEY, GEMINI_MODEL, ZOTERO_LIBRARY_ID, ZOTERO_API_KEY,
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
-        DATABASE_URL, normalize_database_url
+        DATABASE_URL, normalize_database_url,
+        APP_NAME, APP_TAGLINE, SUPABASE_URL, SUPABASE_KEY
     )
     from database import init_db, get_db, Paper
     from zotero_sync import ZoteroSyncService
@@ -71,6 +78,11 @@ except ImportError:
         ResearchGapService, ReviewerSimulatorService,
         FundingScoutService, IndustryLabService
     )
+    try:
+        from auth import get_current_user, require_current_user
+    except Exception:
+        get_current_user = None
+        require_current_user = None
     try:
         from twin_agent import TwinAgentService, PortfolioSyncService, GitHubConnectorService
     except Exception as _e:
@@ -143,6 +155,14 @@ class ConferenceSearchRequest(BaseModel):
     grants_only: Optional[bool] = False
     region: Optional[str] = None
     upcoming_only: Optional[bool] = True
+
+
+class ConferenceWatchlistRequest(BaseModel):
+    conference_name: str
+    acronym: str
+    core_rank: Optional[str] = None
+    submission_deadline: Optional[str] = None
+    location: Optional[str] = None
 
 
 class RadarAnalysisRequest(BaseModel):
@@ -434,8 +454,37 @@ async def execute_processing_pipeline(
 def health_check():
     return {
         "status": "online",
-        "service": "Zotero Audio Mentor",
-        "version": "1.0.0"
+        "service": "ProfFeb",
+        "version": "2.0.0",
+        "serverless": IS_SERVERLESS
+    }
+
+
+@app.get("/api/config")
+def get_saas_config():
+    """Returns public configuration for frontend initialization."""
+    return {
+        "app_name": APP_NAME,
+        "tagline": APP_TAGLINE,
+        "supabase_url": SUPABASE_URL,
+        "supabase_key": SUPABASE_KEY,
+        "available_voices": AVAILABLE_VOICES,
+        "default_voice": DEFAULT_TTS_VOICE,
+        "version": "2.0.0"
+    }
+
+
+@app.get("/api/auth/me")
+async def get_auth_me(current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None):
+    """Returns current user status or unauthenticated indicator."""
+    if current_user:
+        return {
+            "authenticated": True,
+            "user": current_user
+        }
+    return {
+        "authenticated": False,
+        "user": None
     }
 
 
@@ -1423,6 +1472,40 @@ def get_featured_conferences():
     return scout.search(query="", upcoming_only=True)
 
 
+_CONFERENCE_WATCHLIST: List[dict] = []
+
+
+@app.post("/api/conferences/watchlist")
+def add_to_conference_watchlist(payload: ConferenceWatchlistRequest):
+    """Add a conference to researcher's monitored watchlist."""
+    item = payload.dict()
+    item["id"] = len(_CONFERENCE_WATCHLIST) + 1
+    existing = [x for x in _CONFERENCE_WATCHLIST if x.get("acronym", "").upper() == item["acronym"].upper()]
+    if not existing:
+        _CONFERENCE_WATCHLIST.append(item)
+    else:
+        item = existing[0]
+    return {"status": "success", "item": item, "total": len(_CONFERENCE_WATCHLIST)}
+
+
+@app.get("/api/conferences/watchlist")
+def get_conference_watchlist():
+    """Retrieve researcher's monitored conference watchlist."""
+    return {
+        "status": "success",
+        "total": len(_CONFERENCE_WATCHLIST),
+        "items": _CONFERENCE_WATCHLIST
+    }
+
+
+@app.delete("/api/conferences/watchlist/{acronym}")
+def remove_from_conference_watchlist(acronym: str):
+    """Remove a conference from researcher's watchlist."""
+    global _CONFERENCE_WATCHLIST
+    _CONFERENCE_WATCHLIST = [x for x in _CONFERENCE_WATCHLIST if x.get("acronym", "").upper() != acronym.upper()]
+    return {"status": "success", "total": len(_CONFERENCE_WATCHLIST)}
+
+
 # =====================================================================
 # ENGINE 3: RESEARCH GAP & NOVELTY RADAR ENDPOINTS
 # =====================================================================
@@ -1799,12 +1882,12 @@ def get_twin_dispatch_history():
     return {"history": history, "total": len(history)}
 
 
-@app.get("/api/health")
+@app.get("/api/health/runtime")
 def api_health():
     """Health check endpoint to test runtime status."""
     return {
         "status": "healthy",
-        "service": "febPhD",
+        "service": "ProfFeb",
         "serverless": IS_SERVERLESS,
         "database": "connected"
     }

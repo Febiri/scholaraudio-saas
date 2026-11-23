@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProfFeb — Autonomous Academic Co-Pilot & Profile Studio</title>
+  <title>ProfFeb — Autonomous Academic Co-Pilot & Profile Studio (Engine 07)</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
@@ -11,8 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
+
   <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
   <script src="/static/js/proffeb-auth.js" defer></script>
 
   <!-- KaTeX for Scientific Formula Rendering -->
@@ -189,78 +194,97 @@
     }
   </style>
 </head>
-<body class="bg-dark-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden antialiased">
+<body class="min-h-screen antialiased selection:bg-cyan-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
 
-  <!-- Ambient background glow aura -->
-  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] bg-gradient-to-b from-cyan-500/15 via-purple-500/10 to-transparent blur-3xl -z-10"></div>
-  <div class="pointer-events-none fixed inset-0 bg-saas-grid opacity-75 -z-20"></div>
-
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="border-b border-white/[0.08] bg-dark-950/85 backdrop-blur-2xl sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-      
-      <!-- Logo & Engine Badge -->
-      <a href="/" class="flex items-center gap-3 shrink-0 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-indigo-500 to-brand-400 p-0.5 shadow-lg shadow-cyan-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
-          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
-            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-cyan-400 transition">ProfFeb</span>
-            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 font-bold">Engine 07</span>
-          </div>
-          <p class="text-[10px] text-slate-400 font-medium hidden md:block">Autonomous Academic Co-Pilot & Profile Studio • Human-in-the-Loop Pipeline</p>
+<div class="pf-app-container">
+  
+  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <aside id="pf-app-sidebar" class="pf-sidebar">
+    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
+      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0891b2, #22d3ee); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
+        <div class="pf-brand-text">
+          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
+          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">COPILOT • E07</div>
         </div>
       </a>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
+        ◀
+      </button>
+    </div>
 
-      <!-- Center Navigation Links -->
-      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
-        <a href="/app" class="hover:text-brand-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-          <span>Research Studio</span>
-        </a>
-        <a href="/conferences" class="hover:text-indigo-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-          <span>Conference Scout</span>
-        </a>
-        <a href="/reviewer" class="hover:text-rose-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>Reviewer Simulator</span>
-        </a>
-        <a href="/radar" class="hover:text-purple-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-          <span>Novelty Radar</span>
-        </a>
-        <a href="/agent" class="text-cyan-400 flex items-center gap-1.5 font-bold">
-          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-          <span>Academic Co-Pilot</span>
-        </a>
-      </nav>
+    <!-- Navigation items (7 Engines + Overview) -->
+    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+      <a href="/" class="pf-nav-item">
+        <span>⊞</span>
+        <span class="pf-nav-label">Overview</span>
+      </a>
+      <a href="/app" class="pf-nav-item">
+        <span style="color: var(--pf-engine-studio);">🎙️</span>
+        <span class="pf-nav-label">Research Studio</span>
+      </a>
+      <a href="/conferences" class="pf-nav-item">
+        <span style="color: var(--pf-engine-scout);">🌐</span>
+        <span class="pf-nav-label">Conference Scout</span>
+      </a>
+      <a href="/radar" class="pf-nav-item">
+        <span style="color: var(--pf-engine-radar);">🔬</span>
+        <span class="pf-nav-label">Novelty Radar</span>
+      </a>
+      <a href="/reviewer" class="pf-nav-item">
+        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
+        <span class="pf-nav-label">Reviewer #2</span>
+      </a>
+      <a href="/grants" class="pf-nav-item">
+        <span style="color: var(--pf-engine-grants);">💰</span>
+        <span class="pf-nav-label">Funding Radar</span>
+      </a>
+      <a href="/lab-connector" class="pf-nav-item">
+        <span style="color: var(--pf-engine-lab);">🏢</span>
+        <span class="pf-nav-label">Lab Connector</span>
+      </a>
+      <a href="/agent" class="pf-nav-item pf-nav-active">
+        <span style="color: var(--pf-engine-copilot);">🧠</span>
+        <span class="pf-nav-label">Academic Co-Pilot</span>
+      </a>
+    </nav>
 
-      <!-- Right CTAs & Auth Menu -->
-      <div class="flex items-center gap-2.5">
-        <!-- Clear Cache Button -->
-        <button 
-          onclick="clearProfFebCache()" 
-          title="Clear local runtime cache and refresh library"
-          class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 text-slate-400 hover:text-white border border-white/[0.08] transition"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        </button>
+    <!-- Bottom utility items -->
+    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
+        <span class="pf-theme-toggle-icon">🌓</span>
+        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
+        <span>⌘K</span>
+        <span class="pf-nav-label">Command Palette</span>
+      </button>
+    </div>
+  </aside>
 
-        <div id="user-nav-container"></div>
+  <!-- ================= MAIN STAGE ================= -->
+  <div class="pf-main-stage">
+    
+    <!-- TOP HEADER -->
+    <header class="pf-top-bar">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
+        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
+          <span style="color: var(--pf-border-strong);">/</span>
+          <span style="font-weight: 600; color: var(--pf-engine-copilot);">Academic Co-Pilot</span>
+        </div>
       </div>
 
-    </div>
-  </header>
+      <div class="flex items-center gap-2">
+        <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
+          🔄
+        </button>
+        <div id="user-nav-container"></div>
+      </div>
+    </header>
 
-  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
     
     <!-- Hero Persona Header -->
     <div class="p-6 sm:p-8 rounded-3xl glass-panel shadow-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -818,6 +842,8 @@
     </div>
 
   </main>
+  </div>
+</div>
 
   <!-- ================= GITHUB PAT & PRIVILEGES MODAL ================= -->
   <div id="github-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">

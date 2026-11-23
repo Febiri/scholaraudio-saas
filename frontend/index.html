@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zotero Audio Mentor — Conversational Research Briefings</title>
+  <title>ProfFeb — Spoken Neural Research Studio (Engine 01)</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
@@ -11,6 +11,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
+
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
 
   <!-- KaTeX for Scientific Formula Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -316,6 +324,16 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <span id="sync-btn-text" class="hidden sm:inline">Sync Zotero</span>
+        </button>
+
+        <!-- Command Palette Trigger -->
+        <button onclick="ProfFebUI.commandPalette.open()" title="Command Palette (Cmd+K)" class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 text-xs font-mono transition">
+          <span>⌘K</span>
+        </button>
+
+        <!-- Theme Switcher -->
+        <button onclick="ProfFebUI.theme.toggle()" title="Toggle Light / Dark Mode" class="p-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white border border-dark-700/80 transition">
+          <span class="pf-theme-toggle-icon">🌓</span>
         </button>
 
         <!-- Shortcuts Guide Button -->

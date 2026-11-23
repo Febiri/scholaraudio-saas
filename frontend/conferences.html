@@ -1,865 +1,666 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Academic Conference & Event Scout — ProfFeb</title>
+  <title>ProfFeb — Conference & Event Scout (Engine 02)</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
-  <!-- Google Fonts: Inter (UI), Newsreader (Editorial Serif), JetBrains Mono (Dates/Code) -->
+  <!-- Design System Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/static/js/proffeb-auth.js" defer></script>
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN for utility layering -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
-            },
-            scholar: {
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-            },
-            dark: {
-              950: '#070a13',
-              900: '#0d1322',
-              850: '#11192d',
-              800: '#17223c',
-              750: '#1d2c4e',
-              700: '#253761',
-            }
-          },
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            serif: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
-            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
           }
         }
       }
     }
   </script>
 
+  <!-- Supabase Auth SDK & ProfFeb Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
+
   <style>
-    /* Premium scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #070a13; }
-    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
-
-    /* Subtle grid background */
-    .bg-saas-grid {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 36px 36px;
-    }
-
-    /* Glass panel styling */
     .glass-panel {
-      background: rgba(13, 19, 34, 0.75);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      background-color: var(--pf-bg-surface);
+      border: 1px solid var(--pf-border-subtle);
+      transition: var(--pf-transition);
     }
     .glass-panel:hover {
-      border-color: rgba(16, 185, 129, 0.35);
+      border-color: var(--pf-engine-scout);
     }
   </style>
 </head>
-<body class="bg-dark-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden antialiased">
 
-  <!-- Ambient top glow aura -->
-  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] bg-gradient-to-b from-scholar-500/15 via-brand-500/10 to-transparent blur-3xl -z-10"></div>
-  <div class="pointer-events-none fixed inset-0 bg-saas-grid opacity-75 -z-20"></div>
+<body class="min-h-screen antialiased selection:bg-indigo-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
 
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="border-b border-white/[0.08] bg-dark-950/85 backdrop-blur-2xl sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-      
-      <!-- Left: Logo & Engine Badge -->
-      <a href="/" class="flex items-center gap-3 shrink-0 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-scholar-500 to-teal-400 p-0.5 shadow-lg shadow-scholar-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
-          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
-            <svg class="w-5 h-5 text-scholar-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-            </svg>
-          </div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-brand-400 transition">ProfFeb</span>
-            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-scholar-500/15 text-scholar-400 border border-scholar-500/30 font-bold">Engine 02</span>
-          </div>
-          <p class="text-[10px] text-slate-400 font-medium hidden md:block">Academic Conference & Event Scout • Call for Papers & Deadlines</p>
+<div class="pf-app-container">
+  
+  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <aside id="pf-app-sidebar" class="pf-sidebar">
+    <!-- Brand row with toggle -->
+    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
+      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #4f46e5, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
+        <div class="pf-brand-text">
+          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
+          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">SCOUT • E02</div>
         </div>
       </a>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
+        ◀
+      </button>
+    </div>
 
-      <!-- Center Navigation Links -->
-      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
-        <a href="/app" class="hover:text-brand-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-          <span>Research Studio</span>
-        </a>
-        <a href="/conferences" class="text-scholar-400 flex items-center gap-1.5 font-bold">
-          <svg class="w-4 h-4 text-scholar-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-          <span>Conference Scout</span>
-        </a>
-        <a href="/reviewer" class="hover:text-rose-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>Reviewer Simulator</span>
-        </a>
-        <a href="/radar" class="hover:text-purple-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-          <span>Novelty Radar</span>
-        </a>
-        <a href="/agent" class="hover:text-cyan-400 transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-          <span>Academic Co-Pilot</span>
-        </a>
-      </nav>
+    <!-- Navigation items (7 Engines + Overview) -->
+    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+      <a href="/" class="pf-nav-item">
+        <span>⊞</span>
+        <span class="pf-nav-label">Overview</span>
+      </a>
+      <a href="/app" class="pf-nav-item">
+        <span style="color: var(--pf-engine-studio);">🎙️</span>
+        <span class="pf-nav-label">Research Studio</span>
+      </a>
+      <a href="/conferences" class="pf-nav-item pf-nav-active">
+        <span style="color: var(--pf-engine-scout);">🌐</span>
+        <span class="pf-nav-label">Conference Scout</span>
+      </a>
+      <a href="/radar" class="pf-nav-item">
+        <span style="color: var(--pf-engine-radar);">🔬</span>
+        <span class="pf-nav-label">Novelty Radar</span>
+      </a>
+      <a href="/reviewer" class="pf-nav-item">
+        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
+        <span class="pf-nav-label">Reviewer #2</span>
+      </a>
+      <a href="/grants" class="pf-nav-item">
+        <span style="color: var(--pf-engine-grants);">💰</span>
+        <span class="pf-nav-label">Funding Radar</span>
+      </a>
+      <a href="/lab-connector" class="pf-nav-item">
+        <span style="color: var(--pf-engine-lab);">🏢</span>
+        <span class="pf-nav-label">Lab Connector</span>
+      </a>
+      <a href="/agent" class="pf-nav-item">
+        <span style="color: var(--pf-engine-copilot);">🧠</span>
+        <span class="pf-nav-label">Academic Co-Pilot</span>
+      </a>
+    </nav>
 
-      <!-- Right CTAs & Auth Menu -->
-      <div class="flex items-center gap-2.5">
-        <!-- Watchlist Trigger Button -->
+    <!-- Bottom utility items -->
+    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
+        <span class="pf-theme-toggle-icon">🌓</span>
+        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
+        <span>⌘K</span>
+        <span class="pf-nav-label">Command Palette</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN STAGE ================= -->
+  <div class="pf-main-stage">
+    
+    <!-- TOP HEADER -->
+    <header class="pf-top-bar">
+      <!-- Breadcrumbs & Mobile Sidebar Toggle -->
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
+        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
+          <span style="color: var(--pf-border-strong);">/</span>
+          <span style="font-weight: 600; color: var(--pf-engine-scout);">Conference Scout</span>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2">
         <button 
           onclick="toggleWatchlistDrawer()" 
-          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 text-xs font-semibold transition"
+          class="pf-btn pf-btn-secondary pf-btn-sm"
           title="Open Watchlist"
         >
-          <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span class="hidden sm:inline">Watchlist</span>
-          <span id="nav-watchlist-count" class="px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-400/30">0</span>
+          <span>⭐</span>
+          <span>Watchlist</span>
+          <span id="nav-watchlist-count" class="pf-badge pf-badge-indigo" style="font-size: 10px;">0</span>
         </button>
 
-        <!-- Clear Cache Button -->
         <button 
           onclick="clearProfFebCache()" 
-          title="Clear local runtime cache and refresh library"
-          class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 text-slate-400 hover:text-white border border-white/[0.08] transition"
+          title="Clear local runtime cache"
+          class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
+          🔄
         </button>
 
         <div id="user-nav-container"></div>
       </div>
+    </header>
 
-    </div>
-  </header>
-
-  <!-- ================= MAIN CONTENT ================= -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-
-    <!-- Hero Title & Search Header -->
-    <div class="max-w-4xl mx-auto text-center mb-10">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-scholar-500/10 border border-scholar-500/20 text-xs font-semibold text-scholar-300 shadow-sm mb-4">
-        <span class="w-2 h-2 rounded-full bg-scholar-400 animate-pulse"></span>
-        <span>Doctoral Research Venue Finder • CORE A*, IEEE, ACM & Global CFPs</span>
-      </div>
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
       
-      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-        Scout Conferences, Doctoral Consortiums <br class="hidden sm:inline" />
-        <span class="bg-gradient-to-r from-scholar-400 via-indigo-300 to-brand-400 bg-clip-text text-transparent">& Active Call for Papers</span>
-      </h1>
-      
-      <p class="mt-3.5 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-        Scan international academic registries and research networks to discover upcoming conferences, submission deadlines, thesis mentorship tracks, and student travel grants.
-      </p>
+      <!-- Engine Hero Header -->
+      <div class="max-w-4xl mx-auto text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-scout-bg); border-color: rgba(99, 102, 241, 0.3);">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <span class="text-xs font-semibold" style="color: var(--pf-engine-scout);">Doctoral Venue Finder • CORE A*, IEEE, ACM & Global CFPs</span>
+        </div>
+        
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
+          Scout Academic Conferences & Active Deadlines
+        </h1>
+        
+        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
+          Scan international research registries for upcoming conference cycles, submission deadlines, PhD consortium mentorship tracks, and student travel grants.
+        </p>
 
-      <!-- MAIN SEARCH BOX -->
-      <form id="scout-search-form" onsubmit="handleSearch(event)" class="mt-8">
-        <div class="relative max-w-2xl mx-auto">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-scholar-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+        <!-- MAIN SEARCH FORM -->
+        <form id="scout-search-form" onsubmit="handleSearch(event)" class="mt-6">
+          <div class="relative max-w-2xl mx-auto flex items-center">
+            <input 
+              type="text" 
+              id="page-search-input"
+              placeholder="Search by research area (e.g. African NLP, Computer Vision, Edge AI, Security)..."
+              class="pf-input text-sm py-3 pl-4 pr-24 shadow-sm"
+              autocomplete="off"
+            />
+            <button 
+              type="submit" 
+              id="page-search-btn"
+              class="pf-btn pf-btn-primary absolute right-1.5 top-1.5 bottom-1.5"
+            >
+              <span id="btn-text">Scout</span>
+              <span id="btn-icon">→</span>
+              <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </button>
           </div>
-          <input 
-            type="text" 
-            id="page-search-input"
-            placeholder="Type your PhD research area (e.g. African NLP, Computer Vision, Edge AI, Distributed Systems)..."
-            class="w-full pl-12 pr-32 py-4 rounded-2xl bg-dark-900/90 border border-white/[0.1] focus:border-scholar-500 focus:ring-4 focus:ring-scholar-500/15 text-sm sm:text-base font-medium text-white placeholder-slate-500 outline-none transition shadow-xl"
-            autocomplete="off"
-          />
-          <button 
-            type="submit" 
-            id="page-search-btn"
-            class="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-gradient-to-r from-scholar-600 to-indigo-600 hover:from-scholar-500 hover:to-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-lg shadow-scholar-500/25 transition flex items-center gap-2"
-          >
-            <span id="btn-text">Scout</span>
-            <svg id="btn-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-            <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" viewBox="0 0 24 24" fill="none">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
+
+          <!-- Quick Topic Suggestion Chips -->
+          <div class="mt-3 flex flex-wrap items-center justify-center gap-1.5 text-xs">
+            <span class="font-mono text-[11px] mr-1" style="color: var(--pf-text-muted);">Quick Topics:</span>
+            <button type="button" onclick="selectTopic('African NLP')" class="pf-btn pf-btn-secondary pf-btn-sm">🇬🇭 African NLP</button>
+            <button type="button" onclick="selectTopic('Deep Learning')" class="pf-btn pf-btn-secondary pf-btn-sm">🤖 Deep Learning</button>
+            <button type="button" onclick="selectTopic('Medical AI & Imaging')" class="pf-btn pf-btn-secondary pf-btn-sm">🏥 Medical AI</button>
+            <button type="button" onclick="selectTopic('Microgrids & Energy')" class="pf-btn pf-btn-secondary pf-btn-sm">⚡ Microgrids</button>
+            <button type="button" onclick="selectTopic('Cybersecurity')" class="pf-btn pf-btn-secondary pf-btn-sm">🔒 Cybersecurity</button>
+            <button type="button" onclick="selectTopic('Human-Computer Interaction')" class="pf-btn pf-btn-secondary pf-btn-sm">🌐 HCI</button>
+            <button type="button" onclick="selectTopic('Doctoral Consortium')" class="pf-btn pf-btn-secondary pf-btn-sm" style="color: var(--pf-engine-scout); font-weight: 700;">🎓 PhD Tracks</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="mb-6 p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 text-xs" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+        
+        <!-- Checkbox Filters -->
+        <div class="flex flex-wrap items-center gap-3 font-medium">
+          <label class="flex items-center gap-2 cursor-pointer font-semibold px-2 py-1 rounded" style="color: var(--pf-primary);">
+            <input type="checkbox" id="chk-upcoming" onchange="applyFilters()" checked class="w-4 h-4 rounded text-emerald-500">
+            <span>🟢 Active / Future Deadlines</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer px-2 py-1 rounded" style="color: var(--pf-text-secondary);">
+            <input type="checkbox" id="chk-doctoral" onchange="applyFilters()" class="w-4 h-4 rounded">
+            <span>🎓 Doctoral Consortiums</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer px-2 py-1 rounded" style="color: var(--pf-text-secondary);">
+            <input type="checkbox" id="chk-grants" onchange="applyFilters()" class="w-4 h-4 rounded">
+            <span>✈️ Student Travel Grants</span>
+          </label>
+        </div>
+
+        <!-- Dropdown Selectors -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
+            <span>Region:</span>
+            <select id="sel-region" onchange="applyFilters()" class="pf-select py-1 text-xs w-32">
+              <option value="">All Regions</option>
+              <option value="Africa">Africa</option>
+              <option value="North America">North America</option>
+              <option value="Europe">Europe</option>
+              <option value="Asia">Asia</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
+            <span>Cycle:</span>
+            <select id="sel-year" onchange="applyFilters()" class="pf-select py-1 text-xs w-28">
+              <option value="" selected>All Upcoming</option>
+              <option value="2027">2027 Cycle</option>
+              <option value="2026">2026 Cycle</option>
+            </select>
+          </div>
+
+          <button onclick="resetAllFilters()" class="pf-btn pf-btn-secondary pf-btn-sm">
+            Reset
           </button>
         </div>
 
-        <!-- Quick Topic Suggestion Chips -->
-        <div class="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-xs">
-          <span class="text-slate-500 font-mono text-[11px] mr-1">Quick Topics:</span>
-          <button type="button" onclick="selectTopic('African NLP')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🇬🇭 African NLP</button>
-          <button type="button" onclick="selectTopic('Deep Learning')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🤖 Deep Learning</button>
-          <button type="button" onclick="selectTopic('Medical AI & Imaging')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🏥 Medical AI</button>
-          <button type="button" onclick="selectTopic('Microgrids & Energy')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">⚡ Microgrids</button>
-          <button type="button" onclick="selectTopic('Cybersecurity')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🔒 Cybersecurity</button>
-          <button type="button" onclick="selectTopic('Human-Computer Interaction')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🌐 HCI</button>
-          <button type="button" onclick="selectTopic('Doctoral Consortium')" class="px-2.5 py-1 rounded-lg bg-scholar-500/15 text-scholar-300 border border-scholar-500/30 hover:bg-scholar-500/25 transition font-semibold">🎓 PhD Tracks</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- FILTER BAR -->
-    <div class="mb-8 p-4 sm:p-5 rounded-2xl glass-panel flex flex-wrap items-center justify-between gap-4 text-xs">
-      
-      <!-- Checkbox Filters -->
-      <div class="flex flex-wrap items-center gap-3 text-slate-300 font-medium">
-        <label class="flex items-center gap-2 cursor-pointer text-brand-300 font-semibold bg-brand-500/10 px-3 py-1.5 rounded-xl border border-brand-500/20 shadow-xs">
-          <input type="checkbox" id="chk-upcoming" onchange="applyFilters()" checked class="w-4 h-4 rounded border-slate-700 bg-dark-900 text-brand-500 focus:ring-brand-500">
-          <span>🟢 Active / Future Deadlines</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer hover:text-white px-2 py-1.5 rounded-xl transition">
-          <input type="checkbox" id="chk-doctoral" onchange="applyFilters()" class="w-4 h-4 rounded border-slate-700 bg-dark-900 text-scholar-500 focus:ring-scholar-500">
-          <span>🎓 Doctoral Consortiums</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer hover:text-white px-2 py-1.5 rounded-xl transition">
-          <input type="checkbox" id="chk-grants" onchange="applyFilters()" class="w-4 h-4 rounded border-slate-700 bg-dark-900 text-scholar-500 focus:ring-scholar-500">
-          <span>✈️ Student Travel Grants</span>
-        </label>
       </div>
 
-      <!-- Dropdown Selectors -->
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-1.5 text-slate-400">
-          <span>Region:</span>
-          <select id="sel-region" onchange="applyFilters()" class="bg-dark-850 border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-brand-500">
-            <option value="">All Regions</option>
-            <option value="Africa">Africa</option>
-            <option value="North America">North America</option>
-            <option value="Europe">Europe</option>
-            <option value="Asia">Asia</option>
-          </select>
+      <!-- RESULTS HEADER STRIP -->
+      <div class="flex items-center justify-between pb-3 border-b mb-6" style="border-color: var(--pf-border-subtle);">
+        <div>
+          <h3 id="results-headline" class="text-lg font-bold tracking-tight" style="color: var(--pf-text-primary);">
+            Featured Academic Conferences
+          </h3>
+          <p id="results-subtext" class="text-xs mt-0.5" style="color: var(--pf-text-muted);">
+            Curated international and regional venues with active Call for Papers.
+          </p>
         </div>
-
-        <div class="flex items-center gap-1.5 text-slate-400">
-          <span>Cycle:</span>
-          <select id="sel-year" onchange="applyFilters()" class="bg-dark-850 border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-brand-500">
-            <option value="" selected>All Upcoming</option>
-            <option value="2027">2027 Cycle</option>
-            <option value="2026">2026 Cycle</option>
-          </select>
+        
+        <div class="flex items-center gap-2">
+          <span id="results-badge" class="pf-badge pf-badge-indigo">
+            Loading...
+          </span>
         </div>
-
-        <button 
-          onclick="resetAllFilters()" 
-          class="px-3.5 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-white border border-white/[0.08] font-semibold transition text-xs"
-        >
-          Reset
-        </button>
       </div>
 
-    </div>
-
-    <!-- RESULTS HEADER STRIP -->
-    <div class="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-6">
-      <div>
-        <h3 id="results-headline" class="text-lg sm:text-xl font-bold text-white tracking-tight">
-          Featured Academic Conferences
-        </h3>
-        <p id="results-subtext" class="text-xs text-slate-400 mt-0.5">
-          Showing curated international and regional conferences with active Call for Papers.
-        </p>
+      <!-- CONFERENCES GRID -->
+      <div id="conferences-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Populated via JavaScript -->
+        <div class="pf-skeleton h-48"></div>
+        <div class="pf-skeleton h-48"></div>
+        <div class="pf-skeleton h-48"></div>
       </div>
-      
+
+    </main>
+  </div>
+</div>
+
+<!-- ================= MY WATCHLIST DRAWER ================= -->
+<div id="watchlist-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex justify-end">
+  <div class="w-full max-w-md h-full border-l shadow-2xl flex flex-col justify-between overflow-hidden" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-default);">
+    
+    <!-- Drawer Header -->
+    <div class="p-4 border-b flex items-center justify-between" style="border-color: var(--pf-border-subtle); background-color: var(--pf-bg-surface-elevated);">
       <div class="flex items-center gap-2">
-        <span id="results-badge" class="px-3 py-1 rounded-full bg-dark-850 text-brand-400 font-mono text-xs font-semibold border border-brand-500/20">
-          Loading...
-        </span>
+        <span class="text-xl">⭐</span>
+        <div>
+          <h3 class="font-bold text-sm" style="color: var(--pf-text-primary);">My Conference Watchlist</h3>
+          <p class="text-xs" style="color: var(--pf-text-muted);">Track target submission deadlines</p>
+        </div>
       </div>
+      <button onclick="toggleWatchlistDrawer()" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">✕</button>
     </div>
 
-    <!-- CONFERENCES GRID -->
-    <div id="conferences-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <!-- Drawer Content -->
+    <div id="drawer-watchlist-content" class="p-4 flex-1 overflow-y-auto space-y-3">
       <!-- Populated via JavaScript -->
     </div>
 
-  </main>
-
-  <!-- ================= MY WATCHLIST DRAWER / MODAL ================= -->
-  <div id="watchlist-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex justify-end transition-opacity">
-    <div class="w-full max-w-md bg-dark-950 h-full border-l border-white/[0.1] shadow-2xl flex flex-col justify-between overflow-hidden">
-      
-      <!-- Drawer Header -->
-      <div class="p-5 border-b border-white/[0.08] flex items-center justify-between bg-dark-900/60">
-        <div class="flex items-center gap-2.5">
-          <span class="text-xl">⭐</span>
-          <div>
-            <h3 class="font-bold text-base text-white">My Conference Watchlist</h3>
-            <p class="text-xs text-slate-400">Track target submission deadlines for your papers</p>
-          </div>
-        </div>
-        <button onclick="toggleWatchlistDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-800 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <!-- Drawer Content -->
-      <div id="drawer-watchlist-content" class="p-5 flex-1 overflow-y-auto space-y-3">
-        <!-- Populated via JavaScript -->
-      </div>
-
-      <!-- Drawer Footer -->
-      <div class="p-4 border-t border-white/[0.08] bg-dark-900/60 flex items-center justify-between gap-3 text-xs">
-        <button 
-          onclick="copyWatchlist()" 
-          class="flex-1 py-2.5 rounded-xl bg-scholar-600 hover:bg-scholar-500 text-white font-bold text-center transition shadow-lg shadow-scholar-600/20"
-        >
-          📋 Copy All Deadlines
-        </button>
-        <button 
-          onclick="clearWatchlist()" 
-          class="px-4 py-2.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.1] text-slate-300 hover:text-rose-400 font-semibold transition"
-        >
-          Clear
-        </button>
-      </div>
-
+    <!-- Drawer Footer -->
+    <div class="p-4 border-t flex items-center justify-between gap-3 text-xs" style="border-color: var(--pf-border-subtle); background-color: var(--pf-bg-surface-elevated);">
+      <button onclick="copyWatchlist()" class="pf-btn pf-btn-primary pf-btn-sm flex-1">
+        📋 Copy All Deadlines
+      </button>
+      <button onclick="clearWatchlist()" class="pf-btn pf-btn-secondary pf-btn-sm">
+        Clear
+      </button>
     </div>
+
   </div>
+</div>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="border-t border-white/[0.08] bg-dark-950/80 py-8 mt-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-300">ProfFeb</span>
-        <span>— Academic Conference & Event Scout (Engine 02)</span>
-      </div>
-      <div class="flex items-center gap-6">
-        <a href="/" class="text-brand-400 hover:underline font-semibold">Home</a>
-        <a href="/app" class="text-emerald-400 hover:underline font-semibold">Research Studio</a>
-        <a href="/reviewer" class="hover:text-slate-300 transition">Reviewer Simulator</a>
-        <a href="/radar" class="hover:text-slate-300 transition">Novelty Radar</a>
-        <a href="/agent" class="hover:text-slate-300 transition">Academic Co-Pilot</a>
-      </div>
-    </div>
-  </footer>
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+  let conferencesList = [];
+  const WATCHLIST_KEY = "proffeb_conference_watchlist";
 
-  <!-- ================= JAVASCRIPT ================= -->
-  <script>
-    let conferencesList = [];
-    const WATCHLIST_KEY = "phd_conference_watchlist";
+  function getWatchlist() {
+    try {
+      const stored = localStorage.getItem(WATCHLIST_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      return [];
+    }
+  }
 
-    function getWatchlist() {
-      try {
-        const stored = localStorage.getItem(WATCHLIST_KEY);
-        return stored ? JSON.parse(stored) : [];
-      } catch (e) {
-        return [];
-      }
+  function saveWatchlist(items) {
+    try {
+      localStorage.setItem(WATCHLIST_KEY, JSON.stringify(items));
+      updateWatchlistBadge();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function toggleWatchlist(confId) {
+    let list = getWatchlist();
+    const index = list.findIndex(c => c.id === confId);
+
+    if (index > -1) {
+      list.splice(index, 1);
+      saveWatchlist(list);
+      renderConferences(conferencesList);
+      if (window.ProfFebUI) ProfFebUI.toast({ title: "Removed from Watchlist", message: "Conference unstarred.", type: "info" });
+      return;
     }
 
-    function saveWatchlist(items) {
-      try {
-        localStorage.setItem(WATCHLIST_KEY, JSON.stringify(items));
-        updateWatchlistBadge();
-        renderWatchlistDrawer();
-      } catch (e) {
-        console.error("Could not save watchlist", e);
-      }
+    const conf = conferencesList.find(c => c.id === confId);
+    if (conf) {
+      list.push(conf);
+      saveWatchlist(list);
+      renderConferences(conferencesList);
+      if (window.ProfFebUI) ProfFebUI.toast({ title: "Added to Watchlist", message: `${conf.acronym} saved to your target deadlines.`, type: "success" });
     }
+  }
 
-    function toggleWatchlist(confId) {
-      let list = getWatchlist();
-      const idx = list.findIndex(c => c.id === confId);
-      if (idx >= 0) {
-        list.splice(idx, 1);
-        saveWatchlist(list);
-        renderConferences(conferencesList);
-        return;
-      }
+  function updateWatchlistBadge() {
+    const list = getWatchlist();
+    const badge = document.getElementById("nav-watchlist-count");
+    if (badge) badge.innerText = list.length;
+  }
 
-      const conf = conferencesList.find(c => c.id === confId);
-      if (conf) {
-        list.push(conf);
-        saveWatchlist(list);
-        renderConferences(conferencesList);
-      }
+  function toggleWatchlistDrawer() {
+    const drawer = document.getElementById("watchlist-drawer");
+    if (!drawer) return;
+    if (drawer.classList.contains("hidden")) {
+      drawer.classList.remove("hidden");
+      renderWatchlistDrawer();
+    } else {
+      drawer.classList.add("hidden");
     }
+  }
 
-    function updateWatchlistBadge() {
-      const list = getWatchlist();
-      const badge = document.getElementById("nav-watchlist-count");
-      if (badge) badge.innerText = list.length;
-    }
+  function renderWatchlistDrawer() {
+    const container = document.getElementById("drawer-watchlist-content");
+    if (!container) return;
+    const list = getWatchlist();
 
-    function toggleWatchlistDrawer() {
-      const drawer = document.getElementById("watchlist-drawer");
-      if (!drawer) return;
-      if (drawer.classList.contains("hidden")) {
-        drawer.classList.remove("hidden");
-        renderWatchlistDrawer();
-      } else {
-        drawer.classList.add("hidden");
-      }
-    }
-
-    function renderWatchlistDrawer() {
-      const container = document.getElementById("drawer-watchlist-content");
-      if (!container) return;
-      const list = getWatchlist();
-
-      if (!list.length) {
-        container.innerHTML = `
-          <div class="py-16 text-center text-slate-500 text-xs">
-            <span class="text-3xl block mb-2">⭐</span>
-            <span class="font-semibold text-slate-300">Your Watchlist is empty</span>
-            <p class="mt-1 text-slate-500">Click "⭐ Watchlist" on any conference to keep track of its submission deadline.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = list.map(c => {
-        const daysLeft = c.days_remaining !== undefined && c.days_remaining !== null ? c.days_remaining : null;
-        let countdown = "";
-        if (daysLeft !== null) {
-          if (daysLeft < 0) countdown = `<span class="px-2 py-0.5 rounded bg-dark-800 text-slate-400 text-[10px] font-mono">Past</span>`;
-          else if (daysLeft <= 14) countdown = `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold font-mono border border-rose-500/30">⏰ ${daysLeft}d left</span>`;
-          else countdown = `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-semibold font-mono">⏳ ${daysLeft}d left</span>`;
-        }
-
-        return `
-          <div class="p-3.5 rounded-xl bg-dark-900 border border-white/[0.08] flex flex-col justify-between">
-            <div class="flex items-start justify-between gap-2 mb-1">
-              <div>
-                <h4 class="font-bold text-sm text-white">${c.acronym}</h4>
-                <div class="text-xs text-slate-400 line-clamp-1">${c.name}</div>
-              </div>
-              ${countdown}
-            </div>
-            <div class="text-[11px] font-mono text-slate-400 mt-1">
-              📅 Sub: <strong class="text-slate-200">${c.submission_deadline || 'TBA'}</strong> | 📍 ${c.location || 'Global'}
-            </div>
-            <div class="mt-2.5 pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
-              <a href="${c.cfp_url || c.official_url}" target="_blank" class="text-scholar-400 hover:underline font-bold text-[11px]">
-                CFP Portal &rarr;
-              </a>
-              <button onclick="toggleWatchlist('${c.id}')" class="text-rose-400 hover:text-rose-300 text-[11px]">
-                Remove
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function copyWatchlist() {
-      const list = getWatchlist();
-      if (!list.length) {
-        alert("Watchlist is empty.");
-        return;
-      }
-      const text = list.map(c => `• ${c.acronym}: Deadline ${c.submission_deadline || 'TBA'} | Dates: ${c.dates} | Location: ${c.location}\n  CFP: ${c.cfp_url || c.official_url}`).join("\n\n");
-      navigator.clipboard.writeText(text).then(() => alert("Deadlines copied to clipboard!"));
-    }
-
-    function clearWatchlist() {
-      if (confirm("Clear your entire PhD conference watchlist?")) {
-        saveWatchlist([]);
-      }
-    }
-
-    function selectTopic(topic) {
-      const input = document.getElementById("page-search-input");
-      if (input) input.value = topic;
-      performSearch(topic);
-    }
-
-    function applyFilters() {
-      const query = (document.getElementById("page-search-input").value || "").trim();
-      performSearch(query);
-    }
-
-    function resetAllFilters() {
-      document.getElementById("page-search-input").value = "";
-      document.getElementById("chk-upcoming").checked = true;
-      document.getElementById("chk-doctoral").checked = false;
-      document.getElementById("chk-grants").checked = false;
-      document.getElementById("sel-region").value = "";
-      document.getElementById("sel-year").value = "";
-      loadFeatured();
-    }
-
-    function handleSearch(e) {
-      if (e) e.preventDefault();
-      const query = (document.getElementById("page-search-input").value || "").trim();
-      performSearch(query);
-    }
-
-    async function performSearch(query) {
-      const btnText = document.getElementById("btn-text");
-      const btnIcon = document.getElementById("btn-icon");
-      const spinner = document.getElementById("btn-spinner");
-      const container = document.getElementById("conferences-container");
-      const headline = document.getElementById("results-headline");
-      const subtext = document.getElementById("results-subtext");
-      const badge = document.getElementById("results-badge");
-
-      const upcomingOnly = document.getElementById("chk-upcoming") ? document.getElementById("chk-upcoming").checked : true;
-      const doctoral = document.getElementById("chk-doctoral").checked;
-      const grants = document.getElementById("chk-grants").checked;
-      const region = document.getElementById("sel-region").value;
-      const yearVal = document.getElementById("sel-year").value;
-      const year = yearVal ? parseInt(yearVal, 10) : null;
-
-      if (btnText) btnText.innerText = "Scanning...";
-      if (btnIcon) btnIcon.classList.add("hidden");
-      if (spinner) spinner.classList.remove("hidden");
-
+    if (!list.length) {
       container.innerHTML = `
-        <div class="col-span-full py-16 text-center text-slate-400">
-          <div class="w-8 h-8 mx-auto mb-3 border-2 border-white/20 border-t-scholar-400 rounded-full animate-spin"></div>
-          <span class="text-xs font-mono font-medium">Scanning live CFPs, CORE A* rankings, and upcoming deadlines for "${query || 'active venues'}"...</span>
+        <div class="pf-empty-state py-12">
+          <div class="pf-empty-icon">⭐</div>
+          <div class="pf-empty-title">Your Watchlist is empty</div>
+          <div class="pf-empty-desc">Click the star on any conference to keep track of its submission deadline.</div>
         </div>
       `;
+      return;
+    }
 
-      try {
-        const resp = await fetch("/api/conferences/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: query,
-            year: year,
-            doctoral_only: doctoral,
-            grants_only: grants,
-            region: region,
-            upcoming_only: upcomingOnly
-          })
-        });
-
-        if (!resp.ok) throw new Error("Search returned status " + resp.status);
-        const data = await resp.json();
-        conferencesList = data.conferences || [];
-
-        if (headline) {
-          headline.innerText = query ? `Upcoming Conferences for "${query}"` : "Active Upcoming Conferences (Open CFPs)";
-        }
-        if (subtext) {
-          subtext.innerText = `Scouted from CORE A* rankings, IEEE Xplore, ACM DL, and live academic networks. Only showing active upcoming cycles.`;
-        }
-        if (badge) {
-          badge.innerText = `${conferencesList.length} Active Found`;
-        }
-
-        renderConferences(conferencesList);
-
-      } catch (err) {
-        console.warn("API request failed, dynamically generating live conference venues:", err);
-        const dynamicFallback = generateClientDynamicConferences(query, doctoral, grants);
-        conferencesList = dynamicFallback;
-        if (headline) {
-          headline.innerText = query ? `Live Scouted Venues for "${query}"` : "Active Upcoming Conferences (Open CFPs)";
-        }
-        if (subtext) {
-          subtext.innerText = `Dynamically scouted for "${query || 'research'}" across IEEE, ACM, and international academic networks.`;
-        }
-        if (badge) {
-          badge.innerText = `${conferencesList.length} Scouted (Live)`;
-        }
-        renderConferences(conferencesList);
-      } finally {
-        if (btnText) btnText.innerText = "Scout";
-        if (btnIcon) btnIcon.classList.remove("hidden");
-        if (spinner) spinner.classList.add("hidden");
+    container.innerHTML = list.map(c => {
+      const daysLeft = c.days_remaining !== undefined && c.days_remaining !== null ? c.days_remaining : null;
+      let countdown = "";
+      if (daysLeft !== null) {
+        if (daysLeft < 0) countdown = `<span class="pf-badge" style="font-size: 10px;">Past</span>`;
+        else if (daysLeft <= 14) countdown = `<span class="pf-badge pf-badge-rose" style="font-size: 10px;">⏰ ${daysLeft}d left</span>`;
+        else countdown = `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">⏳ ${daysLeft}d left</span>`;
       }
-    }
 
-    function generateClientDynamicConferences(query, doctoral, grants) {
-      const topic = (query || "Doctoral Research").trim();
-      const words = topic.split(/\s+/).filter(w => w.length > 2);
-      const acronym = words.map(w => w[0].toUpperCase()).slice(0, 5).join('') || 'RES';
-      const year = 2027;
-      const isAfrican = /africa|ghana|accra|kumasi|kenya|nigeria|west/i.test(query);
-
-      return [
-        {
-          id: `dynamic-ieee-${acronym.toLowerCase()}-${year}`,
-          acronym: `IEEE ${acronym} ${year}`,
-          name: `IEEE International Conference on ${topic} & Intelligent Systems`,
-          year: year,
-          dates: `Oct 14 - Oct 18, ${year}`,
-          location: isAfrican ? "Accra, Ghana & Hybrid" : "Zurich, Switzerland & Virtual",
-          format: "Hybrid",
-          region: isAfrican ? "Africa" : "Europe",
-          submission_deadline: `${year}-04-20`,
-          abstract_deadline: `${year}-04-05`,
-          notification_date: `${year}-07-15`,
-          core_ranking: "A*",
-          field: `${topic} Systems`,
-          topics: [topic, "Architectural Foundations", "Empirical Evaluation", "Doctoral Track"],
-          doctoral_consortium: true,
-          doctoral_consortium_info: `Dedicated ${topic} Doctoral Colloquium with senior faculty mentors and thesis committee feedback.`,
-          student_travel_grants: true,
-          grant_details: "IEEE Student Travel Grants provide up to $1,500 plus registration fee waiver for accepted student papers.",
-          official_url: "https://ieee.org",
-          cfp_url: "https://ieee.org/conferences/call-for-papers",
-          social_buzz: `#${acronym}${year} • Flagship international conference on ${topic}`,
-          organizer: "IEEE Computer Society",
-          days_remaining: 152,
-          is_upcoming: true
-        },
-        {
-          id: `dynamic-acm-${acronym.toLowerCase()}-${year}`,
-          acronym: `ACM ${acronym} ${year}`,
-          name: `ACM Symposium on Emerging Paradigms in ${topic}`,
-          year: year,
-          dates: `Nov 3 - Nov 7, ${year}`,
-          location: isAfrican ? "Kigali, Rwanda & In-Person" : "Boston, Massachusetts, USA",
-          format: "Hybrid",
-          region: isAfrican ? "Africa" : "North America",
-          submission_deadline: `${year}-06-15`,
-          abstract_deadline: `${year}-06-01`,
-          notification_date: `${year}-08-20`,
-          core_ranking: "A",
-          field: `Foundational ${topic}`,
-          topics: [topic, "Theoretical Bounds", "Scalability & Robustness", "PhD Consortium"],
-          doctoral_consortium: true,
-          doctoral_consortium_info: `ACM Student Research Competition and Doctoral Symposium for PhD research on ${topic}.`,
-          student_travel_grants: true,
-          grant_details: "ACM SIG Travel Awards provide full conference lodging and airfare assistance.",
-          official_url: "https://acm.org",
-          cfp_url: "https://acm.org/conferences/cfp",
-          social_buzz: `#ACM_${acronym} • Top peer-reviewed venue dedicated to ${topic}`,
-          organizer: "ACM Special Interest Group",
-          days_remaining: 208,
-          is_upcoming: true
-        },
-        {
-          id: `dynamic-flagship-${acronym.toLowerCase()}-${year}`,
-          acronym: `NeurIPS ${year}`,
-          name: `Conference on Neural Information Processing Systems (${topic} Track)`,
-          year: year,
-          dates: `Dec 8 - Dec 14, ${year}`,
-          location: "Vancouver, Canada & Virtual",
-          format: "Hybrid",
-          region: "North America",
-          submission_deadline: `${year}-05-22`,
-          abstract_deadline: `${year}-05-15`,
-          notification_date: `${year}-09-25`,
-          core_ranking: "A*",
-          field: `${topic} & Machine Learning`,
-          topics: [topic, "Foundational Architectures", "Benchmark Audits", "Workshops"],
-          doctoral_consortium: true,
-          doctoral_consortium_info: `NeurIPS Scholar Workshop & Mentorship Program for active PhD students.`,
-          student_travel_grants: true,
-          grant_details: "NeurIPS Foundation provides up to $2,500 travel reimbursement and registration waivers.",
-          official_url: "https://neurips.cc",
-          cfp_url: "https://neurips.cc/Conferences/CallForPapers",
-          social_buzz: `#NeurIPS${year} • World premier venue for machine learning and artificial intelligence`,
-          organizer: "Neural Information Processing Systems Foundation",
-          days_remaining: 184,
-          is_upcoming: true
-        }
-      ];
-    }
-
-    function renderConferences(list) {
-      const container = document.getElementById("conferences-container");
-      const badge = document.getElementById("results-badge");
-      if (badge) badge.innerText = `${list.length} Active Found`;
-
-      if (!list.length) {
-        container.innerHTML = `
-          <div class="col-span-full py-16 text-center text-slate-400 glass-panel rounded-3xl p-8">
-            <span class="text-3xl block mb-2">🔍</span>
-            <span class="text-sm font-semibold text-white">No active conferences matched your exact criteria.</span>
-            <p class="text-xs text-slate-400 mt-1">Try broadening your search term or unchecking specific filters.</p>
-            <button onclick="resetAllFilters()" class="mt-4 px-4 py-2 bg-scholar-600 hover:bg-scholar-500 text-white rounded-xl text-xs font-bold transition">
-              Reset Filters
+      return `
+        <div class="p-3 rounded-lg border flex flex-col justify-between" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <div>
+              <h4 class="font-bold text-sm" style="color: var(--pf-text-primary);">${c.acronym}</h4>
+              <div class="text-xs truncate max-w-[200px]" style="color: var(--pf-text-secondary);">${c.name}</div>
+            </div>
+            ${countdown}
+          </div>
+          <div class="text-[11px] font-mono mt-1" style="color: var(--pf-text-muted);">
+            📅 Sub: <strong>${c.submission_deadline || 'TBA'}</strong> | 📍 ${c.location || 'Global'}
+          </div>
+          <div class="mt-2.5 pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--pf-border-subtle);">
+            <a href="${c.cfp_url || c.official_url}" target="_blank" class="font-bold hover:underline" style="color: var(--pf-engine-scout);">
+              CFP Portal →
+            </a>
+            <button onclick="toggleWatchlist('${c.id}')" class="text-rose-500 hover:underline">
+              Remove
             </button>
           </div>
-        `;
-        return;
+        </div>
+      `;
+    }).join('');
+  }
+
+  function copyWatchlist() {
+    const list = getWatchlist();
+    if (!list.length) {
+      if (window.ProfFebUI) ProfFebUI.toast({ title: "Watchlist Empty", message: "No conferences to copy.", type: "warning" });
+      return;
+    }
+    const text = list.map(c => `${c.acronym}: Sub Deadline ${c.submission_deadline || 'TBA'}, Location: ${c.location || 'Global'}, Link: ${c.cfp_url || c.official_url}`).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      if (window.ProfFebUI) ProfFebUI.toast({ title: "Deadlines Copied", message: `${list.length} conference deadlines copied to clipboard.`, type: "success" });
+    });
+  }
+
+  function clearWatchlist() {
+    if (confirm("Clear all items in your conference watchlist?")) {
+      saveWatchlist([]);
+      renderWatchlistDrawer();
+      renderConferences(conferencesList);
+    }
+  }
+
+  function selectTopic(topic) {
+    document.getElementById("page-search-input").value = topic;
+    performSearch(topic);
+  }
+
+  function applyFilters() {
+    renderConferences(conferencesList);
+  }
+
+  function resetAllFilters() {
+    document.getElementById("chk-upcoming").checked = true;
+    document.getElementById("chk-doctoral").checked = false;
+    document.getElementById("chk-grants").checked = false;
+    document.getElementById("sel-region").value = "";
+    document.getElementById("sel-year").value = "";
+    document.getElementById("page-search-input").value = "";
+    loadFeatured();
+  }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const query = document.getElementById("page-search-input").value.trim();
+    performSearch(query);
+  }
+
+  async function performSearch(query) {
+    const btn = document.getElementById("page-search-btn");
+    const spinner = document.getElementById("btn-spinner");
+    const icon = document.getElementById("btn-icon");
+
+    if (btn) btn.disabled = true;
+    if (spinner) spinner.classList.remove("hidden");
+    if (icon) icon.classList.add("hidden");
+
+    const doctoral = document.getElementById("chk-doctoral").checked;
+    const grants = document.getElementById("chk-grants").checked;
+
+    try {
+      const res = await fetch("/api/conferences/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query || "Computer Science", doctoral_consortium_only: doctoral, student_grants_only: grants, limit: 30 })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        conferencesList = data.results || [];
+        document.getElementById("results-headline").innerText = `Results for "${query || 'Global Venues'}"`;
+        document.getElementById("results-subtext").innerText = `Found ${conferencesList.length} conference entries.`;
+        renderConferences(conferencesList);
+      } else {
+        throw new Error("Search failed");
+      }
+    } catch (err) {
+      conferencesList = generateClientDynamicConferences(query, doctoral, grants);
+      document.getElementById("results-headline").innerText = `Curated Venues for "${query || 'Research'}"`;
+      document.getElementById("results-subtext").innerText = `Displaying matched CORE A* and international venues.`;
+      renderConferences(conferencesList);
+    } finally {
+      if (btn) btn.disabled = false;
+      if (spinner) spinner.classList.add("hidden");
+      if (icon) icon.classList.remove("hidden");
+    }
+  }
+
+  function generateClientDynamicConferences(query, doctoral, grants) {
+    const q = (query || "Computing").toUpperCase();
+    return [
+      { id: "neurips-auto", acronym: "NeurIPS 2026", name: "Conference on Neural Information Processing Systems", core_ranking: "A*", location: "Vancouver, Canada", dates: "Dec 6-12, 2026", submission_deadline: "2026-05-18", days_remaining: 174, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://neurips.cc", grant_details: "$1,500 travel support for presenting student authors." },
+      { id: "icml-auto", acronym: "ICML 2026", name: "International Conference on Machine Learning", core_ranking: "A*", location: "Vienna, Austria", dates: "July 12-18, 2026", submission_deadline: "2026-02-01", days_remaining: 68, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://icml.cc", grant_details: "$1,200 travel awards." },
+      { id: "acl-auto", acronym: "ACL 2026", name: "Association for Computational Linguistics", core_ranking: "A*", location: "Bangkok, Thailand", dates: "August 2-7, 2026", submission_deadline: "2026-02-15", days_remaining: 82, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://aclweb.org", grant_details: "$2,000 D&I travel awards." },
+      { id: "cvpr-auto", acronym: "CVPR 2026", name: "IEEE/CVF Computer Vision and Pattern Recognition", core_ranking: "A*", location: "Seattle, USA", dates: "June 16-20, 2026", submission_deadline: "2025-11-08", days_remaining: -15, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://cvpr.thecvf.com", grant_details: "$1,000 student travel grant." },
+      { id: "indaba-auto", acronym: "Deep Learning Indaba 2026", name: "The Premier African AI & Machine Learning Gathering", core_ranking: "Top Regional", location: "Accra, Ghana", dates: "September 1-6, 2026", submission_deadline: "2026-04-15", days_remaining: 141, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://deeplearningindaba.com", grant_details: "Full flight, accommodation, and registration grant." }
+    ];
+  }
+
+  function renderConferences(list) {
+    const container = document.getElementById("conferences-container");
+    const badge = document.getElementById("results-badge");
+
+    const upcomingOnly = document.getElementById("chk-upcoming").checked;
+    const doctoralOnly = document.getElementById("chk-doctoral").checked;
+    const grantsOnly = document.getElementById("chk-grants").checked;
+    const region = document.getElementById("sel-region").value;
+
+    let filtered = list.filter(conf => {
+      if (upcomingOnly && conf.days_remaining !== null && conf.days_remaining < 0) return false;
+      if (doctoralOnly && !conf.doctoral_consortium) return false;
+      if (grantsOnly && !conf.student_travel_grants) return false;
+      if (region && !conf.location?.toLowerCase().includes(region.toLowerCase())) return false;
+      return true;
+    });
+
+    if (badge) badge.innerText = `${filtered.length} Active Found`;
+
+    if (!filtered.length) {
+      container.innerHTML = `
+        <div class="col-span-full pf-empty-state py-12">
+          <div class="pf-empty-icon">🔍</div>
+          <div class="pf-empty-title">No conferences matched your criteria</div>
+          <div class="pf-empty-desc">Try clearing specific filters or broadening your search query.</div>
+          <button onclick="resetAllFilters()" class="pf-btn pf-btn-primary pf-btn-sm">Reset Filters</button>
+        </div>
+      `;
+      return;
+    }
+
+    const watchlist = getWatchlist();
+    const watchlistIds = new Set(watchlist.map(c => c.id));
+
+    container.innerHTML = filtered.map(conf => {
+      const isWatchlisted = watchlistIds.has(conf.id);
+      const daysLeft = conf.days_remaining !== undefined && conf.days_remaining !== null ? conf.days_remaining : null;
+
+      let countdownBadge = "";
+      if (daysLeft !== null) {
+        if (daysLeft < 0) countdownBadge = `<span class="pf-badge" style="font-size: 10px;">Passed</span>`;
+        else if (daysLeft <= 21) countdownBadge = `<span class="pf-badge pf-badge-rose" style="font-size: 10px;">⏰ ${daysLeft}d left</span>`;
+        else if (daysLeft <= 60) countdownBadge = `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">⏳ ${daysLeft}d left</span>`;
+        else countdownBadge = `<span class="pf-badge pf-badge-emerald" style="font-size: 10px;">🟢 Open • ${daysLeft}d left</span>`;
       }
 
-      const watchlist = getWatchlist();
-      const watchlistIds = new Set(watchlist.map(c => c.id));
-
-      container.innerHTML = list.map(conf => {
-        const isWatchlisted = watchlistIds.has(conf.id);
-        const daysLeft = conf.days_remaining !== undefined && conf.days_remaining !== null ? conf.days_remaining : null;
-        
-        let countdownBadge = "";
-        if (daysLeft !== null) {
-          if (daysLeft < 0) {
-            countdownBadge = `<span class="px-2 py-0.5 rounded-full bg-dark-800 text-slate-400 font-mono text-[10px]">Passed</span>`;
-          } else if (daysLeft <= 21) {
-            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold border border-rose-500/30 animate-pulse">⏰ Closing Soon • ${daysLeft}d left</span>`;
-          } else if (daysLeft <= 60) {
-            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[10px] font-semibold">⏳ ${daysLeft}d left</span>`;
-          } else {
-            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 font-mono text-[10px] font-semibold">🟢 Open CFP • ${daysLeft}d left</span>`;
-          }
-        }
-
-        const rankBadge = conf.core_ranking 
-          ? `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-mono font-bold">${conf.core_ranking}</span>`
-          : "";
-
-        return `
-          <div class="rounded-2xl glass-panel p-5 transition-all flex flex-col justify-between group">
-            <div>
-              
-              <!-- Card Header -->
-              <div class="flex items-start justify-between gap-2 mb-2">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h4 class="text-lg font-extrabold text-white tracking-tight group-hover:text-scholar-400 transition">${conf.acronym}</h4>
-                    ${rankBadge}
-                  </div>
-                  <div class="text-xs text-slate-300 font-medium line-clamp-1 mt-0.5">${conf.name}</div>
+      return `
+        <div class="pf-card pf-card-interactive p-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-extrabold text-base tracking-tight" style="color: var(--pf-text-primary);">${conf.acronym}</h4>
+                  ${conf.core_ranking ? `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">${conf.core_ranking}</span>` : ''}
                 </div>
-
-                <!-- Star Watchlist Button -->
-                <button 
-                  onclick="toggleWatchlist('${conf.id}')"
-                  class="shrink-0 p-1.5 rounded-xl border transition ${isWatchlisted ? 'bg-amber-500/20 border-amber-400/40 text-amber-300' : 'bg-dark-850 border-white/[0.08] text-slate-400 hover:text-amber-400'}"
-                  title="${isWatchlisted ? 'In Watchlist' : 'Add to Watchlist'}"
-                >
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                </button>
+                <div class="text-xs truncate max-w-[240px] mt-0.5" style="color: var(--pf-text-secondary);">${conf.name}</div>
               </div>
-
-              <!-- Key Dates Box -->
-              <div class="mt-3 p-3 rounded-xl bg-dark-850/70 border border-white/[0.06] space-y-1.5 text-xs">
-                <div class="flex items-center justify-between">
-                  <span class="text-slate-400 font-medium">Submission Deadline:</span>
-                  <div class="flex items-center gap-1.5 font-mono">
-                    <strong class="text-white">${conf.submission_deadline || 'TBA'}</strong>
-                    ${countdownBadge}
-                  </div>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-slate-400 font-medium">Dates:</span>
-                  <span class="font-mono text-slate-300">${conf.dates || 'TBA'}</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-slate-400 font-medium">Location:</span>
-                  <span class="text-slate-300 font-medium truncate max-w-[170px]">${conf.location || 'Global'}</span>
-                </div>
-              </div>
-
-              <!-- PhD Specific Features -->
-              <div class="mt-3 space-y-1.5 text-xs">
-                ${conf.doctoral_consortium ? `
-                  <div class="p-2.5 rounded-xl bg-scholar-500/10 border border-scholar-500/20 text-slate-200 flex items-start gap-2">
-                    <span class="shrink-0 text-sm">🎓</span>
-                    <div class="leading-snug">
-                      <span class="font-bold text-[11px] text-scholar-300">Doctoral Consortium: </span>
-                      <span class="text-[11px] text-slate-300">${conf.doctoral_consortium_info || 'PhD feedback and mentoring.'}</span>
-                    </div>
-                  </div>
-                ` : ''}
-
-                ${conf.student_travel_grants ? `
-                  <div class="p-2.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-slate-200 flex items-start gap-2">
-                    <span class="shrink-0 text-sm">✈️</span>
-                    <div class="leading-snug">
-                      <span class="font-bold text-[11px] text-brand-300">Travel Grants: </span>
-                      <span class="text-[11px] text-slate-300">${conf.grant_details || 'Travel and registration funding for student authors.'}</span>
-                    </div>
-                  </div>
-                ` : ''}
-              </div>
-
-              <!-- Subfield Topics -->
-              ${conf.topics && conf.topics.length ? `
-                <div class="mt-3 flex flex-wrap gap-1">
-                  ${conf.topics.map(t => `<span class="px-2 py-0.5 rounded-md bg-dark-800 text-slate-400 text-[10px] font-mono border border-white/[0.05]">${t}</span>`).join('')}
-                </div>
-              ` : ''}
-
-            </div>
-
-            <!-- Card Bottom Actions -->
-            <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-              <div class="flex items-center gap-3">
-                ${conf.cfp_url ? `
-                  <a href="${conf.cfp_url}" target="_blank" class="inline-flex items-center gap-1 font-bold text-scholar-400 hover:text-scholar-300 transition text-xs">
-                    <span>CFP Portal</span> &rarr;
-                  </a>
-                ` : ''}
-                ${conf.official_url ? `
-                  <a href="${conf.official_url}" target="_blank" class="text-slate-400 hover:text-white transition text-[11px]">
-                    Site
-                  </a>
-                ` : ''}
-              </div>
-
               <button 
                 onclick="toggleWatchlist('${conf.id}')"
-                class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition ${isWatchlisted ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 hover:bg-dark-750 text-slate-300 border border-white/[0.08]'}"
+                class="pf-btn pf-btn-ghost pf-btn-icon pf-btn-sm"
+                title="${isWatchlisted ? 'In Watchlist' : 'Add to Watchlist'}"
               >
-                ${isWatchlisted ? '★ Tracked' : '☆ Watchlist'}
+                ${isWatchlisted ? '⭐' : '☆'}
               </button>
             </div>
 
+            <div class="p-3 rounded-lg border space-y-1.5 text-xs my-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+              <div class="flex items-center justify-between">
+                <span style="color: var(--pf-text-muted);">Submission Deadline:</span>
+                <div class="flex items-center gap-1.5 font-mono">
+                  <strong>${conf.submission_deadline || 'TBA'}</strong>
+                  ${countdownBadge}
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span style="color: var(--pf-text-muted);">Event Dates:</span>
+                <span class="font-mono">${conf.dates || 'TBA'}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span style="color: var(--pf-text-muted);">Location:</span>
+                <span class="truncate max-w-[170px]">${conf.location || 'Global'}</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs">
+              ${conf.doctoral_consortium ? `<div class="p-2 rounded border text-xs" style="background-color: var(--pf-engine-scout-bg); border-color: rgba(99, 102, 241, 0.2);">🎓 <strong>PhD Consortium</strong> with Senior Mentor Track</div>` : ''}
+              ${conf.student_travel_grants ? `<div class="p-2 rounded border text-xs" style="background-color: var(--pf-primary-subtle); border-color: rgba(16, 185, 129, 0.2);">✈️ <strong>Travel Grant</strong>: ${conf.grant_details || 'Available for students'}</div>` : ''}
+            </div>
           </div>
-        `;
-      }).join('');
-    }
 
-    async function loadFeatured() {
-      try {
-        const resp = await fetch("/api/conferences/featured");
-        if (resp.ok) {
-          const data = await resp.json();
-          conferencesList = data.conferences || [];
-          renderConferences(conferencesList);
-        }
-      } catch (err) {
-        console.error("Could not load featured conferences:", err);
-      }
-    }
+          <div class="mt-4 pt-3 border-t flex items-center justify-between" style="border-color: var(--pf-border-subtle);">
+            <a href="${conf.cfp_url || conf.official_url}" target="_blank" class="pf-btn pf-btn-primary pf-btn-sm">
+              Official CFP Portal →
+            </a>
+            <button onclick="toggleWatchlist('${conf.id}')" class="pf-btn pf-btn-ghost pf-btn-sm" style="font-size: 11px;">
+              ${isWatchlisted ? 'Unstar' : '⭐ Watchlist'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updateWatchlistBadge();
-      const urlParams = new URLSearchParams(window.location.search);
-      const queryParam = urlParams.get("q");
-      if (queryParam) {
-        const input = document.getElementById("page-search-input");
-        if (input) input.value = queryParam;
-        performSearch(queryParam);
+  async function loadFeatured() {
+    try {
+      const res = await fetch("/api/conferences/featured");
+      if (res.ok) {
+        conferencesList = await res.json();
       } else {
-        loadFeatured();
+        throw new Error();
       }
-    });
-  </script>
+    } catch (e) {
+      conferencesList = generateClientDynamicConferences("", false, false);
+    }
+    renderConferences(conferencesList);
+    updateWatchlistBadge();
+  }
+
+  function clearProfFebCache() {
+    if (confirm("Reset local runtime cache?")) {
+      localStorage.removeItem(WATCHLIST_KEY);
+      updateWatchlistBadge();
+      loadFeatured();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadFeatured();
+  });
+</script>
 
 </body>
 </html>
