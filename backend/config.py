@@ -5,10 +5,20 @@ from dotenv import load_dotenv
 # Load .env file from project root or backend directory if present
 load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-BACKEND_DIR = BASE_DIR / "backend"
-FRONTEND_DIR = BASE_DIR / "frontend"
-STATIC_DIR = BASE_DIR / "static"
+_CURRENT_DIR = Path(__file__).resolve().parent
+_PARENT_DIR = _CURRENT_DIR.parent
+
+# Resilient directory resolution: works seamlessly under local dev, monorepos, and Vercel Services
+if (_CURRENT_DIR / "frontend").exists() and not (_PARENT_DIR / "frontend").exists():
+    BASE_DIR = _CURRENT_DIR
+    BACKEND_DIR = _CURRENT_DIR
+    FRONTEND_DIR = _CURRENT_DIR / "frontend"
+    STATIC_DIR = _CURRENT_DIR / "static"
+else:
+    BASE_DIR = _PARENT_DIR
+    BACKEND_DIR = _CURRENT_DIR
+    FRONTEND_DIR = (_CURRENT_DIR / "frontend") if (_CURRENT_DIR / "frontend").exists() else (_PARENT_DIR / "frontend")
+    STATIC_DIR = (_CURRENT_DIR / "static") if (_CURRENT_DIR / "static").exists() else (_PARENT_DIR / "static")
 
 # Robust detection of serverless / read-only environment
 IS_SERVERLESS = (
@@ -96,6 +106,9 @@ except Exception:
 # ProfFeb Platform Metadata
 APP_NAME = "ProfFeb"
 APP_TAGLINE = "The Global Neural Audio Research Workstation & AI Academic Mentor"
+
+# Vercel Services Internal Binding
+BACKEND_URL = os.getenv("BACKEND_URL", "").strip().rstrip("/")
 
 # Supabase Configuration (Multi-Tenant Auth & Storage)
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://lbwdlisjvrlbfqonioed.supabase.co").strip()

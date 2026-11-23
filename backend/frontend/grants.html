@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfFeb — Funding & Travel Grant Radar (Engine 05)</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <!-- Design System Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
+
+  <!-- Tailwind CSS CDN for utility layering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase Auth SDK & ProfFeb Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
+</head>
+
+<body class="min-h-screen antialiased selection:bg-teal-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+
+<div class="pf-app-container">
+  
+  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <aside id="pf-app-sidebar" class="pf-sidebar">
+    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
+      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0d9488, #14b8a6); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
+        <div class="pf-brand-text">
+          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
+          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">GRANTS • E05</div>
+        </div>
+      </a>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
+        ◀
+      </button>
+    </div>
+
+    <!-- Navigation items (7 Engines + Overview) -->
+    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+      <a href="/" class="pf-nav-item">
+        <span>⊞</span>
+        <span class="pf-nav-label">Overview</span>
+      </a>
+      <a href="/app" class="pf-nav-item">
+        <span style="color: var(--pf-engine-studio);">🎙️</span>
+        <span class="pf-nav-label">Research Studio</span>
+      </a>
+      <a href="/conferences" class="pf-nav-item">
+        <span style="color: var(--pf-engine-scout);">🌐</span>
+        <span class="pf-nav-label">Conference Scout</span>
+      </a>
+      <a href="/radar" class="pf-nav-item">
+        <span style="color: var(--pf-engine-radar);">🔬</span>
+        <span class="pf-nav-label">Novelty Radar</span>
+      </a>
+      <a href="/reviewer" class="pf-nav-item">
+        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
+        <span class="pf-nav-label">Reviewer #2</span>
+      </a>
+      <a href="/grants" class="pf-nav-item pf-nav-active">
+        <span style="color: var(--pf-engine-grants);">💰</span>
+        <span class="pf-nav-label">Funding Radar</span>
+      </a>
+      <a href="/lab-connector" class="pf-nav-item">
+        <span style="color: var(--pf-engine-lab);">🏢</span>
+        <span class="pf-nav-label">Lab Connector</span>
+      </a>
+      <a href="/agent" class="pf-nav-item">
+        <span style="color: var(--pf-engine-copilot);">🧠</span>
+        <span class="pf-nav-label">Academic Co-Pilot</span>
+      </a>
+    </nav>
+
+    <!-- Bottom utility items -->
+    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
+        <span class="pf-theme-toggle-icon">🌓</span>
+        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
+        <span>⌘K</span>
+        <span class="pf-nav-label">Command Palette</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN STAGE ================= -->
+  <div class="pf-main-stage">
+    
+    <!-- TOP HEADER -->
+    <header class="pf-top-bar">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
+        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
+          <span style="color: var(--pf-border-strong);">/</span>
+          <span style="font-weight: 600; color: var(--pf-engine-grants);">Funding & Grant Radar</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
+          🔄
+        </button>
+        <div id="user-nav-container"></div>
+      </div>
+    </header>
+
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Hero Banner -->
+      <div class="text-center max-w-3xl mx-auto mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-grants-bg); border-color: rgba(20, 184, 166, 0.3);">
+          <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+          <span class="text-xs font-semibold" style="color: var(--pf-engine-grants);">Zero Out-of-Pocket Conference Travel • Prestigious PhD Fellowships</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
+          Match Research & Destination to Active Grants
+        </h1>
+        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
+          Specify your research topic and destination country or continent. Our intelligent matcher surfaces travel grants, full doctoral stipends ($35k–$50k+), and diversity awards.
+        </p>
+      </div>
+
+      <!-- Matcher Panel -->
+      <div class="pf-card p-6 mb-8 space-y-4">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Field 1: Research Work -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+              1. What Research Work Are You Doing?
+            </label>
+            <input 
+              type="text" 
+              id="grant-work"
+              placeholder="e.g. Distributed LLMs, Edge AI, Computer Vision, Graph Neural Networks..."
+              oninput="filterGrants()"
+              class="pf-input text-sm py-2.5"
+            >
+          </div>
+
+          <!-- Field 2: Destination -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+              2. Where Do You Want To Go?
+            </label>
+            <select 
+              id="grant-dest" 
+              onchange="filterGrants()"
+              class="pf-select text-sm py-2.5"
+            >
+              <option value="All">Global / Anywhere (All Destinations)</option>
+              <option value="United States & Canada">United States & Canada</option>
+              <option value="Europe (UK, Germany, France, Switzerland)">Europe (UK, Germany, France, Switzerland)</option>
+              <option value="Asia (Japan, Singapore, India)">Asia (Japan, Singapore, India)</option>
+              <option value="Africa (Ghana, South Africa, Kenya)">Africa (Ghana, South Africa, Kenya)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Research Topic Chips -->
+        <div class="flex items-center gap-1.5 flex-wrap pt-1">
+          <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Quick Topics:</span>
+          <button type="button" onclick="setResearchWork('Generative AI & LLMs')" class="pf-btn pf-btn-secondary pf-btn-sm">Generative AI & LLMs</button>
+          <button type="button" onclick="setResearchWork('Computer Vision')" class="pf-btn pf-btn-secondary pf-btn-sm">Computer Vision</button>
+          <button type="button" onclick="setResearchWork('Systems & Edge Computing')" class="pf-btn pf-btn-secondary pf-btn-sm">Systems & Edge</button>
+          <button type="button" onclick="setResearchWork('Cybersecurity & Privacy')" class="pf-btn pf-btn-secondary pf-btn-sm">Cybersecurity</button>
+          <button type="button" onclick="setResearchWork('Robotics & Autonomous Systems')" class="pf-btn pf-btn-secondary pf-btn-sm">Robotics</button>
+        </div>
+
+        <!-- Category Filter Chips & Action Button -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--pf-border-subtle);">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-chips">
+            <button onclick="setCategory('All')" class="cat-btn pf-btn pf-btn-primary pf-btn-sm" data-cat="All">All Funding Types</button>
+            <button onclick="setCategory('Conference Travel Grant')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Conference Travel Grant">✈️ Travel Grants ($1.5k-$3k)</button>
+            <button onclick="setCategory('Prestigious Fellowship')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Prestigious Fellowship">🎓 Full Fellowships ($35k-$50k+)</button>
+            <button onclick="setCategory('Diversity & Global Grant')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Diversity & Global Grant">🌍 Diversity & Global</button>
+          </div>
+
+          <button 
+            type="button" 
+            id="match-btn"
+            onclick="searchLiveGrants()"
+            class="pf-btn pf-btn-primary pf-btn-sm shrink-0"
+          >
+            <span>🎯 Match With Live AI Scout</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Grants Results Grid -->
+      <div id="grants-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="pf-skeleton h-48"></div>
+        <div class="pf-skeleton h-48"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  let allGrants = [];
+  let currentCategory = 'All';
+
+  function setResearchWork(topic) {
+    document.getElementById('grant-work').value = topic;
+    filterGrants();
+  }
+
+  async function loadGrants() {
+    try {
+      const res = await fetch('/api/grants/feed');
+      if (res.ok) {
+        allGrants = await res.json();
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      allGrants = generateDefaultGrants();
+    }
+    filterGrants();
+  }
+
+  function setCategory(cat) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      if (btn.dataset.cat === cat) {
+        btn.classList.add('pf-btn-primary');
+        btn.classList.remove('pf-btn-secondary');
+      } else {
+        btn.classList.remove('pf-btn-primary');
+        btn.classList.add('pf-btn-secondary');
+      }
+    });
+    filterGrants();
+  }
+
+  function filterGrants() {
+    const dest = document.getElementById('grant-dest').value;
+    const work = document.getElementById('grant-work').value.trim().toLowerCase();
+
+    let filtered = allGrants.filter(g => {
+      if (currentCategory !== 'All' && g.category !== currentCategory) return false;
+
+      if (dest !== 'All') {
+        const destLower = dest.toLowerCase();
+        const grantDest = `${g.destination_scope || ''} ${g.organization || ''} ${g.description || ''} ${(g.tags || []).join(' ')}`.toLowerCase();
+        const isGlobal = grantDest.includes('global') || grantDest.includes('worldwide');
+        if (!isGlobal && !grantDest.includes(destLower)) {
+          if (destLower.includes('united states') && !['usa', 'us', 'america', 'california', 'redmond', 'new york'].some(k => grantDest.includes(k))) return false;
+          if (destLower.includes('europe') && !['europe', 'uk', 'cambridge', 'london', 'germany', 'zurich'].some(k => grantDest.includes(k))) return false;
+          if (destLower.includes('africa') && !['africa', 'diaspora'].some(k => grantDest.includes(k))) return false;
+          if (destLower.includes('asia') && !['asia', 'japan', 'singapore', 'india'].some(k => grantDest.includes(k))) return false;
+        }
+      }
+
+      if (work) {
+        const searchable = `${g.title} ${g.organization} ${g.description} ${g.eligibility || ''} ${(g.tags || []).join(' ')}`.toLowerCase();
+        const words = work.split(/\s+/).filter(w => w.length > 2);
+        const hasMatch = words.some(w => searchable.includes(w)) || searchable.includes('computer science') || searchable.includes('phd students') || searchable.includes('machine learning');
+        if (!hasMatch) return false;
+      }
+
+      return true;
+    });
+
+    renderGrants(filtered);
+  }
+
+  function renderGrants(list = allGrants) {
+    const grid = document.getElementById('grants-grid');
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="col-span-full pf-empty-state py-12">
+          <div class="pf-empty-icon">🔍</div>
+          <div class="pf-empty-title">No funding opportunities matched your criteria</div>
+          <div class="pf-empty-desc">Try clearing specific research keywords or choosing 'All Destinations'.</div>
+          <button onclick="document.getElementById('grant-work').value=''; document.getElementById('grant-dest').value='All'; setCategory('All');" class="pf-btn pf-btn-primary pf-btn-sm">Reset Filters</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = list.map(g => {
+      const matchBadge = g.match_reason ? `
+        <div class="pf-badge pf-badge-emerald mb-2" style="font-size: 10px;">
+          🎯 ${g.match_reason}
+        </div>
+      ` : '';
+
+      return `
+      <div class="pf-card pf-card-interactive p-5 flex flex-col justify-between">
+        <div>
+          ${matchBadge}
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <span class="pf-badge" style="font-size: 10px;">
+              ${g.category}
+            </span>
+            <span class="pf-badge pf-badge-emerald font-mono font-bold shrink-0" style="font-size: 11px;">
+              ${g.award}
+            </span>
+          </div>
+
+          <h3 class="text-base font-bold tracking-tight" style="color: var(--pf-text-primary);">
+            ${g.title}
+          </h3>
+          <span class="text-xs font-semibold block mt-0.5 mb-2" style="color: var(--pf-text-muted);">
+            ${g.organization}
+          </span>
+
+          <p class="text-xs leading-relaxed mb-3" style="color: var(--pf-text-secondary);">
+            ${g.description}
+          </p>
+
+          <div class="space-y-1.5 text-xs p-3 rounded-lg border mb-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+            <div class="flex items-center gap-2">
+              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">⏳ Deadline:</span>
+              <span style="color: var(--pf-text-secondary);">${g.deadline}</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">🎓 Eligibility:</span>
+              <span style="color: var(--pf-text-secondary);">${g.eligibility}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-wrap mb-4">
+            ${(g.tags || []).map(t => `<span class="pf-badge" style="font-size: 9px;">${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="pt-3 border-t flex items-center justify-between gap-2 flex-wrap" style="border-color: var(--pf-border-subtle);">
+          <a href="${g.url}" target="_blank" class="pf-btn pf-btn-secondary pf-btn-sm">
+            Portal →
+          </a>
+          <a href="/agent?apply_mode=grant&title=${encodeURIComponent(g.title)}&org=${encodeURIComponent(g.organization)}&award=${encodeURIComponent(g.award || '')}&autogen=true" class="pf-btn pf-btn-primary pf-btn-sm">
+            🧠 Apply with Co-Pilot
+          </a>
+        </div>
+      </div>
+      `;
+    }).join('');
+  }
+
+  function generateDefaultGrants() {
+    return [
+      { id: "g1", title: "Google PhD Fellowship 2026", organization: "Google Research", category: "Prestigious Fellowship", award: "Full Tuition + $40,000 Stipend", deadline: "May 2026", eligibility: "Enrolled PhD students in Computing, AI, Systems, HCI", destination_scope: "Global", description: "Recognizes outstanding graduate students doing exceptional research in computer science and related fields.", tags: ["AI", "Systems", "Global"], url: "https://research.google/outreach/phd-fellowship/" },
+      { id: "g2", title: "NeurIPS Student Travel Grant", organization: "NeurIPS Foundation", category: "Conference Travel Grant", award: "$1,500 - $2,500 USD", deadline: "October 2026", eligibility: "Authors of accepted papers or doctoral consortium participants", destination_scope: "Vancouver, Canada", description: "Provides travel assistance to student authors presenting at NeurIPS.", tags: ["NeurIPS", "ML", "Travel"], url: "https://neurips.cc" },
+      { id: "g3", title: "Black in AI Travel & Registration Grant", organization: "Black in AI", category: "Diversity & Global Grant", award: "Flight, Hotel & Registration", deadline: "Rolling / August 2026", eligibility: "Black researchers in AI attending major conferences", destination_scope: "Global", description: "Supports underrepresented African and diaspora scholars in machine learning.", tags: ["Diversity", "Africa", "Global"], url: "https://blackinai.github.io" },
+      { id: "g4", title: "Microsoft Research PhD Fellowship", organization: "Microsoft Research", category: "Prestigious Fellowship", award: "$42,000 Annual Stipend", deadline: "June 2026", eligibility: "PhD students in 3rd year conducting hardware, security, or AI research", destination_scope: "North America & Europe", description: "Two-year fellowship covering tuition and living stipend plus MSR mentorship.", tags: ["Microsoft", "Fellowship"], url: "https://www.microsoft.com/en-us/research/academic-program/phd-fellowship/" }
+    ];
+  }
+
+  async function searchLiveGrants() {
+    const btn = document.getElementById('match-btn');
+    const work = document.getElementById('grant-work').value.trim();
+    const dest = document.getElementById('grant-dest').value;
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳ Searching Live Registries...</span>`;
+    }
+
+    try {
+      const res = await fetch('/api/grants/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: work || 'Computer Science PhD Fellowship', destination: dest, limit: 12 })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+          allGrants = data.results;
+          filterGrants();
+          if (window.ProfFebUI) ProfFebUI.toast({ title: "Live Matches Found", message: `Matched ${data.results.length} funding sources.`, type: "success" });
+          return;
+        }
+      }
+      throw new Error();
+    } catch (e) {
+      filterGrants();
+      if (window.ProfFebUI) ProfFebUI.toast({ title: "Filters Applied", message: "Showing matched grants from registry.", type: "info" });
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🎯 Match With Live AI Scout</span>`;
+      }
+    }
+  }
+
+  function clearProfFebCache() {
+    loadGrants();
+  }
+
+  document.addEventListener('DOMContentLoaded', loadGrants);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfFeb — Tech Summit & Lab Connector (Engine 06)</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <!-- Design System Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
+
+  <!-- Tailwind CSS CDN for utility layering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase Auth SDK & ProfFeb Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
+</head>
+
+<body class="min-h-screen antialiased selection:bg-sky-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+
+<div class="pf-app-container">
+  
+  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <aside id="pf-app-sidebar" class="pf-sidebar">
+    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
+      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0284c7, #38bdf8); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
+        <div class="pf-brand-text">
+          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
+          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">LABS • E06</div>
+        </div>
+      </a>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
+        ◀
+      </button>
+    </div>
+
+    <!-- Navigation items (7 Engines + Overview) -->
+    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+      <a href="/" class="pf-nav-item">
+        <span>⊞</span>
+        <span class="pf-nav-label">Overview</span>
+      </a>
+      <a href="/app" class="pf-nav-item">
+        <span style="color: var(--pf-engine-studio);">🎙️</span>
+        <span class="pf-nav-label">Research Studio</span>
+      </a>
+      <a href="/conferences" class="pf-nav-item">
+        <span style="color: var(--pf-engine-scout);">🌐</span>
+        <span class="pf-nav-label">Conference Scout</span>
+      </a>
+      <a href="/radar" class="pf-nav-item">
+        <span style="color: var(--pf-engine-radar);">🔬</span>
+        <span class="pf-nav-label">Novelty Radar</span>
+      </a>
+      <a href="/reviewer" class="pf-nav-item">
+        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
+        <span class="pf-nav-label">Reviewer #2</span>
+      </a>
+      <a href="/grants" class="pf-nav-item">
+        <span style="color: var(--pf-engine-grants);">💰</span>
+        <span class="pf-nav-label">Funding Radar</span>
+      </a>
+      <a href="/lab-connector" class="pf-nav-item pf-nav-active">
+        <span style="color: var(--pf-engine-lab);">🏢</span>
+        <span class="pf-nav-label">Lab Connector</span>
+      </a>
+      <a href="/agent" class="pf-nav-item">
+        <span style="color: var(--pf-engine-copilot);">🧠</span>
+        <span class="pf-nav-label">Academic Co-Pilot</span>
+      </a>
+    </nav>
+
+    <!-- Bottom utility items -->
+    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
+        <span class="pf-theme-toggle-icon">🌓</span>
+        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
+        <span>⌘K</span>
+        <span class="pf-nav-label">Command Palette</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN STAGE ================= -->
+  <div class="pf-main-stage">
+    
+    <!-- TOP HEADER -->
+    <header class="pf-top-bar">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
+        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
+          <span style="color: var(--pf-border-strong);">/</span>
+          <span style="font-weight: 600; color: var(--pf-engine-lab);">Tech Summit & Lab Connector</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
+          🔄
+        </button>
+        <div id="user-nav-container"></div>
+      </div>
+    </header>
+
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Hero Banner -->
+      <div class="text-center max-w-3xl mx-auto mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-lab-bg); border-color: rgba(14, 165, 233, 0.3);">
+          <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+          <span class="text-xs font-semibold" style="color: var(--pf-engine-lab);">Fast-Track Research Careers • DeepMind • FAIR • MSR • Internships</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
+          Match Research & Region to Industry Labs
+        </h1>
+        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
+          Tell us your research focus and target region. We match paid Research Scientist Internships ($8k–$12k/mo) and flagship global tech expos.
+        </p>
+      </div>
+
+      <!-- Matcher Panel -->
+      <div class="pf-card p-6 mb-8 space-y-4">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Field 1: Research Work -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+              1. What Research Work Are You Doing?
+            </label>
+            <input 
+              type="text" 
+              id="lab-work"
+              placeholder="e.g. Large Language Models, Edge Computing, Reinforcement Learning, Robotics..."
+              oninput="filterLabs()"
+              class="pf-input text-sm py-2.5"
+            >
+          </div>
+
+          <!-- Field 2: Preferred Region -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+              2. Where Do You Want To Go?
+            </label>
+            <select 
+              id="lab-location" 
+              onchange="filterLabs()"
+              class="pf-select text-sm py-2.5"
+            >
+              <option value="All">All Locations / Global (Anywhere)</option>
+              <option value="United States (Silicon Valley, Seattle, NY, Boston)">United States (Silicon Valley, Seattle, NY)</option>
+              <option value="United Kingdom & Europe (London, Cambridge, Paris, Zurich)">Europe (London, Cambridge, Paris, Zurich)</option>
+              <option value="Asia (Singapore, Tokyo, Bangalore)">Asia (Singapore, Tokyo, Bangalore)</option>
+              <option value="Africa (Accra, Nairobi, Johannesburg)">Africa (Accra, Nairobi, Johannesburg)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Fields -->
+        <div class="flex items-center gap-1.5 flex-wrap pt-1">
+          <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Quick Fields:</span>
+          <button type="button" onclick="setLabWork('Generative AI & LLMs')" class="pf-btn pf-btn-secondary pf-btn-sm">Generative AI & LLMs</button>
+          <button type="button" onclick="setLabWork('Robotics & Embodied AI')" class="pf-btn pf-btn-secondary pf-btn-sm">Robotics & Embodied AI</button>
+          <button type="button" onclick="setLabWork('Edge Silicon & Systems')" class="pf-btn pf-btn-secondary pf-btn-sm">Edge Silicon & Systems</button>
+          <button type="button" onclick="setLabWork('Computer Vision')" class="pf-btn pf-btn-secondary pf-btn-sm">Computer Vision</button>
+          <button type="button" onclick="setLabWork('Cloud & Distributed Systems')" class="pf-btn pf-btn-secondary pf-btn-sm">Cloud & Distributed</button>
+        </div>
+
+        <!-- Type Filter Chips & Action Button -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--pf-border-subtle);">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1" id="type-chips">
+            <button onclick="setType('All')" class="type-btn pf-btn pf-btn-primary pf-btn-sm" data-type="All">All Opportunities</button>
+            <button onclick="setType('Research Lab Internship')" class="type-btn pf-btn-secondary pf-btn-sm" data-type="Research Lab Internship">💼 Research Internships ($8k-$12k/mo)</button>
+            <button onclick="setType('Global Tech Summit')" class="type-btn pf-btn-secondary pf-btn-sm" data-type="Global Tech Summit">🌐 Global Tech Summits & Expos</button>
+          </div>
+
+          <button 
+            type="button" 
+            id="match-labs-btn"
+            onclick="searchLiveLabs()"
+            class="pf-btn pf-btn-primary pf-btn-sm shrink-0"
+          >
+            <span>🚀 Match Labs With Live AI Scout</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Labs Results Grid -->
+      <div id="labs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="pf-skeleton h-48"></div>
+        <div class="pf-skeleton h-48"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  let allLabs = [];
+  let activeType = 'All';
+
+  function setLabWork(field) {
+    document.getElementById('lab-work').value = field;
+    filterLabs();
+  }
+
+  async function loadLabs() {
+    try {
+      const res = await fetch('/api/labs/feed');
+      if (res.ok) {
+        allLabs = await res.json();
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      allLabs = generateDefaultLabs();
+    }
+    filterLabs();
+  }
+
+  function setType(type) {
+    activeType = type;
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      if (btn.dataset.type === type) {
+        btn.classList.add('pf-btn-primary');
+        btn.classList.remove('pf-btn-secondary');
+      } else {
+        btn.classList.remove('pf-btn-primary');
+        btn.classList.add('pf-btn-secondary');
+      }
+    });
+    filterLabs();
+  }
+
+  function filterLabs() {
+    const work = document.getElementById('lab-work').value.trim().toLowerCase();
+    const loc = document.getElementById('lab-location').value;
+
+    const filtered = allLabs.filter(item => {
+      if (activeType !== 'All' && item.type !== activeType) return false;
+
+      if (loc !== 'All') {
+        const locLower = loc.toLowerCase();
+        const labLoc = `${item.location || ''} ${item.description || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
+        const isGlobal = labLoc.includes('global') || labLoc.includes('remote') || labLoc.includes('hybrid');
+        if (!isGlobal && !labLoc.includes(locLower)) {
+          if (locLower.includes('united states') && !['usa', 'ca', 'wa', 'ny', 'ma', 'nevada', 'seattle', 'mountain view', 'redmond', 'menlo park'].some(k => labLoc.includes(k))) return false;
+          if (locLower.includes('europe') && !['europe', 'uk', 'london', 'cambridge', 'paris', 'zurich', 'berlin'].some(k => labLoc.includes(k))) return false;
+          if (locLower.includes('asia') && !['asia', 'singapore', 'tokyo', 'bangalore', 'india'].some(k => labLoc.includes(k))) return false;
+          if (locLower.includes('africa') && !['africa', 'accra', 'nairobi'].some(k => labLoc.includes(k))) return false;
+        }
+      }
+
+      if (work) {
+        const searchable = `${item.name} ${item.organization} ${item.target_profile || ''} ${item.description} ${(item.tags || []).join(' ')}`.toLowerCase();
+        const words = work.split(/\s+/).filter(w => w.length > 2);
+        const hasMatch = words.some(w => searchable.includes(w)) || searchable.includes('machine learning') || searchable.includes('computer science') || searchable.includes('systems') || searchable.includes('artificial intelligence');
+        if (!hasMatch) return false;
+      }
+
+      return true;
+    });
+
+    renderLabs(filtered);
+  }
+
+  function renderLabs(list = allLabs) {
+    const grid = document.getElementById('labs-grid');
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="col-span-full pf-empty-state py-12">
+          <div class="pf-empty-icon">🔍</div>
+          <div class="pf-empty-title">No labs or summits matched your criteria</div>
+          <div class="pf-empty-desc">Try clearing specific keywords or selecting 'All Locations'.</div>
+          <button onclick="document.getElementById('lab-work').value=''; document.getElementById('lab-location').value='All'; setType('All');" class="pf-btn pf-btn-primary pf-btn-sm">Reset Filters</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = list.map(item => {
+      const matchBadge = item.match_reason ? `
+        <div class="pf-badge pf-badge-sky mb-2" style="font-size: 10px;">
+          🎯 ${item.match_reason}
+        </div>
+      ` : '';
+
+      return `
+      <div class="pf-card pf-card-interactive p-5 flex flex-col justify-between">
+        <div>
+          ${matchBadge}
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <span class="pf-badge" style="font-size: 10px;">
+              ${item.type}
+            </span>
+            <span class="pf-badge pf-badge-sky font-mono font-medium" style="font-size: 11px;">
+              📍 ${item.location}
+            </span>
+          </div>
+
+          <h3 class="text-base font-bold tracking-tight" style="color: var(--pf-text-primary);">
+            ${item.name}
+          </h3>
+          <span class="text-xs font-semibold block mt-0.5 mb-2" style="color: var(--pf-text-muted);">
+            ${item.organization}
+          </span>
+
+          <p class="text-xs leading-relaxed mb-3" style="color: var(--pf-text-secondary);">
+            ${item.description}
+          </p>
+
+          <div class="space-y-1.5 text-xs p-3 rounded-lg border mb-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+            <div class="flex items-center gap-2">
+              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">⏳ Cycle:</span>
+              <span style="color: var(--pf-text-secondary);">${item.cycle}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">💎 Support:</span>
+              <span class="font-semibold" style="color: var(--pf-engine-lab);">${item.compensation}</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">🎯 Ideal Profile:</span>
+              <span style="color: var(--pf-text-secondary);">${item.target_profile}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-wrap mb-4">
+            ${(item.tags || []).map(t => `<span class="pf-badge" style="font-size: 9px;">${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="pt-3 border-t flex items-center justify-between gap-2 flex-wrap" style="border-color: var(--pf-border-subtle);">
+          <a href="${item.url}" target="_blank" class="pf-btn pf-btn-secondary pf-btn-sm">
+            Portal →
+          </a>
+          <a href="/agent?apply_mode=internship&title=${encodeURIComponent(item.name)}&org=${encodeURIComponent(item.organization)}&autogen=true" class="pf-btn pf-btn-primary pf-btn-sm">
+            🧠 Apply with Co-Pilot
+          </a>
+        </div>
+      </div>
+      `;
+    }).join('');
+  }
+
+  function generateDefaultLabs() {
+    return [
+      { id: "lab-1", name: "Research Scientist Intern (PhD)", organization: "Google DeepMind", type: "Research Lab Internship", location: "London, Mountain View, Paris", cycle: "Summer & Fall 2026", compensation: "$9,500 - $12,000 / month + Relocation", target_profile: "PhD students publishing in NeurIPS, ICML, ICLR", description: "Collaborate with senior researchers on frontier models, reasoning, and multimodal agents.", tags: ["DeepMind", "LLMs", "Reasoning"], url: "https://deepmind.google/about/careers/" },
+      { id: "lab-2", name: "AI Research Intern (FAIR)", organization: "Meta Fundamental AI Research", type: "Research Lab Internship", location: "Menlo Park, New York, Zurich", cycle: "Year-Round (Rolling)", compensation: "$9,000 - $11,500 / month", target_profile: "Doctoral candidates working on open-source foundation models and vision.", description: "Conduct open scientific research aiming for top-tier conference publication.", tags: ["FAIR", "Vision", "OpenSource"], url: "https://www.metacareers.com/areas-of-work/research/" },
+      { id: "lab-3", name: "AWS Summit & Academic Research Forum", organization: "Amazon Web Services", type: "Global Tech Summit", location: "New York, London, Tokyo", cycle: "Spring & Summer 2026", compensation: "Student Pass & Cloud Credits ($5,000)", target_profile: "PhD researchers building distributed systems, training clusters, and AI infra.", description: "Premier cloud architecture summit connecting academic builders with infrastructure engineers.", tags: ["AWS", "Systems", "Cloud"], url: "https://aws.amazon.com/events/summits/" }
+    ];
+  }
+
+  async function searchLiveLabs() {
+    const btn = document.getElementById('match-labs-btn');
+    const work = document.getElementById('lab-work').value.trim();
+    const loc = document.getElementById('lab-location').value;
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳ Searching Industry Portals...</span>`;
+    }
+
+    try {
+      const res = await fetch('/api/labs/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: work || 'AI Research Scientist Internship', location: loc, limit: 12 })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+          allLabs = data.results;
+          filterLabs();
+          if (window.ProfFebUI) ProfFebUI.toast({ title: "Live Matches Found", message: `Matched ${data.results.length} lab positions.`, type: "success" });
+          return;
+        }
+      }
+      throw new Error();
+    } catch (e) {
+      filterLabs();
+      if (window.ProfFebUI) ProfFebUI.toast({ title: "Filters Applied", message: "Showing matched lab opportunities.", type: "info" });
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀 Match Labs With Live AI Scout</span>`;
+      }
+    }
+  }
+
+  function clearProfFebCache() {
+    loadLabs();
+  }
+
+  document.addEventListener('DOMContentLoaded', loadLabs);
+</script>
+
+</body>
+</html>

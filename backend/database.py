@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
-_ROOT = Path(__file__).resolve().parent.parent
+_CURRENT = Path(__file__).resolve().parent
+_ROOT = _CURRENT if (_CURRENT / "data").exists() else _CURRENT.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 

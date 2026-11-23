@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfFeb — The Autonomous Academic Operating System & Neural Workstation</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <!-- Design System Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
+
+  <!-- Tailwind CSS CDN for utility layering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#10b981', 600: '#059669' },
+            scout: { 500: '#6366f1' },
+            radar: { 500: '#8b5cf6' },
+            reviewer: { 500: '#f43f5e' },
+            grants: { 500: '#0d9488' },
+            lab: { 500: '#0ea5e9' },
+            copilot: { 500: '#06b6d4' }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase Auth SDK & ProfFeb Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
+
+  <style>
+    /* Animated Data Flow Diagram Particles */
+    @keyframes particleFlow {
+      0% { stroke-dashoffset: 100; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .data-flow-line {
+      stroke-dasharray: 6 8;
+      animation: particleFlow 2.4s linear infinite;
+    }
+
+    /* Ambient dynamic glow */
+    .hero-glow {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 75%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col relative antialiased selection:bg-emerald-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+
+  <!-- Ambient Top Aura -->
+  <div class="hero-glow"></div>
+
+  <!-- ================= TOP ENTERPRISE HEADER ================= -->
+  <header class="pf-top-bar h-16 border-b z-40 sticky top-0" style="background-color: var(--pf-bg-glass); border-color: var(--pf-border-subtle);">
+    <div class="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
+      
+      <!-- Brand & Version -->
+      <a href="/" class="flex items-center gap-3 shrink-0 group text-decoration-none">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm text-white shadow-sm" style="background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);">
+          P
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base tracking-tight" style="color: var(--pf-text-primary);">ProfFeb</span>
+            <span class="pf-badge pf-badge-emerald" style="font-family: var(--pf-font-mono); font-size: 10px;">OS 2.0</span>
+          </div>
+          <p class="text-[10px] hidden md:block" style="color: var(--pf-text-muted);">Autonomous Academic Operating System</p>
+        </div>
+      </a>
+
+      <!-- Center Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-1">
+        <a href="/app" class="pf-btn pf-btn-ghost text-xs">Research Studio</a>
+        <a href="/conferences" class="pf-btn pf-btn-ghost text-xs">Conference Scout</a>
+        <a href="/radar" class="pf-btn pf-btn-ghost text-xs">Novelty Radar</a>
+        <a href="/reviewer" class="pf-btn pf-btn-ghost text-xs">Reviewer #2</a>
+        <a href="/grants" class="pf-btn pf-btn-ghost text-xs">Funding</a>
+        <a href="/lab-connector" class="pf-btn pf-btn-ghost text-xs">Lab Connector</a>
+        <a href="/agent" class="pf-btn pf-btn-ghost text-xs">Co-Pilot</a>
+        <a href="#system-map" class="pf-btn pf-btn-ghost text-xs" style="color: var(--pf-primary);">System Map</a>
+      </nav>
+
+      <!-- Right CTAs & Tools -->
+      <div class="flex items-center gap-2">
+        <!-- Quick Command Palette Pill -->
+        <button type="button" class="pf-btn pf-btn-secondary pf-btn-sm hidden sm:inline-flex" onclick="ProfFebUI.commandPalette.open()" title="Open Command Palette (Cmd+K)">
+          <span>⌘K</span>
+          <span style="color: var(--pf-text-muted);">Search</span>
+        </button>
+
+        <!-- Theme Switcher -->
+        <button type="button" class="pf-btn pf-btn-secondary pf-btn-icon pf-btn-sm" onclick="ProfFebUI.theme.toggle()" title="Toggle Light / Dark Mode">
+          <span class="pf-theme-toggle-icon">🌓</span>
+        </button>
+
+        <!-- Auth Pill / Launch CTA -->
+        <div id="auth-header-container" class="flex items-center gap-2">
+          <a href="/app" class="pf-btn pf-btn-primary pf-btn-sm">
+            <span>Launch Studio</span>
+            <span>→</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10 flex flex-col gap-16">
+
+    <!-- HERO SECTION -->
+    <section class="text-center max-w-4xl mx-auto pt-6 pb-2 flex flex-col items-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 border" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-default);">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-semibold" style="color: var(--pf-text-secondary);">Enterprise Research Grade • Zlib Audio Caching Enabled</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6" style="color: var(--pf-text-primary);">
+        The Spoken Research OS for <br class="hidden sm:inline" />
+        <span style="background: linear-gradient(135deg, #10b981 0%, #6366f1 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Autonomous Scholars</span>
+      </h1>
+
+      <p class="text-base sm:text-lg max-w-2xl mb-8 leading-relaxed font-serif" style="color: var(--pf-text-secondary);">
+        ProfFeb translates complex academic manuscripts into spoken neural audio briefings, KaTeX mathematical deconstructions, adversarial peer reviews, and autonomous funding dossiers.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="/app" class="pf-btn pf-btn-primary pf-btn-lg shadow-md">
+          <span>Open Research Studio</span>
+          <span>→</span>
+        </a>
+        <a href="#system-map" class="pf-btn pf-btn-secondary pf-btn-lg">
+          <span>Explore Interactive System Map</span>
+        </a>
+      </div>
+
+      <!-- Live Telemetry Status Bar -->
+      <div id="telemetry-bar" class="w-full mt-12 p-4 rounded-xl border grid grid-cols-2 md:grid-cols-4 gap-4 text-left" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+        <div>
+          <div class="text-[11px] font-mono uppercase" style="color: var(--pf-text-muted);">System Health</div>
+          <div class="text-sm font-bold flex items-center gap-1.5 mt-0.5" style="color: var(--pf-success);">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span id="stat-health">100% Operational</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono uppercase" style="color: var(--pf-text-muted);">Database Cache</div>
+          <div class="text-sm font-bold mt-0.5" id="stat-db" style="color: var(--pf-text-primary);">SQLite / zlib active</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono uppercase" style="color: var(--pf-text-muted);">Neural Voice Engine</div>
+          <div class="text-sm font-bold mt-0.5" id="stat-tts" style="color: var(--pf-text-primary);">Edge-TTS (18 Voices)</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono uppercase" style="color: var(--pf-text-muted);">Ingested Papers</div>
+          <div class="text-sm font-bold mt-0.5" id="stat-papers" style="color: var(--pf-text-primary);">Syncing...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE SYSTEM MAP SECTION -->
+    <section id="system-map" class="pt-4 scroll-mt-24">
+      <div class="text-center mb-8">
+        <span class="pf-badge pf-badge-emerald mb-2">Architectural Blueprint</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight" style="color: var(--pf-text-primary);">How The 7 Engines Connect & Flow</h2>
+        <p class="text-xs sm:text-sm max-w-xl mx-auto mt-2" style="color: var(--pf-text-muted);">
+          Every paper ingested into ProfFeb flows autonomously across our multimodal research pipeline. Click any engine node to jump directly into its workspace.
+        </p>
+      </div>
+
+      <!-- Visual Map Container -->
+      <div class="w-full p-6 sm:p-8 rounded-2xl border relative overflow-hidden" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-default);">
+        
+        <!-- SVG Connections & Data Flow Lines -->
+        <div class="relative w-full max-w-5xl mx-auto">
+          <svg class="w-full h-48 sm:h-64 pointer-events-none hidden md:block" viewBox="0 0 1000 240" fill="none">
+            <!-- Connection from Input to Center Studio -->
+            <path d="M 120 120 L 320 120" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 120 120 L 320 120" stroke="var(--pf-primary)" stroke-width="2" class="data-flow-line" />
+
+            <!-- Hub Branches from Studio to Analysis, Review, Radar -->
+            <path d="M 440 120 C 500 120, 520 50, 600 50" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 440 120 C 500 120, 520 50, 600 50" stroke="var(--pf-engine-radar)" stroke-width="2" class="data-flow-line" />
+
+            <path d="M 440 120 L 600 120" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 440 120 L 600 120" stroke="var(--pf-engine-reviewer)" stroke-width="2" class="data-flow-line" />
+
+            <path d="M 440 120 C 500 120, 520 190, 600 190" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 440 120 C 500 120, 520 190, 600 190" stroke="var(--pf-engine-scout)" stroke-width="2" class="data-flow-line" />
+
+            <!-- Aggregation to Co-Pilot -->
+            <path d="M 720 50 C 800 50, 820 120, 880 120" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 720 120 L 880 120" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 720 190 C 800 190, 820 120, 880 120" stroke="var(--pf-border-default)" stroke-width="2" />
+            <path d="M 720 120 L 880 120" stroke="var(--pf-engine-copilot)" stroke-width="2.5" class="data-flow-line" />
+          </svg>
+
+          <!-- Interactive Node Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            
+            <!-- Node: Ingestion & Studio -->
+            <a href="/app" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-studio);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-emerald">Engine 01</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Step 1</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Research Studio</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">PDF parsing, Edge-TTS audio briefings, KaTeX phonetics & figure sync.</p>
+              <div class="mt-3 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-studio);">
+                <span>Launch Studio</span> →
+              </div>
+            </a>
+
+            <!-- Node: Novelty Radar -->
+            <a href="/radar" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-radar);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-violet">Engine 03</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Benchmark</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Novelty Radar</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">Prior-art literature scans, SOTA gap matrix, and 6-month research roadmap.</p>
+              <div class="mt-3 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-radar);">
+                <span>Scan Novelty</span> →
+              </div>
+            </a>
+
+            <!-- Node: Reviewer Simulator -->
+            <a href="/reviewer" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-reviewer);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-rose">Engine 04</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Stress-Test</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Reviewer #2 Simulator</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">Program Committee rubrics, copy-paste fixes, and rebuttal coach.</p>
+              <div class="mt-3 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-reviewer);">
+                <span>Simulate Peer Review</span> →
+              </div>
+            </a>
+
+            <!-- Node: Academic Co-Pilot -->
+            <a href="/agent" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-copilot);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-cyan">Engine 07</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Autopilot</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Academic Co-Pilot</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">Autonomous application dossiers, human-in-the-loop review, and GitHub logs.</p>
+              <div class="mt-3 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-copilot);">
+                <span>Run Co-Pilot</span> →
+              </div>
+            </a>
+
+          </div>
+
+          <!-- Secondary Pipeline Nodes -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+            
+            <!-- Node: Conference Scout -->
+            <a href="/conferences" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-scout);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-indigo">Engine 02</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Venues</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Conference Scout</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">CORE A* conference database, live deadline countdowns, and watchlist drawer.</p>
+              <div class="mt-2 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-scout);">
+                <span>Scout Conferences</span> →
+              </div>
+            </a>
+
+            <!-- Node: Funding Radar -->
+            <a href="/grants" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-grants);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-emerald">Engine 05</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Funding</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Funding Radar</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">$35k–$50k fellowships and doctoral travel grant matching with deadline filters.</p>
+              <div class="mt-2 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-grants);">
+                <span>Match Grants</span> →
+              </div>
+            </a>
+
+            <!-- Node: Lab Connector -->
+            <a href="/lab-connector" class="pf-card pf-card-interactive p-4 block text-decoration-none border-l-4" style="border-left-color: var(--pf-engine-lab);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge pf-badge-sky">Engine 06</span>
+                <span class="text-xs font-mono" style="color: var(--pf-text-muted);">Industry</span>
+              </div>
+              <div class="font-bold text-sm" style="color: var(--pf-text-primary);">Lab Connector</div>
+              <p class="text-xs mt-1" style="color: var(--pf-text-secondary);">Industry research scientist internships ($8k–$12k/mo) and major academic summits.</p>
+              <div class="mt-2 text-xs font-semibold flex items-center gap-1" style="color: var(--pf-engine-lab);">
+                <span>Connect Labs</span> →
+              </div>
+            </a>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-STEP "HOW IT WORKS" WORKFLOW -->
+    <section class="py-4">
+      <div class="text-center mb-10">
+        <span class="pf-badge pf-badge-emerald mb-2">Process Lifecycle</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight" style="color: var(--pf-text-primary);">From PDF to Disseminated Impact</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="p-5 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div>
+            <div class="font-mono text-2xl font-black mb-3" style="color: var(--pf-primary);">01</div>
+            <h3 class="font-bold text-sm mb-2" style="color: var(--pf-text-primary);">Ingest & Deconstruct</h3>
+            <p class="text-xs leading-relaxed" style="color: var(--pf-text-muted);">
+              PyMuPDF and Gemini extract complex formulas into KaTeX, isolate architecture figures, and structure chapters.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t text-[11px] font-mono" style="border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">
+            Input: PDF / Zotero
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div>
+            <div class="font-mono text-2xl font-black mb-3" style="color: var(--pf-engine-scout);">02</div>
+            <h3 class="font-bold text-sm mb-2" style="color: var(--pf-text-primary);">Neural Spoken Synthesis</h3>
+            <p class="text-xs leading-relaxed" style="color: var(--pf-text-muted);">
+              Edge-TTS generates verbatim audio or senior 4-part briefings with paragraph karaoke highlighting.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t text-[11px] font-mono" style="border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">
+            Voice: 18 Global Accents
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div>
+            <div class="font-mono text-2xl font-black mb-3" style="color: var(--pf-engine-reviewer);">03</div>
+            <h3 class="font-bold text-sm mb-2" style="color: var(--pf-text-primary);">Adversarial Stress Test</h3>
+            <p class="text-xs leading-relaxed" style="color: var(--pf-text-muted);">
+              Reviewer #2 benchmarks methodological rigor, novelty gaps, and provides copy-paste manuscript improvements.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t text-[11px] font-mono" style="border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">
+            Output: PC Scorecard
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div>
+            <div class="font-mono text-2xl font-black mb-3" style="color: var(--pf-engine-copilot);">04</div>
+            <h3 class="font-bold text-sm mb-2" style="color: var(--pf-text-primary);">Autonomous Submission</h3>
+            <p class="text-xs leading-relaxed" style="color: var(--pf-text-muted);">
+              Academic Co-Pilot prepares your applicant dossier, matches A* conference deadlines, and files GitHub tracker issues.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t text-[11px] font-mono" style="border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">
+            Result: Camera-Ready
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT PAPERS & QUICK ACTIONS FOR RETURNING SCHOLARS -->
+    <section class="p-6 rounded-2xl border" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="font-bold text-base" style="color: var(--pf-text-primary);">Recent Research Papers</h3>
+          <p class="text-xs" style="color: var(--pf-text-muted);">Persisted in database with zero-recomputation audio caching</p>
+        </div>
+        <a href="/app" class="pf-btn pf-btn-secondary pf-btn-sm">
+          <span>Open Full Library</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div id="home-recent-papers" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <!-- Injected dynamically via JS -->
+        <div class="pf-skeleton h-24"></div>
+        <div class="pf-skeleton h-24"></div>
+        <div class="pf-skeleton h-24"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t py-8 mt-12" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs" style="color: var(--pf-text-muted);">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs text-white" style="background-color: var(--pf-primary);">P</div>
+        <span class="font-bold" style="color: var(--pf-text-primary);">ProfFeb Enterprise</span>
+        <span>• The Autonomous Research OS</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="/app" class="hover:underline">Research Studio</a>
+        <a href="/conferences" class="hover:underline">Conference Scout</a>
+        <a href="/radar" class="hover:underline">Novelty Radar</a>
+        <a href="/reviewer" class="hover:underline">Reviewer #2</a>
+        <a href="/grants" class="hover:underline">Grants</a>
+        <a href="/lab-connector" class="hover:underline">Lab Connector</a>
+        <a href="/agent" class="hover:underline">Co-Pilot</a>
+        <button type="button" class="hover:underline font-mono" onclick="clearProfFebCache()">Clear Audio Cache</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT FOR TELEMETRY AND RECENT PAPERS -->
+  <script>
+    async function loadHomeTelemetry() {
+      try {
+        const [healthRes, papersRes] = await Promise.allSettled([
+          fetch('/api/health'),
+          fetch('/api/papers')
+        ]);
+
+        if (healthRes.status === 'fulfilled' && healthRes.value.ok) {
+          const health = await healthRes.value.json();
+          const dbEl = document.getElementById('stat-db');
+          if (dbEl && health.database) {
+            dbEl.textContent = health.database === 'connected' ? 'SQLite (zlib cache active)' : health.database;
+          }
+        }
+
+        const container = document.getElementById('home-recent-papers');
+        const papersStat = document.getElementById('stat-papers');
+
+        if (papersRes.status === 'fulfilled' && papersRes.value.ok) {
+          const papers = await papersRes.value.json();
+          if (papersStat) {
+            papersStat.textContent = `${papers.length} Papers Synced`;
+          }
+
+          if (container) {
+            if (!papers || papers.length === 0) {
+              container.innerHTML = `
+                <div class="col-span-full pf-empty-state py-8">
+                  <div class="pf-empty-icon">📄</div>
+                  <div class="pf-empty-title">No papers ingested yet</div>
+                  <div class="pf-empty-desc">Upload your first research manuscript in the Research Studio to start spoken synthesis.</div>
+                  <a href="/app" class="pf-btn pf-btn-primary pf-btn-sm">Ingest First Paper</a>
+                </div>
+              `;
+            } else {
+              container.innerHTML = papers.slice(0, 6).map(p => `
+                <a href="/app" class="pf-card pf-card-interactive p-3 block text-decoration-none">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="pf-badge pf-badge-emerald" style="font-size: 9px;">${p.status || 'Ready'}</span>
+                    <span class="text-[10px] font-mono" style="color: var(--pf-text-muted);">${(p.full_audio_duration || p.summary_audio_duration) ? '🎵 Audio Cached' : '📄 PDF Ingested'}</span>
+                  </div>
+                  <div class="font-bold text-xs truncate" style="color: var(--pf-text-primary);" title="${p.title || 'Untitled Manuscript'}">${p.title || 'Untitled Manuscript'}</div>
+                  <div class="text-[11px] truncate mt-0.5" style="color: var(--pf-text-muted);">${p.author || 'Author not indexed'}</div>
+                </a>
+              `).join('');
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Telemetry load notice:', err);
+      }
+    }
+
+    function clearProfFebCache() {
+      if (confirm("Reset and clear local audio cache? Persisted database records will remain safe.")) {
+        localStorage.removeItem('proffeb_audio_cache');
+        if (window.ProfFebUI) {
+          ProfFebUI.toast({
+            title: "Cache Cleared",
+            message: "Local memory cache was cleared successfully.",
+            type: "success"
+          });
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadHomeTelemetry);
+  </script>
+
+</body>
+</html>

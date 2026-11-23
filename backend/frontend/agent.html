@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfFeb — Autonomous Academic Co-Pilot & Profile Studio (Engine 07)</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ProfFeb Unified Design System -->
+  <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
+
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+  <script src="/static/js/proffeb-ui.js" defer></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+
+  <!-- KaTeX for Scientific Formula Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            cyan: {
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+            },
+            purple: {
+              400: '#c084fc',
+              500: '#a855f7',
+              600: '#9333ea',
+              700: '#7e22ce',
+            },
+            dark: {
+              950: '#070a13',
+              900: '#0d1322',
+              850: '#11192d',
+              800: '#17223c',
+              750: '#1d2c4e',
+              700: '#253761',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Premium scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a13; }
+    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+
+    /* Subtle grid background */
+    .bg-saas-grid {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* Glass card styling */
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-panel:hover {
+      border-color: rgba(6, 182, 212, 0.35);
+    }
+
+    /* Twin prose formatting for tables, headers, and code */
+    .twin-prose {
+      line-height: 1.65;
+    }
+    .twin-prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0;
+      font-size: 0.75rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .twin-prose th, .twin-prose td {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.45rem 0.65rem;
+      text-align: left;
+    }
+    .twin-prose th {
+      background: rgba(6, 182, 212, 0.12);
+      font-weight: 700;
+      color: #22d3ee;
+    }
+    .twin-prose tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .twin-prose h3 {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 0.85rem;
+      margin-bottom: 0.35rem;
+      color: #ffffff;
+    }
+    .twin-prose h4 {
+      font-weight: 600;
+      font-size: 0.82rem;
+      margin-top: 0.65rem;
+      margin-bottom: 0.25rem;
+      color: #cbd5e1;
+    }
+    .twin-prose ul {
+      list-style-type: disc;
+      margin-left: 1.25rem;
+      margin-top: 0.35rem;
+      margin-bottom: 0.35rem;
+    }
+    .twin-prose ol {
+      list-style-type: decimal;
+      margin-left: 1.25rem;
+      margin-top: 0.35rem;
+      margin-bottom: 0.35rem;
+    }
+    .twin-prose li {
+      margin-bottom: 0.2rem;
+    }
+    .twin-prose blockquote {
+      border-left: 3px solid #06b6d4;
+      padding-left: 0.75rem;
+      margin: 0.5rem 0;
+      color: #94a3b8;
+      background: rgba(6, 182, 212, 0.05);
+      border-radius: 0 0.4rem 0.4rem 0;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+    .twin-prose code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      color: #38bdf8;
+    }
+    .twin-prose pre {
+      margin: 0.65rem 0;
+      background: #070a13;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .twin-prose pre code {
+      background: transparent;
+      padding: 0;
+      color: #e2e8f0;
+      display: block;
+    }
+    .twin-prose .katex-display {
+      margin: 0.65rem 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-cyan-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+
+<div class="pf-app-container">
+  
+  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <aside id="pf-app-sidebar" class="pf-sidebar">
+    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
+      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0891b2, #22d3ee); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
+        <div class="pf-brand-text">
+          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
+          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">COPILOT • E07</div>
+        </div>
+      </a>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
+        ◀
+      </button>
+    </div>
+
+    <!-- Navigation items (7 Engines + Overview) -->
+    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+      <a href="/" class="pf-nav-item">
+        <span>⊞</span>
+        <span class="pf-nav-label">Overview</span>
+      </a>
+      <a href="/app" class="pf-nav-item">
+        <span style="color: var(--pf-engine-studio);">🎙️</span>
+        <span class="pf-nav-label">Research Studio</span>
+      </a>
+      <a href="/conferences" class="pf-nav-item">
+        <span style="color: var(--pf-engine-scout);">🌐</span>
+        <span class="pf-nav-label">Conference Scout</span>
+      </a>
+      <a href="/radar" class="pf-nav-item">
+        <span style="color: var(--pf-engine-radar);">🔬</span>
+        <span class="pf-nav-label">Novelty Radar</span>
+      </a>
+      <a href="/reviewer" class="pf-nav-item">
+        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
+        <span class="pf-nav-label">Reviewer #2</span>
+      </a>
+      <a href="/grants" class="pf-nav-item">
+        <span style="color: var(--pf-engine-grants);">💰</span>
+        <span class="pf-nav-label">Funding Radar</span>
+      </a>
+      <a href="/lab-connector" class="pf-nav-item">
+        <span style="color: var(--pf-engine-lab);">🏢</span>
+        <span class="pf-nav-label">Lab Connector</span>
+      </a>
+      <a href="/agent" class="pf-nav-item pf-nav-active">
+        <span style="color: var(--pf-engine-copilot);">🧠</span>
+        <span class="pf-nav-label">Academic Co-Pilot</span>
+      </a>
+    </nav>
+
+    <!-- Bottom utility items -->
+    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
+        <span class="pf-theme-toggle-icon">🌓</span>
+        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
+        <span>⌘K</span>
+        <span class="pf-nav-label">Command Palette</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN STAGE ================= -->
+  <div class="pf-main-stage">
+    
+    <!-- TOP HEADER -->
+    <header class="pf-top-bar">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
+        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
+          <span style="color: var(--pf-border-strong);">/</span>
+          <span style="font-weight: 600; color: var(--pf-engine-copilot);">Academic Co-Pilot</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
+          🔄
+        </button>
+        <div id="user-nav-container"></div>
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Hero Persona Header -->
+    <div class="p-6 sm:p-8 rounded-3xl glass-panel shadow-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-2 flex-wrap mb-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-xs font-mono font-bold text-cyan-300">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>AUTONOMOUS ACADEMIC CO-PILOT</span>
+          </span>
+          <span class="text-xs text-slate-400 font-mono">Multi-Tenant Scholar Brain & Connected Repositories</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-white">
+          ProfFeb <span class="bg-gradient-to-r from-cyan-400 via-indigo-300 to-brand-400 bg-clip-text text-transparent">Academic Co-Pilot Studio</span>
+        </h1>
+        <p class="mt-2.5 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+          Your personal AI academic mentor operating with publication mastery. Autonomous human-in-the-loop pipeline: pre-fills grant and fellowship applications, presents them for your review, and logs dossiers directly to your connected GitHub repository upon your <strong>"Proceed"</strong> command.
+        </p>
+      </div>
+
+      <!-- Sync Status & GitHub Connector Control Box -->
+      <div class="shrink-0 p-4 rounded-2xl bg-dark-850/90 border border-white/[0.08] flex flex-col gap-2.5 sm:min-w-[280px]">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-400">Scholar Profile:</span>
+          <span class="text-brand-400 font-bold font-mono">Active Session</span>
+        </div>
+        <div class="text-[11px] text-slate-300 font-mono truncate flex items-center justify-between">
+          <span>🔗 Multi-Tenant Cloud</span>
+          <span class="text-slate-500">Supabase Auth</span>
+        </div>
+        <div class="flex items-center justify-between text-xs pt-1 border-t border-white/[0.06]">
+          <span class="text-slate-400">GitHub Pipeline:</span>
+          <span id="gh-status-badge" class="font-mono font-bold text-xs text-cyan-300 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Checking...
+          </span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button 
+            type="button" 
+            id="sync-btn"
+            onclick="syncPortfolio()"
+            class="px-2.5 py-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-white font-bold text-[11px] border border-white/[0.08] transition flex items-center justify-center gap-1"
+          >
+            <span>🔄 Re-Sync</span>
+          </button>
+          <button 
+            type="button" 
+            id="open-gh-modal-btn"
+            onclick="openGitHubModal()"
+            class="px-2.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-[11px] shadow-sm transition flex items-center justify-center gap-1"
+          >
+            <span>🔑 GitHub PAT</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Studio Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/[0.08] mb-8" id="studio-tabs">
+      <button onclick="switchTab('apply')" id="tab-btn-apply" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/25" data-tab="apply">
+        <span>📝 Apply On My Behalf</span>
+      </button>
+      <button onclick="switchTab('history')" id="tab-btn-history" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="history">
+        <span>📜 Dispatch Audit Log</span>
+      </button>
+      <button onclick="switchTab('suggestions')" id="tab-btn-suggestions" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="suggestions">
+        <span>🎯 Strategic Advisory</span>
+      </button>
+      <button onclick="switchTab('brain')" id="tab-btn-brain" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="brain">
+        <span>🧠 Knowledge Brain & Repos</span>
+      </button>
+      <button onclick="switchTab('chat')" id="tab-btn-chat" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="chat">
+        <span>💬 Talk to Your Co-Pilot</span>
+      </button>
+    </div>
+
+    <!-- ================= PANEL 1: APPLY ON MY BEHALF ================= -->
+    <div id="panel-apply" class="studio-panel space-y-6">
+      
+      <!-- Selection Card -->
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white">Autonomous Application & Pre-Fill Engine</h3>
+            <p class="text-xs text-slate-400">Your Co-Pilot compiles the entire application package, enters your verified data, and prepares it for your <strong>"Check & Proceed"</strong> review.</p>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="setApplyMode('grant')" id="mode-grant-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-brand-500/20 text-brand-300 border border-brand-500/30">
+              💰 Grants & Fellowships
+            </button>
+            <button type="button" onclick="setApplyMode('lab')" id="mode-lab-btn" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition text-slate-400 hover:bg-dark-850">
+              🚀 Industry Labs & Summits
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Opportunity Form -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              Target Opportunity Title or Scheme
+            </label>
+            <input 
+              type="text" 
+              id="target-opp-title"
+              placeholder="e.g. Google PhD Fellowship, SIGCOMM Travel Grant, DeepMind Internship..."
+              class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm font-medium"
+            >
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              Quick Select Preset Opportunity
+            </label>
+            <select 
+              id="opp-preset-select" 
+              onchange="onPresetSelect(this.value)"
+              class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm font-medium"
+            >
+              <!-- Filled dynamically via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span class="w-2 h-2 rounded-full bg-brand-400"></span>
+            <span>Pre-fills: Verified Scholar Profile • Research Focus • Publications & Dossiers</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              id="prepare-app-btn"
+              onclick="prepareAndReviewApplication()"
+              class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 via-indigo-600 to-brand-600 hover:from-cyan-500 hover:to-brand-500 text-white font-bold text-sm shadow-lg shadow-cyan-600/25 flex items-center gap-2 transition active:scale-95"
+            >
+              <span>⚡ Autonomous Pre-Fill & Review ("Check & Proceed")</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CHECK & PROCEED REVIEW CONSOLE ================= -->
+      <div id="check-proceed-container" class="space-y-6 hidden">
+        
+        <!-- Human-in-the-Loop Review Banner -->
+        <div class="p-6 rounded-3xl bg-gradient-to-r from-cyan-950 via-dark-900 to-dark-900 text-white border border-cyan-500/30 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-mono text-[10px] font-bold">
+                HUMAN-IN-THE-LOOP CHECKPOINT
+              </span>
+              <span class="text-xs text-slate-300 font-mono">Status: Pre-Filled & Ready</span>
+            </div>
+            <h3 class="text-xl font-extrabold text-white">Review & Check Pre-Filled Application</h3>
+            <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+              Your Co-Pilot has completed and entered your information across all application fields. Review or adjust any text below. When satisfied, click <strong>"Check & Proceed"</strong> to log to GitHub and dispatch.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="copyBookmarkletScript(this)"
+              class="px-4 py-2.5 rounded-xl bg-cyan-700/80 hover:bg-cyan-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-cyan-500"
+              title="Copy JavaScript Bookmarklet to auto-fill online forms with 1-click in your browser"
+            >
+              <span>📋 Copy 1-Click Form Auto-Fill</span>
+            </button>
+            <button 
+              type="button" 
+              onclick="copyCheckProceedJson(this)"
+              class="px-4 py-2.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-white/[0.08]"
+            >
+              <span>📋 Copy JSON</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Pre-Filled Interactive Form Card -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+            <h4 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+              <span>👤</span> Applicant Dossier & Pre-Entered Information
+            </h4>
+            <span class="text-xs text-brand-400 font-semibold font-mono">Editable Scholar Dossier</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Full Legal Name</label>
+              <input type="text" id="cp-name" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Email</label>
+              <input type="email" id="cp-email" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Contact Phone</label>
+              <input type="text" id="cp-phone" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Affiliation / Title</label>
+              <input type="text" id="cp-org" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Locations / Citizenship</label>
+              <input type="text" id="cp-location" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Portfolio Website</label>
+              <input type="url" id="cp-portfolio" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">GitHub Profile</label>
+              <input type="url" id="cp-github" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-white text-xs font-medium focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Target Scheme / Opp</label>
+              <input type="text" id="cp-target-title" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-cyan-300 text-xs font-bold focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Requested Funding / Award</label>
+              <input type="text" id="cp-target-award" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-brand-300 text-xs font-bold focus:ring-2 focus:ring-cyan-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Flagship Repositories & Publication Citations</label>
+            <input type="text" id="cp-repos" class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.08] text-slate-300 text-xs font-mono focus:ring-2 focus:ring-cyan-500">
+          </div>
+
+          <!-- Long-form Dossier Sections -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center justify-between">
+                <span>📜 Statement of Purpose / Cover Pitch</span>
+                <button type="button" onclick="copyElementText('cp-sop', this)" class="text-[10px] text-cyan-400 font-bold hover:underline">Copy</button>
+              </label>
+              <textarea id="cp-sop" rows="6" class="w-full px-4 py-3 rounded-2xl bg-dark-850 border border-white/[0.08] text-slate-200 text-xs font-serif leading-relaxed focus:ring-2 focus:ring-cyan-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center justify-between">
+                <span>🔬 Scientific Justification & Lab Alignment</span>
+                <button type="button" onclick="copyElementText('cp-alignment', this)" class="text-[10px] text-cyan-400 font-bold hover:underline">Copy</button>
+              </label>
+              <textarea id="cp-alignment" rows="6" class="w-full px-4 py-3 rounded-2xl bg-dark-850 border border-white/[0.08] text-slate-200 text-xs font-serif leading-relaxed focus:ring-2 focus:ring-cyan-500"></textarea>
+            </div>
+          </div>
+
+          <!-- THE PROCEED BUTTON -->
+          <div class="pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="text-xs text-slate-400">
+              <span class="font-bold text-white">Autonomous Target Repo:</span> <code class="font-mono text-cyan-300 font-semibold">connected repository</code> (or local audit log).
+            </div>
+
+            <button 
+              type="button" 
+              id="proceed-dispatch-btn"
+              onclick="executeProceedDispatch()"
+              class="px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-600 hover:from-brand-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2.5 transition transform active:scale-95"
+            >
+              <span>✅ Check & Proceed (Dispatch Application)</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Application Dossier Results Container -->
+      <div id="app-results-container" class="space-y-6 hidden">
+        
+        <!-- Action Header -->
+        <div class="p-6 rounded-3xl bg-dark-900 border border-white/[0.08] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-cyan-400 block mb-1">Generated by ProfFeb Academic Co-Pilot</span>
+            <h3 id="app-result-title" class="text-xl font-bold text-white">Full Application Dossier</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Written in first-person executive voice citing your verified publications, methodology, and research background.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="copyFullApplicationDossier(this)"
+              class="px-4 py-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-white/[0.08]"
+            >
+              <span>📋 Copy Full Dossier</span>
+            </button>
+            <button 
+              type="button" 
+              onclick="downloadApplicationDossier()"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-brand-600 hover:from-cyan-500 hover:to-brand-500 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5"
+            >
+              <span>⬇️ Download (.md)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Dossier Component Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- 1. Statement of Purpose / Cover Letter -->
+          <div class="p-6 rounded-3xl glass-panel flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                  <span>📜</span> Statement of Purpose / Cover Letter
+                </span>
+                <button type="button" onclick="copyElementText('app-sop-text', this)" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-bold border border-white/[0.08] transition">
+                  📋 Copy
+                </button>
+              </div>
+              <div id="app-sop-text" class="text-xs text-slate-300 font-serif leading-relaxed bg-dark-850/80 p-4 rounded-2xl border border-white/[0.06] whitespace-pre-wrap max-h-72 overflow-y-auto"></div>
+            </div>
+          </div>
+
+          <!-- 2. Research Alignment / Project Pitch -->
+          <div class="p-6 rounded-3xl glass-panel flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                  <span>🔬</span> Scientific Alignment & Project Fit
+                </span>
+                <button type="button" onclick="copyElementText('app-alignment-text', this)" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-bold border border-white/[0.08] transition">
+                  📋 Copy
+                </button>
+              </div>
+              <div id="app-alignment-text" class="text-xs text-slate-300 font-serif leading-relaxed bg-dark-850/80 p-4 rounded-2xl border border-white/[0.06] whitespace-pre-wrap max-h-72 overflow-y-auto"></div>
+            </div>
+          </div>
+
+          <!-- 3. Itemized Budget or Cold Outreach Email -->
+          <div class="p-6 rounded-3xl glass-panel flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span id="app-card3-title" class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                  <span>💰</span> Itemized Budget Justification
+                </span>
+                <button type="button" onclick="copyElementText('app-card3-text', this)" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-bold border border-white/[0.08] transition">
+                  📋 Copy
+                </button>
+              </div>
+              <div id="app-card3-text" class="text-xs text-slate-300 font-mono leading-relaxed bg-dark-850/80 p-4 rounded-2xl border border-white/[0.06] whitespace-pre-wrap max-h-72 overflow-y-auto"></div>
+            </div>
+          </div>
+
+          <!-- 4. CV Highlights / Interview Prep -->
+          <div class="p-6 rounded-3xl glass-panel flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span id="app-card4-title" class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                  <span>🌟</span> Unique Qualifications & CV Highlights
+                </span>
+                <button type="button" onclick="copyElementText('app-card4-text', this)" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-bold border border-white/[0.08] transition">
+                  📋 Copy
+                </button>
+              </div>
+              <div id="app-card4-text" class="text-xs text-slate-300 leading-relaxed bg-dark-850/80 p-4 rounded-2xl border border-white/[0.06] whitespace-pre-wrap max-h-72 overflow-y-auto"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= PANEL 2: DISPATCH AUDIT LOG ================= -->
+    <div id="panel-history" class="studio-panel space-y-6 hidden">
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-[10px] font-mono uppercase text-cyan-400 font-bold">Autonomous Execution History</span>
+          <h3 class="text-lg font-bold text-white mt-0.5">Dispatched Applications & GitHub Logs</h3>
+          <p class="text-xs text-slate-400">Live records of all applications prepared, checked, and dispatched to committees and GitHub issues.</p>
+        </div>
+        <button onclick="loadDispatchHistory()" class="px-3.5 py-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-xs font-bold text-slate-200 border border-white/[0.08] transition flex items-center gap-1.5 self-start sm:self-auto">
+          <span>🔄 Refresh History</span>
+        </button>
+      </div>
+
+      <div id="dispatch-history-list" class="space-y-4">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- ================= PANEL 3: STRATEGIC ADVISORY ================= -->
+    <div id="panel-suggestions" class="studio-panel space-y-6 hidden">
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-mono uppercase text-cyan-400 font-bold">Proactive Doctoral Radar</span>
+          <h3 class="text-lg font-bold text-white mt-0.5">High-Leverage Strategic Moves for Your Research</h3>
+          <p class="text-xs text-slate-400">Calculated by ProfFeb based on your publications, research focus, and upcoming funding windows.</p>
+        </div>
+        <button onclick="loadStrategicSuggestions()" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-xs font-bold text-slate-200 border border-white/[0.08] transition">
+          🔄 Refresh Suggestions
+        </button>
+      </div>
+
+      <div id="suggestions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
+
+    <!-- ================= PANEL 4: KNOWLEDGE BRAIN & REPOSITORIES ================= -->
+    <div id="panel-brain" class="studio-panel space-y-6 hidden">
+      
+      <!-- Profile Header -->
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 via-indigo-600 to-brand-500 text-white font-extrabold text-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+              🎓
+            </div>
+            <div>
+              <h3 id="brain-name" class="text-xl font-bold text-white">Dr. Scholar</h3>
+              <p id="brain-title" class="text-xs text-slate-400 font-medium">PhD Researcher & Scientific Author</p>
+              <div class="flex items-center gap-3 text-xs text-slate-400 mt-1">
+                <span>📍 Global Academic Network</span>
+                <span>•</span>
+                <span id="brain-email">📧 scholar@proffeb.ai</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="ProfFebAuth.openModal('signin')" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-teal-600 hover:from-brand-500 hover:to-teal-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+              <span>👤 Account Profile</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Live GitHub Repositories Ingested -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Repositories Synced with Co-Pilot</h4>
+            <button onclick="loadLiveGitHubRepos()" class="text-xs text-cyan-400 font-bold hover:underline">Refresh Repos</button>
+          </div>
+          <div id="github-repos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl bg-dark-850 border border-white/[0.08]">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-sm text-white">neuro-symbolic-rag</span>
+                <span class="text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-bold">Featured AI</span>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed mb-3">Enterprise AI framework combining stochastic LLM reasoning with deterministic symbolic logic verification and PubMed literature grounding.</p>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-mono bg-dark-900 text-slate-300 px-2 py-0.5 rounded border border-white/[0.06]">Python</span>
+                <span class="text-[10px] font-mono bg-dark-900 text-slate-300 px-2 py-0.5 rounded border border-white/[0.06]">FastAPI</span>
+                <span class="text-[10px] font-mono bg-dark-900 text-slate-300 px-2 py-0.5 rounded border border-white/[0.06]">Knowledge Graphs</span>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-dark-850 border border-white/[0.08]">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-sm text-white">ClawBio-Pipeline</span>
+                <span class="text-[10px] font-mono bg-brand-500/20 text-brand-300 border border-brand-500/30 px-2 py-0.5 rounded font-bold">Multi-Omics</span>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed mb-3">Production multi-omics workflow orchestrator with ClinVar ACMG variant annotation and automated pipeline execution.</p>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-mono bg-dark-900 text-slate-300 px-2 py-0.5 rounded border border-white/[0.06]">Biopython</span>
+                <span class="text-[10px] font-mono bg-dark-900 text-slate-300 px-2 py-0.5 rounded border border-white/[0.06]">ClinVar</span>
+                <span class="text-[10px] font-mono bg-dark-900 text-slate-300 px-2 py-0.5 rounded border border-white/[0.06]">Genomics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom PhD Notes Editor -->
+        <div class="pt-4 border-t border-white/[0.08]">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Active Research Focus & PhD Notes (Feed updates directly to your Co-Pilot)
+          </label>
+          <textarea 
+            id="brain-notes-input" 
+            rows="3" 
+            placeholder="e.g. Currently preparing our multi-omics benchmark for IEEE BIBM, seeking $3,000 conference travel sponsorship..."
+            class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-xs font-medium"
+          ></textarea>
+          <div class="flex justify-end mt-2">
+            <button 
+              type="button" 
+              onclick="saveBrainNotes()" 
+              id="save-notes-btn"
+              class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition shadow-sm"
+            >
+              Save Notes to Co-Pilot
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= PANEL 5: CHAT WITH YOUR CO-PILOT ================= -->
+    <div id="panel-chat" class="studio-panel space-y-4 hidden">
+      <div class="p-4 sm:p-6 rounded-3xl glass-panel shadow-2xl flex flex-col h-[580px]">
+        
+        <!-- Chat Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-white/[0.08] shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-sm font-bold text-cyan-300">
+              ⚡
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">ProfFeb Academic Mentor</h4>
+              <p class="text-[10px] text-slate-400">Autonomous co-pilot with deep research reasoning and literature recall</p>
+            </div>
+          </div>
+          <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-white px-2 py-1 rounded-lg bg-dark-850 border border-white/[0.08] transition">Clear</button>
+        </div>
+
+        <!-- Message History -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1 text-xs">
+          <div class="flex items-start gap-2.5">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-[9px] shrink-0 font-mono">FEB</span>
+            <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] max-w-xl leading-relaxed">
+              Hello scholar! I am your Autonomous Academic Mentor & Co-Pilot. I can assist you with research proposal formulations, fellowship and travel grant applications, peer review rebuttal strategies, and literature synthesis. How can I advance your research agenda today?
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt Suggestions Chips -->
+        <div class="py-2 flex items-center gap-1.5 flex-wrap border-t border-white/[0.06] shrink-0">
+          <button onclick="sendQuickPrompt('What grants should I apply for this month given my research profile?')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white text-[11px] font-medium border border-white/[0.08] transition">
+            💰 What grants should I apply for?
+          </button>
+          <button onclick="sendQuickPrompt('Draft a cold email to the Principal Research Scientist at Google DeepMind pitching my research framework.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white text-[11px] font-medium border border-white/[0.08] transition">
+            🚀 Pitch DeepMind
+          </button>
+          <button onclick="sendQuickPrompt('Write a 200-word research statement connecting my recent findings with foundation models for an IEEE conference travel grant.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white text-[11px] font-medium border border-white/[0.08] transition">
+            📝 Draft Travel Statement
+          </button>
+        </div>
+
+        <!-- Chat Input Form -->
+        <form onsubmit="event.preventDefault(); sendChatMessage();" class="pt-2 flex items-center gap-2 shrink-0">
+          <input 
+            type="text" 
+            id="chat-input"
+            placeholder="Ask your co-pilot to draft letters, evaluate opportunities, or plan your next move..."
+            class="flex-1 px-4 py-2.5 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-xs font-medium"
+          >
+          <button 
+            type="submit" 
+            id="chat-send-btn"
+            class="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-md shadow-cyan-600/20 transition flex items-center gap-1"
+          >
+            <span>Send</span>
+          </button>
+        </form>
+
+      </div>
+    </div>
+
+  </main>
+  </div>
+</div>
+
+  <!-- ================= GITHUB PAT & PRIVILEGES MODAL ================= -->
+  <div id="github-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+    <div class="bg-dark-950 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-white/[0.1] space-y-5 animate-in fade-in duration-200">
+      
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-dark-850 border border-white/[0.1] text-white flex items-center justify-center text-lg font-bold">
+            🐙
+          </div>
+          <div>
+            <h3 class="font-extrabold text-white text-base">GitHub Autonomous Pipeline</h3>
+            <p class="text-xs text-slate-400">Programmatic execution pipeline for research repositories</p>
+          </div>
+        </div>
+        <button onclick="closeGitHubModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 leading-relaxed">
+        <strong>Direct Autonomous Execution:</strong> Enter your GitHub Personal Access Token (PAT) with <code class="bg-dark-900 px-1.5 py-0.5 rounded border border-white/[0.1] text-cyan-200 font-mono">repo</code> scope. This empowers ProfFeb to open tracking issues, log application dossiers, and sync repositories.
+      </div>
+
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+            GitHub Username
+          </label>
+          <input 
+            type="text" 
+            id="gh-username-input" 
+            placeholder="e.g. your-github-handle"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.1] text-white text-xs font-mono font-medium focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+            Target Tracking Repository
+          </label>
+          <input 
+            type="text" 
+            id="gh-repo-input" 
+            value="research-notes"
+            placeholder="e.g. research-notes"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.1] text-white text-xs font-mono font-medium focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+          >
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+              Personal Access Token (PAT)
+            </label>
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=ProfFeb_Academic_Agent" target="_blank" class="text-[11px] text-cyan-400 font-bold hover:underline">
+              Generate Token ↗
+            </a>
+          </div>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="gh-token-input" 
+              placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-white/[0.1] text-white text-xs font-mono focus:ring-2 focus:ring-cyan-500 focus:outline-none pr-10"
+            >
+            <button 
+              type="button" 
+              onclick="toggleTokenVisibility()"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+            >
+              👁️
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="gh-modal-status-box" class="p-3 rounded-xl bg-dark-850 border border-white/[0.08] text-xs font-mono text-slate-300 flex items-center justify-between">
+        <span>Status: Initializing...</span>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/[0.08]">
+        <button 
+          type="button" 
+          onclick="closeGitHubModal()"
+          class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-dark-850 transition"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          id="gh-save-btn"
+          onclick="saveGitHubCredentials()"
+          class="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5"
+        >
+          <span>💾 Connect & Verify</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= DISPATCH SUCCESS & LAUNCHER MODAL ================= -->
+  <div id="dispatch-receipt-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+    <div class="bg-dark-950 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-white/[0.1] space-y-5 animate-in fade-in duration-200">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-brand-500/20 text-brand-300 border border-brand-500/30 flex items-center justify-center text-2xl font-bold">
+          🚀
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 text-[10px] font-mono font-bold border border-brand-500/30">
+            ✅ DISPATCH SUCCESSFUL
+          </div>
+          <h3 class="font-extrabold text-white text-lg mt-0.5">Application Processed & Logged!</h3>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Your Co-Pilot has completed the autonomous execution cycle. The formal application tracking issue and markdown dossier have been dispatched.
+      </p>
+
+      <div class="p-4 rounded-2xl bg-dark-850 border border-white/[0.08] space-y-2.5 text-xs font-mono">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Target Opportunity:</span>
+          <span id="receipt-opp-title" class="font-bold text-white">Google PhD Fellowship</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Tracking Status:</span>
+          <span class="text-brand-400 font-bold">Dispatched / Committee Review</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">GitHub Log:</span>
+          <span id="receipt-github-link" class="text-cyan-400 font-bold underline truncate max-w-[200px]">Audited & Logged</span>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button 
+          type="button" 
+          onclick="copyBookmarkletScript(this)"
+          class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-600/25 transition flex items-center justify-center gap-2"
+        >
+          <span>📋 Copy 1-Click Form Auto-Fill Bookmarklet</span>
+        </button>
+
+        <a 
+          id="receipt-direct-issue-btn"
+          href="#"
+          target="_blank"
+          class="w-full py-2.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-white font-bold text-xs border border-white/[0.08] transition flex items-center justify-center gap-1.5"
+        >
+          <span>🐙 View Tracking Issue on GitHub ↗</span>
+        </a>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-white/[0.08]">
+        <button 
+          type="button" 
+          onclick="closeDispatchReceiptModal()"
+          class="px-5 py-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 font-bold text-xs border border-white/[0.08] transition"
+        >
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="border-t border-white/[0.08] bg-dark-950/80 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-300">ProfFeb</span>
+        <span>— Autonomous Academic Co-Pilot & Profile Studio (Engine 07)</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="text-brand-400 hover:underline font-semibold">Home</a>
+        <a href="/app" class="text-emerald-400 hover:underline font-semibold">Research Studio</a>
+        <a href="/conferences" class="hover:text-slate-300 transition">Conference Scout</a>
+        <a href="/reviewer" class="hover:text-slate-300 transition">Reviewer Simulator</a>
+        <a href="/radar" class="hover:text-slate-300 transition">Novelty Radar</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let activeStudioTab = 'apply';
+    let currentApplyMode = 'grant';
+    let latestDossier = null;
+    let latestPacket = null;
+    let chatHistory = [];
+    let gitHubStatus = null;
+
+    const PRESET_OPPORTUNITIES = {
+      grant: [
+        { title: "Google PhD Fellowship Program", org: "Google Research", award: "$50,000 + Google Research Mentor" },
+        { title: "Microsoft Research PhD Fellowship", org: "Microsoft Research", award: "$42,000 stipend + 12-week internship" },
+        { title: "Meta Research PhD Fellowship", org: "Meta AI (FAIR)", award: "$42,000 stipend + full tuition" },
+        { title: "NeurIPS Scholar & Student Travel Support", org: "NeurIPS Foundation", award: "$2,500 travel grant + waiver" },
+        { title: "ACM SIGCOMM Student Travel Grants", org: "ACM SIGCOMM", award: "$3,000 flight + hotel coverage" },
+        { title: "Black in AI Travel & Registration Grants", org: "Black in AI", award: "Full flights + lodging + visa support" }
+      ],
+      lab: [
+        { title: "Google DeepMind Research Scientist Internship", org: "Google DeepMind", loc: "London, UK / Mountain View" },
+        { title: "Meta Fundamental AI Research (FAIR) Internship", org: "Meta FAIR", loc: "Menlo Park, CA / Paris" },
+        { title: "Microsoft Research (MSR) Doctoral Internship", org: "Microsoft Research", loc: "Redmond, WA / Cambridge, UK" },
+        { title: "Apple Machine Learning Research Internship", org: "Apple MLR", loc: "Cupertino, CA / Zurich" },
+        { title: "Google I/O Global Developer Conference", org: "Google", loc: "Mountain View, CA" },
+        { title: "AWS re:Invent Cloud & AI Expo", org: "Amazon Web Services", loc: "Las Vegas, USA" }
+      ]
+    };
+
+    function switchTab(tab) {
+      activeStudioTab = tab;
+      document.querySelectorAll('.studio-tab-btn').forEach(b => {
+        if (b.dataset.tab === tab) {
+          b.className = 'studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/25';
+        } else {
+          b.className = 'studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850';
+        }
+      });
+
+      document.querySelectorAll('.studio-panel').forEach(p => p.classList.add('hidden'));
+      const activePanel = document.getElementById('panel-' + tab);
+      if (activePanel) activePanel.classList.remove('hidden');
+
+      if (tab === 'suggestions') {
+        loadStrategicSuggestions();
+      } else if (tab === 'brain') {
+        loadBrainProfile();
+        loadLiveGitHubRepos();
+      } else if (tab === 'history') {
+        loadDispatchHistory();
+      }
+    }
+
+    function switchStudioTab(tab) { switchTab(tab); }
+    function switchApplyMode(mode) { setApplyMode(mode); }
+
+    function setApplyMode(mode) {
+      currentApplyMode = mode;
+      const grantBtn = document.getElementById('mode-grant-btn');
+      const labBtn = document.getElementById('mode-lab-btn');
+
+      if (mode === 'grant') {
+        grantBtn.className = "px-3 py-1.5 rounded-xl text-xs font-bold transition bg-brand-500/20 text-brand-300 border border-brand-500/30";
+        labBtn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold transition text-slate-400 hover:bg-dark-850";
+      } else {
+        labBtn.className = "px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+        grantBtn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold transition text-slate-400 hover:bg-dark-850";
+      }
+      populatePresets();
+    }
+
+    function populatePresets() {
+      const select = document.getElementById('opp-preset-select');
+      const list = PRESET_OPPORTUNITIES[currentApplyMode] || [];
+      select.innerHTML = '<option value="">-- Choose from Presets --</option>' + list.map(item => `
+        <option value="${item.title}">${item.title} (${item.org || item.loc || ''})</option>
+      `).join('');
+    }
+
+    function onPresetSelect(val) {
+      if (val) {
+        document.getElementById('target-opp-title').value = val;
+      }
+    }
+
+    // ================= GITHUB STATUS & CONNECTOR =================
+    async function checkGitHubStatus() {
+      const badge = document.getElementById('gh-status-badge');
+      try {
+        const res = await fetch('/api/twin/github/status');
+        const data = await res.json();
+        gitHubStatus = data;
+        if (data.authenticated) {
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-brand-400"></span> <span class="text-brand-300">Connected (@${data.username})</span>`;
+        } else {
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> <span class="text-cyan-300">Public (@${data.username})</span>`;
+        }
+      } catch (err) {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> <span class="text-slate-400">Offline</span>`;
+      }
+    }
+
+    function openGitHubModal() {
+      document.getElementById('github-modal').classList.remove('hidden');
+      const statusBox = document.getElementById('gh-modal-status-box');
+      if (gitHubStatus) {
+        statusBox.innerHTML = `<span>Account: @${gitHubStatus.username} • Authenticated: <strong>${gitHubStatus.authenticated ? 'Yes (Full Write Privileges)' : 'No (Public Read Only)'}</strong></span>`;
+      }
+    }
+
+    function closeGitHubModal() {
+      document.getElementById('github-modal').classList.add('hidden');
+    }
+
+    function toggleTokenVisibility() {
+      const input = document.getElementById('gh-token-input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    async function saveGitHubCredentials() {
+      const token = document.getElementById('gh-token-input').value.trim();
+      const username = document.getElementById('gh-username-input').value.trim();
+      const btn = document.getElementById('gh-save-btn');
+      const statusBox = document.getElementById('gh-modal-status-box');
+
+      btn.disabled = true;
+      btn.textContent = 'Verifying with GitHub...';
+
+      try {
+        const res = await fetch('/api/twin/github/connect', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ token, username })
+        });
+        const data = await res.json();
+        if (data.authenticated) {
+          statusBox.innerHTML = `<span class="text-brand-400 font-bold">✅ Verified @${data.username}! Scopes: ${data.scopes || 'repo'}</span>`;
+          checkGitHubStatus();
+          setTimeout(() => closeGitHubModal(), 1200);
+        } else {
+          statusBox.innerHTML = `<span class="text-amber-300">⚠️ ${data.message || 'Token could not be verified'}</span>`;
+        }
+      } catch (err) {
+        statusBox.innerHTML = `<span class="text-rose-400">Error connecting to GitHub API</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>💾 Connect & Verify</span>`;
+      }
+    }
+
+    async function loadLiveGitHubRepos() {
+      const grid = document.getElementById('github-repos-grid');
+      try {
+        const res = await fetch('/api/twin/github/repos');
+        const data = await res.json();
+        const repos = data.repos || [];
+        if (repos.length > 0) {
+          grid.innerHTML = repos.slice(0, 8).map(r => `
+            <div class="p-4 rounded-2xl bg-dark-850 border border-white/[0.08] hover:border-cyan-400/40 transition flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <a href="${r.html_url}" target="_blank" class="font-bold text-sm text-white hover:text-cyan-400 transition flex items-center gap-1">
+                    <span>${r.name}</span>
+                    <span class="text-[10px] text-slate-400">↗</span>
+                  </a>
+                  <span class="text-[10px] font-mono bg-dark-900 px-2 py-0.5 rounded border border-white/[0.06] text-slate-400">★ ${r.stargazers_count || 0}</span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-2">${r.description || 'Open-source scientific and engineering research repository.'}</p>
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-mono bg-dark-900 px-2 py-0.5 rounded border border-white/[0.06] text-cyan-300 font-bold">${r.language || 'Python'}</span>
+                <span class="text-[10px] text-slate-400 font-mono">Updated ${new Date(r.updated_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.warn('Failed to load GitHub repos:', err);
+      }
+    }
+
+    // ================= AUTONOMOUS "CHECK & PROCEED" PIPELINE =================
+    async function prepareAndReviewApplication() {
+      const oppTitle = document.getElementById('target-opp-title').value.trim();
+      if (!oppTitle) {
+        alert('Please enter or select a target opportunity title first.');
+        return;
+      }
+
+      const btn = document.getElementById('prepare-app-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Pre-Filling Application on Your Behalf...`;
+
+      try {
+        const res = await fetch('/api/twin/prepare-application', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            opportunity_type: currentApplyMode,
+            title: oppTitle,
+            details: { organization: 'Selection Committee' }
+          })
+        });
+        const packet = await res.json();
+        latestPacket = packet;
+        latestDossier = packet.dossier || packet;
+
+        const info = packet.applicant_info || packet.applicant || {};
+        document.getElementById('cp-name').value = info.name || 'Scholar Researcher';
+        document.getElementById('cp-email').value = info.email || 'scholar@university.edu';
+        document.getElementById('cp-phone').value = info.phone || '';
+        document.getElementById('cp-org').value = info.affiliation || info.title || 'Department of Computer Science & AI';
+        document.getElementById('cp-location').value = info.location || 'Global Academic Community';
+        document.getElementById('cp-portfolio').value = info.portfolio || '';
+        document.getElementById('cp-github').value = info.github || '';
+        document.getElementById('cp-repos').value = (info.featured_repos || []).join(', ') || 'multimodal-ai, scientific-computing';
+
+        document.getElementById('cp-target-title').value = packet.opportunity_title || oppTitle;
+        document.getElementById('cp-target-award').value = packet.requested_award || '$50,000 / Travel Grant';
+
+        const dossier = packet.dossier || {};
+        document.getElementById('cp-sop').value = dossier.statement_of_purpose || dossier.cover_letter || 'Drafting personal statement...';
+        document.getElementById('cp-alignment').value = dossier.research_justification || dossier.project_alignment_pitch || 'Research justification...';
+
+        document.getElementById('check-proceed-container').classList.remove('hidden');
+        renderApplicationDossier(dossier, currentApplyMode);
+        document.getElementById('check-proceed-container').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        console.warn('Preparation failed:', err);
+        alert('Failed to prepare application packet. Check backend connection.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>⚡ Autonomous Pre-Fill & Review ("Check & Proceed")</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+      }
+    }
+
+    async function executeProceedDispatch() {
+      if (!latestPacket) {
+        alert('No prepared application packet found. Please click Pre-Fill first.');
+        return;
+      }
+
+      latestPacket.applicant_info.name = document.getElementById('cp-name').value;
+      latestPacket.applicant_info.email = document.getElementById('cp-email').value;
+      latestPacket.applicant_info.phone = document.getElementById('cp-phone').value;
+      latestPacket.applicant_info.affiliation = document.getElementById('cp-org').value;
+      latestPacket.opportunity_title = document.getElementById('cp-target-title').value;
+      if (latestPacket.dossier) {
+        latestPacket.dossier.statement_of_purpose = document.getElementById('cp-sop').value;
+        latestPacket.dossier.research_justification = document.getElementById('cp-alignment').value;
+      }
+
+      const proceedBtn = document.getElementById('proceed-dispatch-btn');
+      proceedBtn.disabled = true;
+      proceedBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Executing Proceed: Dispatching to GitHub & Logging...`;
+
+      try {
+        const res = await fetch('/api/twin/dispatch-application', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            packet: latestPacket,
+            target_repo: document.getElementById('gh-repo-input')?.value || 'research-notes'
+          })
+        });
+        const result = await res.json();
+        
+        const gh = result.github_dispatch || {};
+        document.getElementById('receipt-opp-title').textContent = latestPacket.opportunity_title;
+        const ghLinkEl = document.getElementById('receipt-github-link');
+        const directIssueBtn = document.getElementById('receipt-direct-issue-btn');
+
+        if (gh.issue_url) {
+          ghLinkEl.textContent = gh.issue_url;
+          directIssueBtn.href = gh.issue_url;
+        } else if (gh.target_repo) {
+          ghLinkEl.textContent = `github.com/${gh.target_repo}`;
+          directIssueBtn.href = `https://github.com/${gh.target_repo}/issues`;
+        }
+
+        document.getElementById('dispatch-receipt-modal').classList.remove('hidden');
+        loadDispatchHistory();
+      } catch (err) {
+        console.warn('Dispatch failed:', err);
+        alert('Dispatch error. Please check server logs.');
+      } finally {
+        proceedBtn.disabled = false;
+        proceedBtn.innerHTML = `<span>✅ Check & Proceed (Dispatch Application)</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+      }
+    }
+
+    function closeDispatchReceiptModal() {
+      document.getElementById('dispatch-receipt-modal').classList.add('hidden');
+    }
+
+    function copyBookmarkletScript(btn) {
+      if (!latestPacket) {
+        alert('Please prepare an application packet first.');
+        return;
+      }
+      const candName = document.getElementById('cp-name')?.value || 'Applicant';
+      const candEmail = document.getElementById('cp-email')?.value || 'scholar@university.edu';
+      const candGithub = document.getElementById('cp-github')?.value || '';
+      const script = latestPacket.form_autofill_script || (
+        "javascript:(function(){" +
+        "function s(sel,val){var el=document.querySelector(sel);if(el){el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));}}" +
+        `s('input[name*="name" i], input[id*="name" i]', '${candName.replace(/'/g, "\\'")}');` +
+        `s('input[name*="email" i], input[id*="email" i]', '${candEmail.replace(/'/g, "\\'")}');` +
+        (candGithub ? `s('input[name*="github" i], input[id*="github" i]', '${candGithub.replace(/'/g, "\\'")}');` : '') +
+        "alert('Application data injected successfully!');" +
+        "})();"
+      );
+      navigator.clipboard.writeText(script).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied Script!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    function copyCheckProceedJson(btn) {
+      if (!latestPacket) return;
+      navigator.clipboard.writeText(JSON.stringify(latestPacket, null, 2)).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied JSON!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    async function loadDispatchHistory() {
+      const container = document.getElementById('dispatch-history-list');
+      if (!container) return;
+      container.innerHTML = `<div class="py-8 text-center text-slate-400 font-mono text-xs">Loading dispatch history...</div>`;
+      try {
+        const res = await fetch('/api/twin/dispatch-history');
+        const data = await res.json();
+        const history = data.history || [];
+
+        if (history.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 rounded-3xl glass-panel text-center space-y-2">
+              <span class="text-3xl">📭</span>
+              <h4 class="font-bold text-white text-sm">No Dispatched Applications Yet</h4>
+              <p class="text-xs text-slate-400">When you prepare an application and click "Check & Proceed", your dispatched logs and GitHub tracking issues will appear here.</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = history.map(item => `
+          <div class="p-6 rounded-3xl glass-panel shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 font-mono text-[10px] font-bold border border-brand-500/30">
+                  ${item.status || 'Dispatched'}
+                </span>
+                <span class="text-[11px] text-slate-400 font-mono">${new Date(item.dispatched_at).toLocaleString()}</span>
+              </div>
+              <h4 class="text-base font-bold text-white">${item.title}</h4>
+              <p class="text-xs text-slate-400">${item.organization || 'Selection Committee'} • Applicant: ${item.applicant || 'Scholar Researcher'}</p>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <a 
+                href="${item.github_log?.issue_url || '#'}"
+                target="_blank"
+                class="px-3.5 py-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-white font-bold text-xs border border-white/[0.08] transition flex items-center gap-1.5"
+              >
+                <span>🐙 GitHub Tracking ↗</span>
+              </a>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = `<div class="text-rose-400 text-xs">Failed to load dispatch history.</div>`;
+      }
+    }
+
+    // ================= DOSSIER DISPLAY & CHAT =================
+    function renderApplicationDossier(data, mode) {
+      latestDossier = data;
+      document.getElementById('app-results-container').classList.remove('hidden');
+      document.getElementById('app-result-title').textContent = (data.grant_title || data.opportunity_title || 'Application') + ' — Complete Dossier';
+
+      document.getElementById('app-sop-text').textContent = data.statement_of_purpose || data.cover_letter || 'Draft statement...';
+      document.getElementById('app-alignment-text').textContent = data.research_justification || data.project_alignment_pitch || 'Research justification...';
+
+      if (mode === 'grant') {
+        document.getElementById('app-card3-title').innerHTML = `<span>💰</span> Itemized Budget Justification`;
+        const budgetLines = (data.itemized_budget || []).map(b => `${b.item}: ${b.amount} (${b.notes})`).join('\n');
+        document.getElementById('app-card3-text').textContent = budgetLines || 'Budget estimated.';
+
+        document.getElementById('app-card4-title').innerHTML = `<span>🌟</span> Key Qualifications & CV Highlights`;
+        const highlights = (data.cv_alignment_highlights || []).join('\n• ');
+        document.getElementById('app-card4-text').textContent = '• ' + highlights;
+      } else {
+        document.getElementById('app-card3-title').innerHTML = `<span>📧</span> Cold Outreach Email to PI / Lead`;
+        document.getElementById('app-card3-text').textContent = data.cold_outreach_email || 'Email draft generated.';
+
+        document.getElementById('app-card4-title').innerHTML = `<span>🎯</span> Interview Preparation Q&A`;
+        const qa = (data.interview_prep_qa || []).map(q => `Q: ${q.question}\nA: ${q.answer}`).join('\n\n');
+        document.getElementById('app-card4-text').textContent = qa;
+      }
+    }
+
+    function copyElementText(id, btn) {
+      const el = document.getElementById(id);
+      const text = el.value || el.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    function copyFullApplicationDossier(btn) {
+      if (!latestDossier) return;
+      const md = latestDossier.full_application_dossier_markdown || JSON.stringify(latestDossier, null, 2);
+      navigator.clipboard.writeText(md).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied Full Dossier!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    function downloadApplicationDossier() {
+      if (!latestDossier) return;
+      const title = (latestDossier.grant_title || latestDossier.opportunity_title || 'application').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const md = latestDossier.full_application_dossier_markdown || JSON.stringify(latestDossier, null, 2);
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `proffeb_${title}_dossier.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function syncPortfolio() {
+      const btn = document.getElementById('sync-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳ Crawling portfolio...</span>`;
+      try {
+        const res = await fetch('/api/twin/sync', { method: 'POST' });
+        const data = await res.json();
+        alert('Scholar profile successfully refreshed!');
+        loadBrainProfile();
+      } catch (err) {
+        console.warn('Sync failed:', err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🔄 Re-Sync</span>`;
+      }
+    }
+
+    async function loadStrategicSuggestions() {
+      const grid = document.getElementById('suggestions-grid');
+      grid.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400 font-mono text-xs">Computing strategic doctoral roadmap...</div>`;
+      try {
+        const res = await fetch('/api/twin/suggestions');
+        const list = await res.json();
+        grid.innerHTML = (list || []).map(s => `
+          <div class="p-6 rounded-3xl glass-panel shadow-sm flex flex-col justify-between group hover:border-cyan-400/40 transition">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">${s.timeline}</span>
+                <span class="text-xs font-bold text-brand-400">${s.impact_level}</span>
+              </div>
+              <h4 class="text-base font-bold text-white group-hover:text-cyan-300 transition mb-1.5">${s.title}</h4>
+              <p class="text-xs text-slate-300 mb-3 leading-relaxed">${s.rationale}</p>
+              <div class="space-y-1 text-xs text-slate-300 bg-dark-850/80 p-3 rounded-xl border border-white/[0.06] mb-4">
+                ${(s.action_steps || []).map(step => `<div class="flex items-start gap-1.5"><span class="text-brand-400 font-bold">▶</span><span>${step}</span></div>`).join('')}
+              </div>
+            </div>
+            <button onclick="prefillApply('${s.title}')" class="w-full py-2.5 rounded-xl bg-dark-850 hover:bg-cyan-600 text-white text-xs font-bold border border-white/[0.08] transition flex items-center justify-center gap-1.5">
+              <span>Execute with Co-Pilot</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.warn('Failed to load suggestions:', err);
+      }
+    }
+
+    function prefillApply(title) {
+      switchTab('apply');
+      document.getElementById('target-opp-title').value = title;
+      prepareAndReviewApplication();
+    }
+
+    async function loadBrainProfile() {
+      try {
+        const res = await fetch('/api/twin/profile');
+        const p = await res.json();
+        document.getElementById('brain-name').textContent = p.name || 'Dr. Scholar';
+        document.getElementById('brain-title').textContent = p.title || 'PhD Researcher & Scientific Author';
+        document.getElementById('brain-notes-input').value = p.custom_notes || '';
+      } catch (err) {
+        console.warn('Could not load profile:', err);
+      }
+    }
+
+    async function saveBrainNotes() {
+      const notes = document.getElementById('brain-notes-input').value;
+      const btn = document.getElementById('save-notes-btn');
+      btn.textContent = 'Saving...';
+      try {
+        await fetch('/api/twin/update-profile', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ custom_notes: notes })
+        });
+        btn.textContent = '✅ Saved to Co-Pilot';
+        setTimeout(() => { btn.textContent = 'Save Notes to Co-Pilot'; }, 2000);
+      } catch (err) {
+        btn.textContent = 'Error';
+      }
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      appendMessage('user', text);
+      const btn = document.getElementById('chat-send-btn');
+      let originalBtnHtml = '';
+      if (btn) {
+        btn.disabled = true;
+        originalBtnHtml = btn.innerHTML;
+        btn.innerHTML = `<svg class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Thinking...</span>`;
+      }
+
+      const container = document.getElementById('chat-messages');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'twin-chat-loading';
+      loadingDiv.className = 'flex items-start gap-2.5';
+      loadingDiv.innerHTML = `
+        <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-[9px] shrink-0 font-mono shadow-sm">FEB</span>
+        <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-300 border border-white/[0.08] max-w-xl text-xs flex items-center gap-2.5 shadow-sm">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style="animation-delay: 0ms"></span>
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style="animation-delay: 150ms"></span>
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style="animation-delay: 300ms"></span>
+          </div>
+          <span class="text-[11px] font-mono text-slate-400 font-medium">ProfFeb formulating response...</span>
+        </div>
+      `;
+      if (container) {
+        container.appendChild(loadingDiv);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      try {
+        const res = await fetch('/api/twin/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ message: text, history: chatHistory })
+        });
+        const data = await res.json();
+        document.getElementById('twin-chat-loading')?.remove();
+        appendMessage('assistant', data.reply || 'Task acknowledged.');
+      } catch (err) {
+        document.getElementById('twin-chat-loading')?.remove();
+        appendMessage('assistant', 'Error communicating with Academic Co-Pilot backend.');
+      } finally {
+        document.getElementById('twin-chat-loading')?.remove();
+        if (btn) {
+          btn.disabled = false;
+          if (originalBtnHtml) btn.innerHTML = originalBtnHtml;
+        }
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('chat-input').value = promptText;
+      sendChatMessage();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderMathInElementSafely(el) {
+      if (!el) return;
+      if (window.renderMathInElement) {
+        try {
+          window.renderMathInElement(el, {
+            delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+            ],
+            throwOnError: false
+          });
+          return;
+        } catch (e) {}
+      }
+      if (window.katex) {
+        try {
+          el.innerHTML = el.innerHTML.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
+            try { return katex.renderToString(f.trim(), { displayMode: true, throwOnError: false }); } catch(e) { return m; }
+          });
+          el.innerHTML = el.innerHTML.replace(/\$([^\$\n\r]+?)\$/g, (m, f) => {
+            try { return katex.renderToString(f.trim(), { displayMode: false, throwOnError: false }); } catch(e) { return m; }
+          });
+        } catch (e) {}
+      }
+    }
+
+    function loadTwinChatHistory() {
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+
+      const saved = localStorage.getItem('zam_twin_chat_history');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            chatHistory = parsed;
+            container.innerHTML = `
+              <div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11px] text-cyan-300 mb-3 shadow-sm">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span><strong>Session Resumed</strong> • ${chatHistory.length} messages restored from last visit</span>
+                </span>
+                <button onclick="clearChat()" class="text-[10px] text-cyan-300 hover:text-rose-400 transition font-medium px-2 py-0.5 rounded bg-dark-850 border border-white/[0.08]">Clear Chat</button>
+              </div>
+            `;
+            chatHistory.forEach(msg => {
+              renderTwinChatBubble(msg.role, msg.content, container, false);
+            });
+            container.scrollTop = container.scrollHeight;
+            return;
+          }
+        } catch (e) {
+          console.warn('Failed to parse twin chat history:', e);
+        }
+      }
+
+      chatHistory = [];
+      container.innerHTML = `
+        <div class="flex items-start gap-2.5">
+          <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-[9px] shrink-0 font-mono shadow-sm">FEB</span>
+          <div class="p-4 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] max-w-xl leading-relaxed twin-prose text-xs shadow-sm">
+            <p class="font-bold text-cyan-300 mb-1">Hello scholar! I am ProfFeb, your Autonomous Academic Co-Pilot & Research Mentor.</p>
+            <p>I am synced with your verified academic profile, publications, and connected research repositories. I can assist you with proposal formulation, peer review defenses, grant applications, and literature synthesis.</p>
+            <p class="mt-2 text-slate-400">All chat sessions are saved automatically so you can resume where you left off. What grant, lab outreach, or research milestone shall we execute?</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTwinChatBubble(role, content, container, scroll = true) {
+      const isUser = role === 'user';
+      const div = document.createElement('div');
+      div.className = `flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`;
+      
+      if (isUser) {
+        div.innerHTML = `
+          <span class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">YOU</span>
+          <div class="p-3.5 rounded-2xl bg-cyan-600 text-white max-w-xl leading-relaxed whitespace-pre-wrap text-xs shadow-sm">${escapeHtml(content)}</div>
+        `;
+      } else {
+        const formattedHtml = window.marked ? marked.parse(content) : `<p>${escapeHtml(content)}</p>`;
+        div.innerHTML = `
+          <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-[9px] shrink-0 font-mono shadow-sm">FEB</span>
+          <div class="p-4 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] max-w-2xl leading-relaxed twin-prose text-xs shadow-sm">${formattedHtml}</div>
+        `;
+        const proseDiv = div.querySelector('.twin-prose');
+        if (proseDiv) {
+          renderMathInElementSafely(proseDiv);
+        }
+      }
+      container.appendChild(div);
+      if (scroll) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function appendMessage(role, content) {
+      chatHistory.push({ role, content });
+      try {
+        localStorage.setItem('zam_twin_chat_history', JSON.stringify(chatHistory));
+      } catch (e) {}
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+      renderTwinChatBubble(role, content, container, true);
+    }
+
+    function clearChat() {
+      if (confirm('Clear Academic Co-Pilot chat history?')) {
+        localStorage.removeItem('zam_twin_chat_history');
+        chatHistory = [];
+        loadTwinChatHistory();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      populatePresets();
+      checkGitHubStatus();
+      loadBrainProfile();
+      loadTwinChatHistory();
+
+      const params = new URLSearchParams(window.location.search);
+      const applyMode = params.get('apply_mode');
+      const title = params.get('title');
+      const org = params.get('org');
+      const award = params.get('award') || params.get('location');
+      const autogen = params.get('autogen');
+
+      if (applyMode) {
+        setApplyMode(applyMode);
+      }
+
+      if (title) {
+        switchTab('apply');
+        document.getElementById('target-opp-title').value = title;
+        if (autogen === 'true') {
+          setTimeout(() => prepareAndReviewApplication(), 300);
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
