@@ -2081,17 +2081,21 @@
         if (!res.ok) throw new Error(`Server returned HTTP ${res.status}`);
         const data = await res.json();
         
-        allPapers = data.papers || [];
-
-        // Save fresh cache
-        try {
-          localStorage.setItem('zam_papers_cache', JSON.stringify({
-            total: data.total,
-            ready_count: data.ready_count,
-            total_audio_minutes: data.total_audio_minutes,
-            papers: allPapers
-          }));
-        } catch (e) {}
+        const freshPapers = data.papers || [];
+        if (freshPapers.length > 0) {
+          allPapers = freshPapers;
+          // Save fresh cache
+          try {
+            localStorage.setItem('zam_papers_cache', JSON.stringify({
+              total: data.total,
+              ready_count: data.ready_count,
+              total_audio_minutes: data.total_audio_minutes,
+              papers: allPapers
+            }));
+          } catch (e) {}
+        } else if (allPapers.length === 0) {
+          allPapers = [];
+        }
 
         // Update Stats
         const statTotalEl = document.getElementById('stat-total-papers');
@@ -2392,7 +2396,19 @@
 
         const data = await res.json();
         if (res.ok && data.success) {
-          pollPaperUntilReady(paperId, targetMode);
+          if (data.paper && data.paper.status === 'Ready') {
+            const idx = allPapers.findIndex(x => x.id === paperId);
+            if (idx !== -1) allPapers[idx] = data.paper;
+            renderPapers();
+            showToast(`${targetMode === 'full_paper' ? 'Full verbatim paper audio' : 'Summary briefing'} is ready!`, 'success');
+            await fetchPapers();
+            const newAudio = targetMode === 'full_paper' ? data.paper.full_audio_path : data.paper.summary_audio_path;
+            if (newAudio) {
+              playPaperTrack(data.paper, targetMode, newAudio);
+            }
+          } else {
+            pollPaperUntilReady(paperId, targetMode);
+          }
         } else {
           showToast(data.message || 'Generation failed', 'error');
           await fetchPapers();

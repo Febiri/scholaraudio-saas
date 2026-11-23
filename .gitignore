@@ -54,7 +54,8 @@ static/diagrams/*
 *.bak
 scratch_main.js
 test_*.py
-data/
+data/*
+!data/seed_papers.json
 
 # OS metadata
 .DS_Store

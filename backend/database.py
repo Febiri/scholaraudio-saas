@@ -349,6 +349,49 @@ def init_db():
     except Exception as e:
         logger.warning(f"Audio blob backfill notice: {e}")
 
+    # Auto-seed initial research library if database is empty (critical for ephemeral serverless / Vercel instances)
+    try:
+        db = SessionLocal()
+        try:
+            if db.query(Paper).count() == 0:
+                seed_file = _ROOT / "data" / "seed_papers.json"
+                if seed_file.exists():
+                    import json
+                    seed_papers = json.loads(seed_file.read_text(encoding="utf-8"))
+                    for sp in seed_papers:
+                        paper = Paper(
+                            zotero_item_key=sp.get("zotero_item_key"),
+                            title=sp.get("title") or "Untitled Document",
+                            authors=sp.get("authors") or "",
+                            abstract=sp.get("abstract") or "",
+                            publication_year=sp.get("publication_year") or "",
+                            journal=sp.get("journal") or "",
+                            pdf_path=sp.get("pdf_path"),
+                            has_pdf=sp.get("has_pdf", False),
+                            summary_text=sp.get("summary_text"),
+                            summary_problem=sp.get("summary_problem"),
+                            summary_methodology=sp.get("summary_methodology"),
+                            summary_results=sp.get("summary_results"),
+                            summary_limitations=sp.get("summary_limitations"),
+                            full_text=sp.get("full_text"),
+                            audio_mode=sp.get("audio_mode") or "summary",
+                            audio_path=sp.get("audio_path"),
+                            audio_duration=sp.get("audio_duration", 0.0),
+                            summary_audio_path=sp.get("summary_audio_path"),
+                            summary_audio_duration=sp.get("summary_audio_duration", 0.0),
+                            full_audio_path=sp.get("full_audio_path"),
+                            full_audio_duration=sp.get("full_audio_duration", 0.0),
+                            voice_used=sp.get("voice_used") or "en-NG-AbeoNeural",
+                            status=sp.get("status") or "Ready"
+                        )
+                        db.add(paper)
+                    db.commit()
+                    logger.info(f"Auto-seeded {len(seed_papers)} papers into clean database.")
+        finally:
+            db.close()
+    except Exception as seed_err:
+        logger.warning(f"Auto-seed check notice: {seed_err}")
+
 
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()

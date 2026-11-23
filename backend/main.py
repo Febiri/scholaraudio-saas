@@ -883,13 +883,36 @@ async def process_paper(
         finally:
             bg_db.close()
 
-    asyncio.create_task(run_pipeline())
-
-    return {
-        "success": True,
-        "message": f"Processing ({target_mode}) started in background.",
-        "paper": paper.to_dict()
-    }
+    if IS_SERVERLESS:
+        # On Vercel / serverless functions, background tasks get frozen immediately when HTTP response returns!
+        # Run directly while the execution context is alive to prevent synthesis stalling:
+        logger.info(f"Serverless environment detected (Vercel): executing pipeline synchronously for paper {paper.id}...")
+        try:
+            await execute_processing_pipeline(
+                paper_id=paper.id,
+                mode=target_mode,
+                voice=req.voice,
+                gemini_key=req.gemini_api_key,
+                gemini_model=req.gemini_model,
+                scope=req.scope or "article",
+                db=db
+            )
+            db.refresh(paper)
+            return {
+                "success": True,
+                "message": f"Processing ({target_mode}) completed successfully.",
+                "paper": paper.to_dict()
+            }
+        except Exception as e:
+            logger.error(f"Serverless pipeline failed for paper {paper.id}: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail=f"Synthesis failed: {str(e)}")
+    else:
+        asyncio.create_task(run_pipeline())
+        return {
+            "success": True,
+            "message": f"Processing ({target_mode}) started in background.",
+            "paper": paper.to_dict()
+        }
 
 
 @app.post("/api/process-batch")
