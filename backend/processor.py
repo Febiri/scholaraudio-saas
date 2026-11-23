@@ -19,9 +19,9 @@ from google import genai
 from google.genai import types
 
 try:
-    from backend.config import AUDIO_DIR, GEMINI_API_KEY, GEMINI_MODEL, DEFAULT_TTS_VOICE
+    from backend.config import AUDIO_DIR, GEMINI_API_KEY, GEMINI_MODEL, DEFAULT_TTS_VOICE, IS_SERVERLESS
 except ImportError:
-    from config import AUDIO_DIR, GEMINI_API_KEY, GEMINI_MODEL, DEFAULT_TTS_VOICE
+    from config import AUDIO_DIR, GEMINI_API_KEY, GEMINI_MODEL, DEFAULT_TTS_VOICE, IS_SERVERLESS
 
 logger = logging.getLogger("processor")
 logging.basicConfig(level=logging.INFO)
@@ -260,6 +260,10 @@ Conclude with a brief 1-2 sentence inspiring scientific outlook.
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         self.api_key = (api_key or GEMINI_API_KEY or "").strip()
         self.model = (model or GEMINI_MODEL or "gemini-2.5-flash").strip()
+        # On serverless (Vercel), enforce high-speed gemini-2.5-flash for sub-3s response to prevent function timeout
+        if IS_SERVERLESS and ("1.5-pro" in self.model or "gemini-pro" in self.model):
+            logger.info(f"Serverless environment detected: optimizing model from {self.model} to gemini-2.5-flash for sub-3s response.")
+            self.model = "gemini-2.5-flash"
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
 
     def generate_briefing(self, title: str, text: str, authors: str = "", abstract: str = "") -> str:
