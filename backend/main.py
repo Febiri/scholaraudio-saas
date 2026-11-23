@@ -19,7 +19,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, desc, func
@@ -34,13 +34,9 @@ try:
         BASE_DIR, FRONTEND_DIR, STATIC_DIR, AUDIO_DIR, PDFS_DIR,
         GEMINI_API_KEY, GEMINI_MODEL, ZOTERO_LIBRARY_ID, ZOTERO_API_KEY,
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
-        DATABASE_URL, normalize_database_url, SUPABASE_URL, SUPABASE_KEY, APP_NAME, APP_TAGLINE
+        DATABASE_URL, normalize_database_url
     )
-    from backend.database import (
-        init_db, get_db, Paper, Note, ConferenceWatchlist,
-        PaperAudio, save_paper_audio, get_paper_audio, has_paper_audio, restore_paper_audio_file
-    )
-    from backend.auth import get_current_user, require_current_user
+    from backend.database import init_db, get_db, Paper
     from backend.zotero_sync import ZoteroSyncService
     from backend.processor import (
         PDFProcessor, GeminiSummarizer, AudioSynthesizer,
@@ -62,13 +58,9 @@ except ImportError:
         BASE_DIR, FRONTEND_DIR, STATIC_DIR, AUDIO_DIR, PDFS_DIR,
         GEMINI_API_KEY, GEMINI_MODEL, ZOTERO_LIBRARY_ID, ZOTERO_API_KEY,
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
-        DATABASE_URL, normalize_database_url, SUPABASE_URL, SUPABASE_KEY, APP_NAME, APP_TAGLINE
+        DATABASE_URL, normalize_database_url
     )
-    from database import (
-        init_db, get_db, Paper, Note, ConferenceWatchlist,
-        PaperAudio, save_paper_audio, get_paper_audio, has_paper_audio, restore_paper_audio_file
-    )
-    from auth import get_current_user, require_current_user
+    from database import init_db, get_db, Paper
     from zotero_sync import ZoteroSyncService
     from processor import (
         PDFProcessor, GeminiSummarizer, AudioSynthesizer,
@@ -100,9 +92,9 @@ except Exception as e:
     logger.warning(f"Database initialization warning: {e}")
 
 app = FastAPI(
-    title="ProfFeb API",
-    description="ProfFeb — Global Neural Audio Research Workstation & AI Academic Mentor",
-    version="2.0.0"
+    title="Zotero Audio Mentor API",
+    description="Transforms Zotero reference library research papers into conversational audio briefings.",
+    version="1.0.0"
 )
 
 # Enable CORS for frontend integrations
@@ -113,38 +105,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def startup_sync_audio_cache():
-    """
-    On system launch, verifies papers with database-cached audio are marked Ready.
-    Does NOT generate any audio on launch - preserves database space, system memory,
-    and network bandwidth by relying on persisted database audio records.
-    """
-    try:
-        init_db()
-        try:
-            from backend.database import SessionLocal, Paper, PaperAudio
-        except ImportError:
-            from database import SessionLocal, Paper, PaperAudio
-
-        with SessionLocal() as db:
-            audio_records = db.query(PaperAudio.paper_id, PaperAudio.mode, PaperAudio.duration).all()
-            if audio_records:
-                for p_id, mode, dur in audio_records:
-                    p = db.query(Paper).filter(Paper.id == p_id).first()
-                    if p:
-                        if p.status != "Ready":
-                            p.status = "Ready"
-                        if mode == "full_paper" and not p.full_audio_duration:
-                            p.full_audio_duration = dur or 0.0
-                        elif mode == "summary" and not p.summary_audio_duration:
-                            p.summary_audio_duration = dur or 0.0
-                db.commit()
-                logger.info(f"Startup verified {len(audio_records)} pre-existing audio records from database.")
-    except Exception as e:
-        logger.warning(f"Audio cache startup sync notice: {e}")
 
 
 # Pydantic Request Schemas
@@ -213,7 +173,7 @@ class LabSearchRequest(BaseModel):
 
 
 class TwinSyncRequest(BaseModel):
-    url: Optional[str] = ""
+    url: Optional[str] = "https://febmac.vercel.app"
 
 
 class TwinUpdateRequest(BaseModel):
@@ -238,7 +198,7 @@ class TwinChatRequest(BaseModel):
 
 class GitHubConnectRequest(BaseModel):
     token: str
-    username: Optional[str] = ""
+    username: Optional[str] = "Febiri"
 
 
 class PrepareApplicationRequest(BaseModel):
@@ -249,7 +209,7 @@ class PrepareApplicationRequest(BaseModel):
 
 class DispatchApplicationRequest(BaseModel):
     packet: Dict[str, Any]
-    target_repo: Optional[str] = "research-notes"
+    target_repo: Optional[str] = "febPhD"
 
 
 class PaperChatRequest(BaseModel):
@@ -265,16 +225,6 @@ class PaperNoteRequest(BaseModel):
     category: Optional[str] = "Methodology"
     color: Optional[str] = "yellow"
     created_at: Optional[str] = None
-
-
-class WatchlistAddRequest(BaseModel):
-    conference_name: str
-    acronym: Optional[str] = ""
-    core_rank: Optional[str] = ""
-    submission_deadline: Optional[str] = ""
-    location: Optional[str] = ""
-    travel_grant: Optional[str] = ""
-    notes: Optional[str] = ""
 
 
 class VoiceChangeRequest(BaseModel):
@@ -298,66 +248,6 @@ class RadarChatRequest(BaseModel):
     radar_result: Optional[Dict[str, Any]] = {}
     message: str
     history: Optional[List[Dict[str, str]]] = []
-
-
-# =====================================================================
-# SAAS GLOBAL PLATFORM & AUTH CONFIGURATION ENDPOINTS
-# =====================================================================
-@app.get("/api/config")
-def get_app_config():
-    """Returns public runtime client configuration for ProfFeb SaaS frontend."""
-    return {
-        "app_name": APP_NAME,
-        "tagline": APP_TAGLINE,
-        "supabase_url": SUPABASE_URL,
-        "supabase_anon_key": SUPABASE_KEY,
-        "available_voices": AVAILABLE_VOICES,
-        "default_voice": DEFAULT_TTS_VOICE,
-        "version": "2.0.0"
-    }
-
-
-@app.post("/api/admin/clear-cache")
-def clear_system_cache():
-    """Clears runtime cache data, synthesis trackers, and transient files."""
-    global ACTIVE_SYNTHESIS_PROGRESS
-    ACTIVE_SYNTHESIS_PROGRESS.clear()
-    cleared = {"audio": 0, "figures": 0, "pdfs": 0}
-    for directory, key in [(AUDIO_DIR, "audio"), (PDFS_DIR, "pdfs"), (STATIC_DIR / "figures", "figures")]:
-        if directory.exists():
-            for item in directory.glob("*"):
-                if item.is_file() and item.name != ".gitkeep":
-                    try:
-                        item.unlink()
-                        cleared[key] += 1
-                    except Exception:
-                        pass
-    return {"success": True, "message": "Cache successfully cleared.", "cleared": cleared}
-
-
-@app.get("/api/auth/me")
-async def get_current_user_profile(user: Optional[Dict[str, Any]] = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Returns active session user profile, quotas, and subscription tier."""
-    if not user:
-        return {"authenticated": False, "user": None, "tier": "guest"}
-
-    user_id = user["id"]
-    try:
-        paper_count = db.query(func.count(Paper.id)).filter(Paper.user_id == user_id).scalar() or 0
-        total_audio_seconds = db.query(func.coalesce(func.sum(Paper.audio_duration), 0.0)).filter(Paper.user_id == user_id).scalar() or 0.0
-    except Exception:
-        paper_count = 0
-        total_audio_seconds = 0.0
-
-    return {
-        "authenticated": True,
-        "user": user,
-        "tier": user.get("user_metadata", {}).get("tier", "scholar"),
-        "stats": {
-            "papers_processed": paper_count,
-            "total_audio_minutes": round(total_audio_seconds / 60.0, 1)
-        }
-    }
 
 
 # Core Pipeline Execution Helper
@@ -411,27 +301,7 @@ async def execute_processing_pipeline(
         if mode == "full_paper":
             # --- 100% VERBATIM FULL PAPER READING PIPELINE ---
             logger.info(f"Processing Paper ID {paper.id} in 100% VERBATIM FULL PAPER mode (no words omitted or replaced)...")
-            audio_filename = f"paper_{paper.id}_full_{paper.zotero_item_key or 'direct'}.mp3"
-
-            # Check if audio already exists in the database cache to prevent redundant synthesis
-            db_audio = get_paper_audio(db, paper_id=paper.id, mode="full_paper")
-            if db_audio and (not voice or db_audio[2] == selected_voice):
-                raw_bytes, dur, stored_voice = db_audio
-                audio_file = AUDIO_DIR / audio_filename
-                if not audio_file.exists():
-                    audio_file.write_bytes(raw_bytes)
-                paper.full_audio_path = f"/api/audio/{audio_filename}"
-                paper.full_audio_duration = dur
-                paper.audio_path = paper.full_audio_path
-                paper.audio_duration = dur
-                paper.audio_mode = "full_paper"
-                paper.voice_used = stored_voice
-                paper.status = "Ready"
-                paper.error_message = None
-                db.commit()
-                logger.info(f"Restored cached database audio for full paper '{paper.title}' (Synthesis skipped)")
-                return
-
+            
             # Extract complete verbatim text with PyMuPDF
             if paper.pdf_path and os.path.exists(paper.pdf_path):
                 verbatim_text, total_p = PDFProcessor.extract_verbatim_text(paper.pdf_path, scope=scope or "article")
@@ -452,24 +322,25 @@ async def execute_processing_pipeline(
                     "mode": mode
                 }
 
+            audio_filename = f"paper_{paper.id}_full_{paper.zotero_item_key or 'direct'}.mp3"
             audio_path, duration = await AudioSynthesizer.synthesize_long_text_async(
                 text=cleaned_speech,
                 output_filename=audio_filename,
                 voice=selected_voice,
-                concurrency=5,
+                concurrency=3,
+                max_chunk_chars=3000,
                 progress_callback=on_progress
             )
 
-            # Persist compressed audio to database
-            save_paper_audio(
-                db=db,
-                paper_id=paper.id,
-                mode="full_paper",
-                voice=selected_voice,
-                duration=duration,
-                audio_data_or_path=AUDIO_DIR / audio_filename,
-                user_id=paper.user_id
-            )
+            if audio_path and os.path.exists(audio_path):
+                file_size = os.path.getsize(audio_path)
+                if file_size < 25 * 1024 * 1024:
+                    try:
+                        paper.full_audio_blob = Path(audio_path).read_bytes()
+                    except Exception as b_err:
+                        logger.warning(f"Failed to persist full_audio_blob to database: {b_err}")
+                else:
+                    logger.info(f"Full paper audio is {file_size / (1024*1024):.1f}MB, stored safely on local disk.")
 
             paper.full_audio_path = f"/api/audio/{audio_filename}"
             paper.full_audio_duration = duration
@@ -485,27 +356,6 @@ async def execute_processing_pipeline(
         else:
             # --- SUMMARY BRIEFING PIPELINE ---
             logger.info(f"Processing Paper ID {paper.id} in SUMMARY BRIEFING mode...")
-            audio_filename = f"paper_{paper.id}_{paper.zotero_item_key or 'direct'}.mp3"
-
-            # Check if summary audio already exists in the database cache to prevent redundant synthesis
-            db_audio = get_paper_audio(db, paper_id=paper.id, mode="summary")
-            if db_audio and paper.summary_problem and (not voice or db_audio[2] == selected_voice):
-                raw_bytes, dur, stored_voice = db_audio
-                audio_file = AUDIO_DIR / audio_filename
-                if not audio_file.exists():
-                    audio_file.write_bytes(raw_bytes)
-                paper.summary_audio_path = f"/api/audio/{audio_filename}"
-                paper.summary_audio_duration = dur
-                paper.audio_path = paper.summary_audio_path
-                paper.audio_duration = dur
-                paper.audio_mode = "summary"
-                paper.voice_used = stored_voice
-                paper.status = "Ready"
-                paper.error_message = None
-                db.commit()
-                logger.info(f"Restored cached database audio for summary '{paper.title}' (Synthesis skipped)")
-                return
-
             # Step 1: Text Extraction for summary
             extracted_text = ""
             if paper.pdf_path and os.path.exists(paper.pdf_path):
@@ -531,22 +381,18 @@ async def execute_processing_pipeline(
             # Parse 4 structured sections
             sections = parse_briefing_sections(briefing_script)
 
+            audio_filename = f"paper_{paper.id}_{paper.zotero_item_key or 'direct'}.mp3"
             audio_path, duration = await AudioSynthesizer.synthesize_audio_async(
                 text=briefing_script,
                 output_filename=audio_filename,
                 voice=selected_voice
             )
 
-            # Persist compressed audio to database
-            save_paper_audio(
-                db=db,
-                paper_id=paper.id,
-                mode="summary",
-                voice=selected_voice,
-                duration=duration,
-                audio_data_or_path=AUDIO_DIR / audio_filename,
-                user_id=paper.user_id
-            )
+            if audio_path and os.path.exists(audio_path):
+                try:
+                    paper.summary_audio_blob = Path(audio_path).read_bytes()
+                except Exception as b_err:
+                    logger.warning(f"Failed to persist summary_audio_blob to database: {b_err}")
 
             paper.summary_text = briefing_script
             paper.summary_problem = sections.get("problem", "")
@@ -587,10 +433,8 @@ async def execute_processing_pipeline(
 def health_check():
     return {
         "status": "online",
-        "service": "ProfFeb",
-        "version": "2.0.0",
-        "serverless": IS_SERVERLESS,
-        "database": "connected"
+        "service": "Zotero Audio Mentor",
+        "version": "1.0.0"
     }
 
 
@@ -733,17 +577,10 @@ def list_papers(
     has_pdf: Optional[bool] = Query(None, description="Filter papers having PDF"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db),
-    user: Optional[Dict[str, Any]] = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
-    """Returns list of ingested papers with summaries, audio paths, and metadata scoped to user."""
+    """Returns list of ingested papers with summaries, audio paths, and metadata."""
     query = db.query(Paper)
-
-    # Multi-tenant isolation: filter by authenticated user or public benchmarks
-    if user and user.get("id"):
-        query = query.filter(or_(Paper.user_id == user["id"], Paper.user_id == None))
-    else:
-        query = query.filter(Paper.user_id == None)
 
     if status:
         query = query.filter(Paper.status == status)
@@ -764,15 +601,9 @@ def list_papers(
     total_count = query.count()
     papers = query.order_by(desc(Paper.created_at)).offset(offset).limit(limit).all()
 
-    # Fast SQL aggregate metrics scoped to user
-    stats_query = db.query(Paper).filter(Paper.status == "Ready")
-    if user and user.get("id"):
-        stats_query = stats_query.filter(or_(Paper.user_id == user["id"], Paper.user_id == None))
-    else:
-        stats_query = stats_query.filter(Paper.user_id == None)
-
-    ready_count = stats_query.count()
-    total_audio_seconds = stats_query.with_entities(func.coalesce(func.sum(Paper.audio_duration), 0.0)).scalar() or 0.0
+    # Fast SQL aggregate metrics (sub-millisecond)
+    ready_count = db.query(Paper).filter(Paper.status == "Ready").count()
+    total_audio_seconds = db.query(func.coalesce(func.sum(Paper.audio_duration), 0.0)).filter(Paper.status == "Ready").scalar() or 0.0
 
     paper_list = []
     for p in papers:
@@ -938,39 +769,15 @@ def _save_paper_notes(paper_id: int, notes: List[Dict[str, Any]]):
 
 
 @app.get("/api/papers/{paper_id}/notes")
-def get_paper_notes(paper_id: int, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+def get_paper_notes(paper_id: int):
     """Retrieve saved highlights and professional notes for a research paper."""
-    user_id = user["id"] if user else None
-    try:
-        q = db.query(Note).filter(Note.paper_id == paper_id)
-        if user_id:
-            q = q.filter(or_(Note.user_id == user_id, Note.user_id == None))
-        db_notes = [n.to_dict() for n in q.order_by(desc(Note.created_at)).all()]
-        if db_notes:
-            return {"paper_id": paper_id, "notes": db_notes, "total": len(db_notes)}
-    except Exception:
-        pass
     notes = _load_paper_notes(paper_id)
     return {"paper_id": paper_id, "notes": notes, "total": len(notes)}
 
 
 @app.post("/api/papers/{paper_id}/notes")
-def save_paper_note(paper_id: int, payload: PaperNoteRequest, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+def save_paper_note(paper_id: int, payload: PaperNoteRequest):
     """Save or update a highlighted passage and professional note."""
-    user_id = user["id"] if user else None
-    try:
-        new_db_note = Note(
-            user_id=user_id,
-            paper_id=paper_id,
-            content=payload.content,
-            tags=payload.category or "Methodology"
-        )
-        db.add(new_db_note)
-        db.commit()
-        db.refresh(new_db_note)
-    except Exception as e:
-        logger.warning(f"Could not persist note to DB: {e}")
-
     notes = _load_paper_notes(paper_id)
     note_id = payload.id or f"note_{int(datetime.utcnow().timestamp() * 1000)}"
     new_note = {
@@ -992,21 +799,8 @@ def save_paper_note(paper_id: int, payload: PaperNoteRequest, db: Session = Depe
 
 
 @app.delete("/api/papers/{paper_id}/notes/{note_id}")
-def delete_paper_note(paper_id: int, note_id: str, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
+def delete_paper_note(paper_id: int, note_id: str):
     """Delete a professional research note."""
-    user_id = user["id"] if user else None
-    try:
-        if note_id.isdigit():
-            q = db.query(Note).filter(Note.id == int(note_id), Note.paper_id == paper_id)
-            if user_id:
-                q = q.filter(or_(Note.user_id == user_id, Note.user_id == None))
-            row = q.first()
-            if row:
-                db.delete(row)
-                db.commit()
-    except Exception as e:
-        logger.warning(f"Could not delete note from DB: {e}")
-
     notes = _load_paper_notes(paper_id)
     notes = [n for n in notes if n.get("id") != note_id]
     _save_paper_notes(paper_id, notes)
@@ -1178,8 +972,7 @@ async def upload_pdf(
     auto_process: bool = Form(False),
     mode: Optional[str] = Form("summary"),
     voice: Optional[str] = Form(None),
-    db: Session = Depends(get_db),
-    user: Optional[Dict[str, Any]] = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Directly upload a research PDF file without requiring Zotero setup."""
     if not file.filename.lower().endswith(".pdf"):
@@ -1224,10 +1017,8 @@ async def upload_pdf(
     except Exception as e:
         logger.warning(f"Could not extract verbatim text upon upload: {e}")
 
-    user_id = user["id"] if user else None
     initial_status = "Processing" if auto_process else "Pending"
     paper = Paper(
-        user_id=user_id,
         zotero_item_key=file_id,
         title=doc_title,
         authors=doc_authors,
@@ -1347,12 +1138,6 @@ def delete_paper(paper_id: int, db: Session = Depends(get_db)):
         except Exception as e:
             logger.warning(f"Could not remove PDF file {paper.pdf_path}: {e}")
 
-    # Delete associated cached audio records from database
-    try:
-        db.query(PaperAudio).filter(PaperAudio.paper_id == paper.id).delete()
-    except Exception as e:
-        logger.warning(f"Could not remove database audio record for paper {paper.id}: {e}")
-
     db.delete(paper)
     db.commit()
     return {"success": True, "message": f"Paper '{paper.title}' deleted."}
@@ -1360,76 +1145,94 @@ def delete_paper(paper_id: int, db: Session = Depends(get_db)):
 
 @app.get("/api/audio/{filename}")
 async def stream_audio(filename: str, db: Session = Depends(get_db)):
-    """Streams generated MP3 audio files with support for HTTP Range requests and on-demand DB cache restoration."""
+    """Streams generated MP3 audio files with support for HTTP Range requests, instant DB blob recovery, and on-demand synthesis."""
     audio_path = AUDIO_DIR / filename
-    if not audio_path.exists():
-        import re
-        match = re.match(r"^paper_(\d+)(?:_(full))?", filename)
-        if match:
-            paper_id = int(match.group(1))
-            is_full = bool(match.group(2))
-            mode = "full_paper" if is_full else "summary"
 
-            # Step 1: Check database cache first (instant restoration, zero synthesis!)
-            if restore_paper_audio_file(db, paper_id=paper_id, mode=mode, target_path=audio_path):
-                logger.info(f"Restored audio '{filename}' from database cache without synthesis.")
-            else:
-                # Step 2: Fallback to on-demand synthesis only if never synthesized before
-                paper = db.query(Paper).filter(Paper.id == paper_id).first()
-                if paper:
-                    selected_voice = paper.voice_used or DEFAULT_TTS_VOICE
-                    try:
-                        if is_full:
-                            text_to_speak = paper.full_text or paper.summary_text or paper.abstract
-                            if text_to_speak and text_to_speak.strip():
-                                cleaned = AudioSynthesizer.prepare_verbatim_for_speech(text_to_speak)
-                                _, dur = await AudioSynthesizer.synthesize_long_text_async(
-                                    text=cleaned,
-                                    output_filename=filename,
-                                    voice=selected_voice
-                                )
-                                paper.full_audio_duration = dur
-                                db.commit()
-                                save_paper_audio(
-                                    db=db,
-                                    paper_id=paper_id,
-                                    mode="full_paper",
-                                    voice=selected_voice,
-                                    duration=dur,
-                                    audio_data_or_path=audio_path,
-                                    user_id=paper.user_id
-                                )
+    # 1. If audio file already exists on disk, stream immediately
+    if audio_path.exists() and audio_path.stat().st_size > 0:
+        return FileResponse(
+            path=str(audio_path),
+            media_type="audio/mpeg",
+            filename=filename,
+            headers={"Accept-Ranges": "bytes"}
+        )
+
+    # 2. File not on disk (system launch, container reboot, or cleared temp dir).
+    # Check if the audio blob is safely preserved in the database!
+    import re
+    match = re.match(r"^paper_(\d+)(?:_(full))?", filename)
+    if match:
+        paper_id = int(match.group(1))
+        is_full = bool(match.group(2))
+
+        # Query the exact audio blob
+        blob_column = Paper.full_audio_blob if is_full else Paper.summary_audio_blob
+        blob_data = db.query(blob_column).filter(Paper.id == paper_id).scalar()
+
+        if blob_data and len(blob_data) > 0:
+            logger.info(f"Instant audio restore: Serving paper {paper_id} ({len(blob_data)} bytes) directly from database blob.")
+            try:
+                audio_path.parent.mkdir(parents=True, exist_ok=True)
+                audio_path.write_bytes(blob_data)
+                return FileResponse(
+                    path=str(audio_path),
+                    media_type="audio/mpeg",
+                    filename=filename,
+                    headers={"Accept-Ranges": "bytes"}
+                )
+            except Exception as disk_err:
+                logger.warning(f"Could not cache restored audio blob to disk: {disk_err}. Streaming directly from database blob.")
+                return Response(
+                    content=blob_data,
+                    media_type="audio/mpeg",
+                    headers={
+                        "Content-Disposition": f'inline; filename="{filename}"',
+                        "Accept-Ranges": "bytes"
+                    }
+                )
+
+        # 3. Only if blob is NOT in database, fall back to on-demand synthesis
+        paper = db.query(Paper).filter(Paper.id == paper_id).first()
+        if paper:
+            selected_voice = paper.voice_used or DEFAULT_TTS_VOICE
+            try:
+                if is_full:
+                    text_to_speak = paper.full_text or paper.summary_text or paper.abstract
+                    if text_to_speak and text_to_speak.strip():
+                        cleaned = AudioSynthesizer.prepare_verbatim_for_speech(text_to_speak)
+                        synth_path, dur = await AudioSynthesizer.synthesize_long_text_async(
+                            text=cleaned,
+                            output_filename=filename,
+                            voice=selected_voice
+                        )
+                        paper.full_audio_duration = dur
+                        if synth_path and os.path.exists(synth_path):
+                            paper.full_audio_blob = Path(synth_path).read_bytes()
+                        db.commit()
+                else:
+                    text_to_speak = paper.summary_text
+                    if not text_to_speak or not text_to_speak.strip():
+                        if paper.summary_problem:
+                            text_to_speak = (
+                                f"## 1. The Core Problem\n{paper.summary_problem}\n\n"
+                                f"## 2. Methodology\n{paper.summary_methodology or ''}\n\n"
+                                f"## 3. Key Results\n{paper.summary_results or ''}\n\n"
+                                f"## 4. Limitations\n{paper.summary_limitations or ''}"
+                            )
                         else:
-                            text_to_speak = paper.summary_text
-                            if not text_to_speak or not text_to_speak.strip():
-                                if paper.summary_problem:
-                                    text_to_speak = (
-                                        f"## 1. The Core Problem\n{paper.summary_problem}\n\n"
-                                        f"## 2. Methodology\n{paper.summary_methodology or ''}\n\n"
-                                        f"## 3. Key Results\n{paper.summary_results or ''}\n\n"
-                                        f"## 4. Limitations\n{paper.summary_limitations or ''}"
-                                    )
-                                else:
-                                    text_to_speak = paper.abstract or paper.title
-                            if text_to_speak and text_to_speak.strip():
-                                _, dur = await AudioSynthesizer.synthesize_audio_async(
-                                    text=text_to_speak,
-                                    output_filename=filename,
-                                    voice=selected_voice
-                                )
-                                paper.summary_audio_duration = dur
-                                db.commit()
-                                save_paper_audio(
-                                    db=db,
-                                    paper_id=paper_id,
-                                    mode="summary",
-                                    voice=selected_voice,
-                                    duration=dur,
-                                    audio_data_or_path=audio_path,
-                                    user_id=paper.user_id
-                                )
-                    except Exception as e:
-                        logger.warning(f"On-demand audio recovery failed: {e}")
+                            text_to_speak = paper.abstract or paper.title
+                    if text_to_speak and text_to_speak.strip():
+                        synth_path, dur = await AudioSynthesizer.synthesize_audio_async(
+                            text=text_to_speak,
+                            output_filename=filename,
+                            voice=selected_voice
+                        )
+                        paper.summary_audio_duration = dur
+                        if synth_path and os.path.exists(synth_path):
+                            paper.summary_audio_blob = Path(synth_path).read_bytes()
+                        db.commit()
+            except Exception as e:
+                logger.warning(f"On-demand audio recovery failed: {e}")
 
     if not audio_path.exists():
         raise HTTPException(status_code=404, detail=f"Audio file '{filename}' not found.")
@@ -1444,7 +1247,7 @@ async def stream_audio(filename: str, db: Session = Depends(get_db)):
 
 @app.post("/api/papers/{paper_id}/change-voice")
 async def change_paper_voice(paper_id: int, payload: VoiceChangeRequest, db: Session = Depends(get_db)):
-    """Re-synthesizes paper audio with a newly selected accent/voice and caches in database."""
+    """Re-synthesizes paper audio with a newly selected accent/voice and updates the database blob."""
     paper = db.query(Paper).filter(Paper.id == paper_id).first()
     if not paper:
         raise HTTPException(status_code=404, detail="Paper not found")
@@ -1463,20 +1266,18 @@ async def change_paper_voice(paper_id: int, payload: VoiceChangeRequest, db: Ses
 
         cleaned_speech = AudioSynthesizer.prepare_verbatim_for_speech(verbatim_text)
         audio_filename = f"paper_{paper.id}_full_{paper.zotero_item_key or 'direct'}.mp3"
-        _, duration = await AudioSynthesizer.synthesize_long_text_async(
+        out_path, duration = await AudioSynthesizer.synthesize_long_text_async(
             text=cleaned_speech,
             output_filename=audio_filename,
             voice=selected_voice
         )
-        save_paper_audio(
-            db=db,
-            paper_id=paper.id,
-            mode="full_paper",
-            voice=selected_voice,
-            duration=duration,
-            audio_data_or_path=AUDIO_DIR / audio_filename,
-            user_id=paper.user_id
-        )
+        if out_path and os.path.exists(out_path):
+            file_size = os.path.getsize(out_path)
+            if file_size < 25 * 1024 * 1024:
+                try:
+                    paper.full_audio_blob = Path(out_path).read_bytes()
+                except Exception as b_err:
+                    logger.warning(f"Failed to update full_audio_blob in database: {b_err}")
         paper.full_audio_path = f"/api/audio/{audio_filename}"
         paper.full_audio_duration = duration
         paper.audio_path = paper.full_audio_path
@@ -1493,20 +1294,16 @@ async def change_paper_voice(paper_id: int, payload: VoiceChangeRequest, db: Ses
             )
 
         audio_filename = f"paper_{paper.id}_{paper.zotero_item_key or 'direct'}.mp3"
-        _, duration = await AudioSynthesizer.synthesize_audio_async(
+        out_path, duration = await AudioSynthesizer.synthesize_audio_async(
             text=briefing_script,
             output_filename=audio_filename,
             voice=selected_voice
         )
-        save_paper_audio(
-            db=db,
-            paper_id=paper.id,
-            mode="summary",
-            voice=selected_voice,
-            duration=duration,
-            audio_data_or_path=AUDIO_DIR / audio_filename,
-            user_id=paper.user_id
-        )
+        if out_path and os.path.exists(out_path):
+            try:
+                paper.summary_audio_blob = Path(out_path).read_bytes()
+            except Exception as b_err:
+                logger.warning(f"Failed to update summary_audio_blob in database: {b_err}")
         paper.summary_audio_path = f"/api/audio/{audio_filename}"
         paper.summary_audio_duration = duration
         paper.audio_path = paper.summary_audio_path
@@ -1600,51 +1397,6 @@ def get_featured_conferences():
     """Returns top curated academic conferences with active doctoral consortiums."""
     scout = ConferenceScoutService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
     return scout.search(query="", upcoming_only=True)
-
-
-@app.get("/api/conferences/watchlist")
-def get_conference_watchlist(db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
-    """Returns conference watchlist for authenticated user or public items."""
-    user_id = user["id"] if user else None
-    query = db.query(ConferenceWatchlist)
-    if user_id:
-        query = query.filter(or_(ConferenceWatchlist.user_id == user_id, ConferenceWatchlist.user_id == None))
-    items = query.order_by(desc(ConferenceWatchlist.created_at)).all()
-    return {"watchlist": [i.to_dict() for i in items], "total": len(items)}
-
-
-@app.post("/api/conferences/watchlist")
-def add_conference_to_watchlist(payload: WatchlistAddRequest, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
-    """Adds a conference to the user's personal watchlist."""
-    user_id = user["id"] if user else None
-    item = ConferenceWatchlist(
-        user_id=user_id,
-        conference_name=payload.conference_name,
-        acronym=payload.acronym or "",
-        core_rank=payload.core_rank or "",
-        submission_deadline=payload.submission_deadline or "",
-        location=payload.location or "",
-        travel_grant=payload.travel_grant or "",
-        notes=payload.notes or ""
-    )
-    db.add(item)
-    db.commit()
-    db.refresh(item)
-    return {"success": True, "item": item.to_dict()}
-
-
-@app.delete("/api/conferences/watchlist/{item_id}")
-def remove_from_watchlist(item_id: int, db: Session = Depends(get_db), user: Optional[Dict[str, Any]] = Depends(get_current_user)):
-    """Removes a conference from the user's watchlist."""
-    user_id = user["id"] if user else None
-    query = db.query(ConferenceWatchlist).filter(ConferenceWatchlist.id == item_id)
-    if user_id:
-        query = query.filter(or_(ConferenceWatchlist.user_id == user_id, ConferenceWatchlist.user_id == None))
-    item = query.first()
-    if item:
-        db.delete(item)
-        db.commit()
-    return {"success": True, "deleted_id": item_id}
 
 
 # =====================================================================
@@ -1896,7 +1648,7 @@ def post_labs(payload: LabSearchRequest):
 # =====================================================================
 @app.get("/api/twin/profile")
 def get_twin_profile():
-    """Returns academic co-pilot knowledge base and scholar profile."""
+    """Returns Mark Febiri's digital twin knowledge base, synced with febmac.vercel.app."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1905,15 +1657,15 @@ def get_twin_profile():
 
 @app.post("/api/twin/sync")
 def sync_twin_portfolio(payload: TwinSyncRequest = TwinSyncRequest()):
-    """Live re-crawls scholar portfolio website to refresh profile knowledge."""
+    """Live re-crawls Mark Febiri's portfolio website to refresh profile knowledge."""
     if not PortfolioSyncService:
         raise HTTPException(status_code=503, detail="PortfolioSyncService unavailable")
-    return PortfolioSyncService.live_sync(base_url=payload.url or "")
+    return PortfolioSyncService.live_sync(base_url=payload.url or "https://febmac.vercel.app")
 
 
 @app.post("/api/twin/update-profile")
 def update_twin_profile(payload: TwinUpdateRequest):
-    """Updates custom research notes or active focus for the Academic Co-Pilot."""
+    """Updates custom research notes or active focus for the Digital Twin."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1922,7 +1674,7 @@ def update_twin_profile(payload: TwinUpdateRequest):
 
 @app.post("/api/twin/apply-grant")
 def twin_apply_grant(payload: TwinApplyGrantRequest):
-    """Autonomous drafter: creates complete grant/fellowship dossier on scholar's behalf."""
+    """Autonomous drafter: creates complete grant/fellowship dossier on Mark's behalf."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1931,7 +1683,7 @@ def twin_apply_grant(payload: TwinApplyGrantRequest):
 
 @app.post("/api/twin/apply-lab")
 def twin_apply_lab(payload: TwinApplyLabRequest):
-    """Autonomous drafter: creates complete research lab internship pitch & cold email on scholar's behalf."""
+    """Autonomous drafter: creates complete research lab internship pitch & cold email on Mark's behalf."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1940,7 +1692,7 @@ def twin_apply_lab(payload: TwinApplyLabRequest):
 
 @app.get("/api/twin/suggestions")
 def get_twin_suggestions():
-    """Proactive strategic advisor: returns prioritized actions the scholar should take over the next 14-60 days."""
+    """Proactive strategic advisor: returns prioritized actions Mark should take over the next 14-60 days."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1949,7 +1701,7 @@ def get_twin_suggestions():
 
 @app.post("/api/twin/chat")
 def chat_with_twin(payload: TwinChatRequest):
-    """Interactive chat with ProfFeb academic mentor and co-pilot."""
+    """Interactive chat with Mark Febiri's perfectionist digital twin."""
     if not TwinAgentService:
         raise HTTPException(status_code=503, detail="TwinAgentService unavailable")
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
@@ -1959,7 +1711,7 @@ def chat_with_twin(payload: TwinChatRequest):
 
 @app.get("/api/twin/github/status")
 def get_twin_github_status():
-    """Returns the live connection status of scholar's GitHub account."""
+    """Returns the live connection status of Mark Febiri's GitHub account."""
     if not GitHubConnectorService:
         raise HTTPException(status_code=503, detail="GitHubConnectorService unavailable")
     connector = GitHubConnectorService()
@@ -1972,13 +1724,13 @@ def connect_twin_github(payload: GitHubConnectRequest):
     if not GitHubConnectorService:
         raise HTTPException(status_code=503, detail="GitHubConnectorService unavailable")
     connector = GitHubConnectorService()
-    result = connector.save_token(token=payload.token, username=payload.username or "")
+    result = connector.save_token(token=payload.token, username=payload.username or "Febiri")
     return result
 
 
 @app.get("/api/twin/github/repos")
 def get_twin_github_repos():
-    """Fetches scholar's active repositories directly from GitHub API."""
+    """Fetches Mark Febiri's active repositories directly from GitHub API."""
     if not GitHubConnectorService:
         raise HTTPException(status_code=503, detail="GitHubConnectorService unavailable")
     connector = GitHubConnectorService()
@@ -2008,7 +1760,7 @@ def twin_dispatch_application(payload: DispatchApplicationRequest):
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
     result = service.dispatch_application(
         packet=payload.packet,
-        target_repo=payload.target_repo or "research-notes"
+        target_repo=payload.target_repo or "febPhD"
     )
     return result
 
@@ -2021,6 +1773,17 @@ def get_twin_dispatch_history():
     service = TwinAgentService(api_key=GEMINI_API_KEY, model=GEMINI_MODEL)
     history = service.get_dispatch_history()
     return {"history": history, "total": len(history)}
+
+
+@app.get("/api/health")
+def api_health():
+    """Health check endpoint to test runtime status."""
+    return {
+        "status": "healthy",
+        "service": "febPhD",
+        "serverless": IS_SERVERLESS,
+        "database": "connected"
+    }
 
 
 # Safely mount static directory if it exists, without crashing if directory is missing

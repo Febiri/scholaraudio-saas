@@ -4,10 +4,9 @@ _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-import zlib
 from datetime import datetime
-from typing import Generator, Optional, Tuple, Union
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean, Float, LargeBinary, ForeignKey, UniqueConstraint
+from typing import Generator
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean, Float, LargeBinary, text, event
 from sqlalchemy.orm import declarative_base, sessionmaker, Session, deferred
 
 try:
@@ -22,7 +21,6 @@ logger = logging.getLogger("database")
 def _create_safe_engine(url: str):
     import os
     import tempfile
-    from sqlalchemy import text
     from sqlalchemy.pool import StaticPool
 
     def _normalize_db_url(raw: str) -> str:
@@ -36,14 +34,39 @@ def _create_safe_engine(url: str):
     norm_url = _normalize_db_url(url)
 
     def _is_engine_writable(eng) -> bool:
-        try:
-            with eng.begin() as conn:
-                conn.execute(text("CREATE TABLE IF NOT EXISTS _zam_rw_check (id INTEGER PRIMARY KEY)"))
-                conn.execute(text("DROP TABLE IF EXISTS _zam_rw_check"))
-            return True
-        except Exception as e:
-            logger.warning(f"Engine {eng.url} failed write verification: {e}")
-            return False
+        if eng.url.drivername.startswith("sqlite"):
+            db_path = eng.url.database
+            if not db_path or db_path == ":memory:":
+                return True
+            p = Path(db_path)
+            try:
+                if p.exists():
+                    return os.access(p, os.W_OK)
+                else:
+                    return os.access(p.parent if p.parent.exists() else Path("."), os.W_OK)
+            except Exception:
+                return False
+        else:
+            try:
+                with eng.connect() as conn:
+                    conn.execute(text("SELECT 1"))
+                return True
+            except Exception as e:
+                logger.warning(f"Engine {eng.url} connection check failed: {e}")
+                return False
+
+    def _configure_sqlite_pragmas(eng):
+        @event.listens_for(eng, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            try:
+                cursor.execute("PRAGMA journal_mode = WAL")
+                cursor.execute("PRAGMA synchronous = NORMAL")
+                cursor.execute("PRAGMA busy_timeout = 30000")
+            except Exception:
+                pass
+            finally:
+                cursor.close()
 
     # Attempt 1: Configured database URL (Supabase PostgreSQL or SQLite)
     if norm_url.startswith("postgresql"):
@@ -72,8 +95,10 @@ def _create_safe_engine(url: str):
         try:
             eng = create_engine(
                 norm_url,
-                connect_args={"check_same_thread": False} if norm_url.startswith("sqlite") else {}
+                connect_args={"check_same_thread": False, "timeout": 30.0} if norm_url.startswith("sqlite") else {}
             )
+            if norm_url.startswith("sqlite") and ":memory:" not in norm_url:
+                _configure_sqlite_pragmas(eng)
             if _is_engine_writable(eng):
                 return eng
         except Exception as e:
@@ -84,7 +109,6 @@ def _create_safe_engine(url: str):
         tmp_dir = Path("/tmp") if (os.name != "nt" or Path("/tmp").exists()) else Path(tempfile.gettempdir())
         tmp_db_file = tmp_dir / "zotero_audio.db"
         if not tmp_db_file.exists():
-            # Try to copy existing base db content if available
             base_db = _ROOT / "zotero_audio.db"
             if base_db.exists():
                 try:
@@ -97,18 +121,19 @@ def _create_safe_engine(url: str):
                 except Exception:
                     pass
         tmp_url = f"sqlite:///{tmp_db_file.as_posix()}"
-        eng = create_engine(tmp_url, connect_args={"check_same_thread": False})
+        eng = create_engine(tmp_url, connect_args={"check_same_thread": False, "timeout": 30.0})
+        _configure_sqlite_pragmas(eng)
         if _is_engine_writable(eng):
             logger.info(f"Using verified writable temporary SQLite database at {tmp_url}")
             return eng
     except Exception as e:
         logger.warning(f"Temporary database fallback failed: {e}")
 
-    # Attempt 3: In-memory SQLite with StaticPool (always 100% writable, zero-disk)
+    # Attempt 3: In-memory SQLite with StaticPool (only if disk is truly unavailable)
     logger.warning("Falling back to in-memory SQLite database with StaticPool.")
     return create_engine(
         "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
+        connect_args={"check_same_thread": False, "timeout": 30.0},
         poolclass=StaticPool
     )
 
@@ -121,7 +146,6 @@ class Paper(Base):
     __tablename__ = "papers"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(64), index=True, nullable=True)
     zotero_item_key = Column(String(64), unique=True, index=True, nullable=True)
     title = Column(String(512), nullable=False, index=True)
     authors = Column(String(512), default="")
@@ -151,6 +175,8 @@ class Paper(Base):
     summary_audio_duration = Column(Float, default=0.0)
     full_audio_path = Column(String(512), nullable=True)
     full_audio_duration = Column(Float, default=0.0)
+    summary_audio_blob = deferred(Column(LargeBinary, nullable=True))
+    full_audio_blob = deferred(Column(LargeBinary, nullable=True))
     voice_used = Column(String(64), default="en-US-ChristopherNeural")
     
     # Processing status: "Pending", "Processing", "Ready", "Failed"
@@ -177,7 +203,6 @@ class Paper(Base):
 
         d = {
             "id": self.id,
-            "user_id": self.user_id,
             "zotero_item_key": self.zotero_item_key,
             "title": self.title,
             "authors": self.authors,
@@ -211,220 +236,6 @@ class Paper(Base):
         return d
 
 
-class Note(Base):
-    __tablename__ = "notes"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(64), index=True, nullable=True)
-    paper_id = Column(Integer, index=True, nullable=True)
-    content = Column(Text, nullable=False)
-    tags = Column(String(256), default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "paper_id": self.paper_id,
-            "content": self.content,
-            "tags": self.tags,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None
-        }
-
-
-class ConferenceWatchlist(Base):
-    __tablename__ = "conference_watchlists"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(String(64), index=True, nullable=True)
-    conference_name = Column(String(512), nullable=False)
-    acronym = Column(String(64), default="")
-    core_rank = Column(String(32), default="")
-    submission_deadline = Column(String(128), default="")
-    location = Column(String(256), default="")
-    travel_grant = Column(String(256), default="")
-    notes = Column(Text, default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "conference_name": self.conference_name,
-            "acronym": self.acronym,
-            "core_rank": self.core_rank,
-            "submission_deadline": self.submission_deadline,
-            "location": self.location,
-            "travel_grant": self.travel_grant,
-            "notes": self.notes,
-            "created_at": self.created_at.isoformat() if self.created_at else None
-        }
-
-
-class PaperAudio(Base):
-    """
-    Space-optimized binary cache for generated paper audio.
-    Audio bytes are stored using zlib compression on top of MP3 mono speech,
-    ensuring >95% storage efficiency while eliminating redundant re-synthesis on startup.
-    Deferred loading ensures the audio payload is only fetched when explicitly accessed.
-    """
-    __tablename__ = "paper_audio"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    paper_id = Column(Integer, ForeignKey("papers.id", ondelete="CASCADE"), index=True, nullable=False)
-    user_id = Column(String(64), index=True, nullable=True)
-    mode = Column(String(32), default="summary")  # "summary" or "full_paper"
-    voice = Column(String(64), nullable=True)
-    duration = Column(Float, default=0.0)
-    audio_format = Column(String(16), default="mp3_zlib")
-    audio_bytes = deferred(Column(LargeBinary, nullable=False))
-    file_size_bytes = Column(Integer, default=0)
-    compressed_size_bytes = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    __table_args__ = (
-        UniqueConstraint("paper_id", "mode", name="uq_paper_audio_mode"),
-    )
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "paper_id": self.paper_id,
-            "user_id": self.user_id,
-            "mode": self.mode,
-            "voice": self.voice,
-            "duration": self.duration,
-            "file_size_bytes": self.file_size_bytes,
-            "compressed_size_bytes": self.compressed_size_bytes,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        }
-
-
-def save_paper_audio(
-    db: Session,
-    paper_id: int,
-    mode: str,
-    voice: str,
-    duration: float,
-    audio_data_or_path: Union[bytes, str, Path],
-    user_id: Optional[str] = None
-) -> Optional[PaperAudio]:
-    """
-    Saves generated speech audio into the database in a space-optimized format (zlib-compressed MP3).
-    Once saved, the audio remains persistent across server restarts and new launches.
-    """
-    try:
-        if isinstance(audio_data_or_path, (str, Path)):
-            p = Path(audio_data_or_path)
-            if not p.exists():
-                return None
-            raw_bytes = p.read_bytes()
-        elif isinstance(audio_data_or_path, (bytes, bytearray)):
-            raw_bytes = bytes(audio_data_or_path)
-        else:
-            return None
-
-        if not raw_bytes:
-            return None
-
-        compressed_bytes = zlib.compress(raw_bytes, level=9)
-
-        record = db.query(PaperAudio).filter(
-            PaperAudio.paper_id == paper_id,
-            PaperAudio.mode == mode
-        ).first()
-
-        if not record:
-            record = PaperAudio(
-                paper_id=paper_id,
-                user_id=user_id,
-                mode=mode,
-                voice=voice,
-                duration=duration,
-                audio_format="mp3_zlib",
-                audio_bytes=compressed_bytes,
-                file_size_bytes=len(raw_bytes),
-                compressed_size_bytes=len(compressed_bytes)
-            )
-            db.add(record)
-        else:
-            if user_id:
-                record.user_id = user_id
-            record.voice = voice
-            record.duration = duration
-            record.audio_bytes = compressed_bytes
-            record.file_size_bytes = len(raw_bytes)
-            record.compressed_size_bytes = len(compressed_bytes)
-            record.updated_at = datetime.utcnow()
-
-        db.commit()
-        db.refresh(record)
-        logger.info(
-            f"Cached audio in DB for paper {paper_id} ({mode}): "
-            f"{len(raw_bytes)} bytes -> {len(compressed_bytes)} bytes ({round((len(compressed_bytes)/max(1, len(raw_bytes)))*100, 1)}%)"
-        )
-        return record
-    except Exception as e:
-        logger.error(f"Failed to save paper audio to database: {e}")
-        db.rollback()
-        return None
-
-
-def get_paper_audio(db: Session, paper_id: int, mode: str = "summary") -> Optional[Tuple[bytes, float, str]]:
-    """
-    Retrieves and decompresses audio bytes from the database.
-    Returns (raw_mp3_bytes, duration, voice) or None.
-    """
-    try:
-        record = db.query(PaperAudio).filter(
-            PaperAudio.paper_id == paper_id,
-            PaperAudio.mode == mode
-        ).first()
-
-        if not record or not record.audio_bytes:
-            return None
-
-        if record.audio_format == "mp3_zlib":
-            raw_bytes = zlib.decompress(record.audio_bytes)
-        else:
-            raw_bytes = record.audio_bytes
-
-        return raw_bytes, record.duration or 0.0, record.voice or ""
-    except Exception as e:
-        logger.error(f"Failed to retrieve paper audio from database: {e}")
-        return None
-
-
-def has_paper_audio(db: Session, paper_id: int, mode: str = "summary") -> bool:
-    """Checks whether audio for the paper and mode already exists in the database."""
-    try:
-        count = db.query(PaperAudio.id).filter(
-            PaperAudio.paper_id == paper_id,
-            PaperAudio.mode == mode
-        ).count()
-        return count > 0
-    except Exception:
-        return False
-
-
-def restore_paper_audio_file(db: Session, paper_id: int, mode: str, target_path: Union[str, Path]) -> bool:
-    """
-    Restores an audio file to disk from the database cache without re-synthesizing.
-    """
-    audio_info = get_paper_audio(db, paper_id=paper_id, mode=mode)
-    if not audio_info:
-        return False
-    raw_bytes, _, _ = audio_info
-    target = Path(target_path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(raw_bytes)
-    return True
-
-
 def init_db():
     try:
         Base.metadata.create_all(bind=engine)
@@ -432,28 +243,111 @@ def init_db():
         logger.warning(f"Warning: could not execute create_all on database: {e}")
         return
 
-    # Automatically migrate SQLite columns if missing
+    # Automatically migrate columns if missing (SQLite or PostgreSQL)
     try:
-        with engine.connect() as conn:
-            cursor = conn.connection.cursor()
-            cursor.execute("PRAGMA table_info(papers)")
-            existing_cols = [row[1] for row in cursor.fetchall()]
-            new_cols = [
-                ("user_id", "VARCHAR(64)"),
-                ("full_text", "TEXT"),
-                ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
-                ("summary_audio_path", "VARCHAR(512)"),
-                ("summary_audio_duration", "FLOAT DEFAULT 0.0"),
-                ("full_audio_path", "VARCHAR(512)"),
-                ("full_audio_duration", "FLOAT DEFAULT 0.0"),
-            ]
-            for col_name, col_def in new_cols:
-                if col_name not in existing_cols:
-                    cursor.execute(f"ALTER TABLE papers ADD COLUMN {col_name} {col_def}")
-            conn.connection.commit()
+        dialect_name = getattr(engine.dialect, "name", "sqlite")
+        if dialect_name == "sqlite":
+            with engine.connect() as conn:
+                cursor = conn.connection.cursor()
+                cursor.execute("PRAGMA table_info(papers)")
+                existing_cols = [row[1] for row in cursor.fetchall()]
+                new_cols = [
+                    ("full_text", "TEXT"),
+                    ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
+                    ("summary_audio_path", "VARCHAR(512)"),
+                    ("summary_audio_duration", "FLOAT DEFAULT 0.0"),
+                    ("full_audio_path", "VARCHAR(512)"),
+                    ("full_audio_duration", "FLOAT DEFAULT 0.0"),
+                    ("summary_audio_blob", "BLOB"),
+                    ("full_audio_blob", "BLOB"),
+                ]
+                for col_name, col_def in new_cols:
+                    if col_name not in existing_cols:
+                        cursor.execute(f"ALTER TABLE papers ADD COLUMN {col_name} {col_def}")
+                conn.connection.commit()
+        elif dialect_name == "postgresql":
+            with engine.begin() as conn:
+                pg_cols = [
+                    ("full_text", "TEXT"),
+                    ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
+                    ("summary_audio_path", "VARCHAR(512)"),
+                    ("summary_audio_duration", "FLOAT DEFAULT 0.0"),
+                    ("full_audio_path", "VARCHAR(512)"),
+                    ("full_audio_duration", "FLOAT DEFAULT 0.0"),
+                    ("summary_audio_blob", "BYTEA"),
+                    ("full_audio_blob", "BYTEA"),
+                ]
+                for col_name, col_def in pg_cols:
+                    conn.execute(text(f"ALTER TABLE papers ADD COLUMN IF NOT EXISTS {col_name} {col_def}"))
     except Exception as e:
-        # Pass if not SQLite or column already added
-        pass
+        logger.warning(f"Database migration check notice: {e}")
+
+    # Backfill: If existing papers have audio files on local disk but blobs are not yet populated,
+    # read the audio files and cache them into the database so they are permanently preserved.
+    try:
+        from backend.config import AUDIO_DIR, STATIC_DIR
+        search_dirs = [AUDIO_DIR, STATIC_DIR / "audio"]
+        db = SessionLocal()
+        try:
+            # Query only papers where at least one audio blob is missing
+            papers_to_backfill = db.query(Paper).filter(
+                (Paper.summary_audio_blob.is_(None)) | (Paper.full_audio_blob.is_(None))
+            ).all()
+            updated_count = 0
+            for paper in papers_to_backfill:
+                # Check summary audio
+                if paper.summary_audio_blob is None:
+                    candidate = None
+                    if paper.summary_audio_path:
+                        fname = Path(paper.summary_audio_path).name
+                        for sdir in search_dirs:
+                            p = sdir / fname
+                            if p.exists() and p.stat().st_size > 0:
+                                candidate = p
+                                break
+                    if not candidate:
+                        # Glob search for summary mp3
+                        for sdir in search_dirs:
+                            if sdir.exists():
+                                matches = [f for f in sdir.glob(f"paper_{paper.id}_*.mp3") if "_full_" not in f.name]
+                                if matches and matches[0].stat().st_size > 0:
+                                    candidate = matches[0]
+                                    paper.summary_audio_path = f"/api/audio/{candidate.name}"
+                                    break
+                    if candidate:
+                        paper.summary_audio_blob = candidate.read_bytes()
+                        updated_count += 1
+
+                # Check full audio (store in DB if under 25MB threshold)
+                if paper.full_audio_blob is None:
+                    candidate = None
+                    if paper.full_audio_path:
+                        fname = Path(paper.full_audio_path).name
+                        for sdir in search_dirs:
+                            p = sdir / fname
+                            if p.exists() and p.stat().st_size > 0:
+                                candidate = p
+                                break
+                    if not candidate:
+                        # Glob search for full mp3
+                        for sdir in search_dirs:
+                            if sdir.exists():
+                                matches = [f for f in sdir.glob(f"paper_{paper.id}_full_*.mp3")]
+                                if matches and matches[0].stat().st_size > 0:
+                                    candidate = matches[0]
+                                    paper.full_audio_path = f"/api/audio/{candidate.name}"
+                                    break
+                    if candidate and candidate.stat().st_size < 25 * 1024 * 1024:
+                        paper.full_audio_blob = candidate.read_bytes()
+                        updated_count += 1
+
+            if updated_count > 0:
+                db.commit()
+                logger.info(f"Backfilled {updated_count} existing audio tracks into database blobs for persistent storage.")
+        finally:
+            db.close()
+    except Exception as e:
+        logger.warning(f"Audio blob backfill notice: {e}")
 
 
 def get_db() -> Generator[Session, None, None]:

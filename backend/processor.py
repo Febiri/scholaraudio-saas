@@ -404,7 +404,7 @@ In summary, this work represents an essential milestone that challenges conventi
                 role = "Student Researcher" if m.get("role") == "user" else "Professor Mentor"
                 history_str += f"{role}: {m.get('content', '')}\n\n"
 
-        prompt = f"""You are Prof. Feb, a distinguished Chair Professor, Senior Principal Research Scientist, and Master Academic Mentor assigned specifically to mentor the researcher on this research paper: "{title}".
+        prompt = f"""You are Prof. Feb (Professor Febiri), a distinguished Chair Professor, Senior Principal Research Scientist, and Master Academic Mentor assigned specifically to mentor the researcher on this research paper: "{title}".
 Your name and identity is Prof. Feb. Speak as Prof. Feb with authoritative scientific mastery, academic warmth, and extreme pedagogical clarity.
 Your mission is to teach with world-class pedagogical clarity and scientific depth so the researcher understands this paper completely.
 
@@ -771,9 +771,9 @@ class AudioSynthesizer:
 
         logger.info(f"Synthesizing audio ({len(cleaned_text)} chars) with voice '{selected_voice}' to {output_path}...")
 
-        # Use edge-tts Communicate
+        # Use edge-tts Communicate with timeout protection
         communicate = edge_tts.Communicate(cleaned_text, voice=selected_voice)
-        await communicate.save(str(output_path))
+        await asyncio.wait_for(communicate.save(str(output_path)), timeout=90.0)
 
         # Estimate duration (~150 words per minute average speaking rate)
         words = len(cleaned_text.split())
@@ -797,14 +797,15 @@ class AudioSynthesizer:
         text: str,
         output_filename: str,
         voice: Optional[str] = None,
-        max_chunk_chars: int = 7000,
-        concurrency: int = 5,
+        max_chunk_chars: int = 3000,
+        concurrency: int = 3,
         progress_callback: Optional[Callable[[int, int], None]] = None
     ) -> Tuple[str, float]:
         """
         High-speed concurrent long speech synthesizer using Edge-TTS:
-        - Splits text into natural paragraph chunks.
-        - Employs an asyncio worker pool with bounded concurrency (default 5 workers).
+        - Splits text into natural paragraph chunks (optimal ~3000 chars).
+        - Employs an asyncio worker pool with bounded concurrency (3 workers for anti-throttling).
+        - Enforces per-chunk timeouts to prevent WebSocket stalling.
         - Gathers and stitches chunks in exact sequential document order.
         - Updates progress_callback after every chunk completion.
         """
@@ -847,11 +848,15 @@ class AudioSynthesizer:
                 retries = 3
                 for attempt in range(retries):
                     try:
-                        comm = edge_tts.Communicate(chunk_str, voice=selected_voice)
-                        buf = bytearray()
-                        async for msg in comm.stream():
-                            if msg["type"] == "audio":
-                                buf.extend(msg["data"])
+                        async def _stream_one() -> bytes:
+                            comm = edge_tts.Communicate(chunk_str, voice=selected_voice)
+                            buf = bytearray()
+                            async for msg in comm.stream():
+                                if msg["type"] == "audio":
+                                    buf.extend(msg["data"])
+                            return bytes(buf)
+
+                        audio_bytes = await asyncio.wait_for(_stream_one(), timeout=45.0)
                         completed_count += 1
                         logger.info(f"Synthesized chunk {idx + 1}/{total_chunks} ({len(chunk_str)} chars) [Progress: {completed_count}/{total_chunks}]")
                         if progress_callback:
@@ -859,12 +864,13 @@ class AudioSynthesizer:
                                 progress_callback(completed_count, total_chunks)
                             except Exception:
                                 pass
-                        return idx, bytes(buf)
+                        return idx, audio_bytes
                     except Exception as err:
+                        logger.warning(f"Chunk {idx + 1}/{total_chunks} attempt {attempt + 1} notice: {err}")
                         if attempt == retries - 1:
                             logger.error(f"Failed chunk {idx + 1} after {retries} attempts: {err}")
                             raise err
-                        await asyncio.sleep(1.0)
+                        await asyncio.sleep(1.5 * (attempt + 1))
             return idx, b""
 
         # Fetch all chunks concurrently with semaphore rate limiting

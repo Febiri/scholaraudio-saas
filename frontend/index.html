@@ -1,23 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProfFeb — Neural Research Briefings & Multi-Modal Academic Workstation</title>
+  <title>Zotero Audio Mentor — Conversational Research Briefings</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-
-  <!-- Supabase JS Client & ProfFeb Auth -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/static/js/proffeb-auth.js" defer></script>
 
   <!-- Google Fonts: Inter (UI), Newsreader (Academic Serif), JetBrains Mono (Formulas/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- KaTeX for Scientific Formula Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -79,62 +72,35 @@
       width: 6px;
       height: 6px;
     }
-
     ::-webkit-scrollbar-track {
       background: #0c111d;
     }
-
     ::-webkit-scrollbar-thumb {
       background: #253452;
       border-radius: 9999px;
     }
-
     ::-webkit-scrollbar-thumb:hover {
       background: #10b981;
     }
 
     /* Soundwave bars animation */
     @keyframes waveBar {
-
-      0%,
-      100% {
-        height: 4px;
-      }
-
-      50% {
-        height: 22px;
-      }
+      0%, 100% { height: 4px; }
+      50% { height: 22px; }
     }
-
     .wave-bar {
       animation: waveBar 1.2s ease-in-out infinite;
     }
-
-    .wave-bar:nth-child(2) {
-      animation-delay: 0.15s;
-    }
-
-    .wave-bar:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    .wave-bar:nth-child(4) {
-      animation-delay: 0.45s;
-    }
-
-    .wave-bar:nth-child(5) {
-      animation-delay: 0.2s;
-    }
-
-    .wave-bar:nth-child(6) {
-      animation-delay: 0.35s;
-    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.35s; }
 
     /* Academic prose typography & math/table formatting for AI Mentor */
     .academic-prose {
       line-height: 1.65;
     }
-
     .academic-prose table {
       width: 100%;
       border-collapse: collapse;
@@ -144,24 +110,19 @@
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.12);
     }
-
-    .academic-prose th,
-    .academic-prose td {
+    .academic-prose th, .academic-prose td {
       border: 1px solid rgba(255, 255, 255, 0.08);
       padding: 0.45rem 0.65rem;
       text-align: left;
     }
-
     .academic-prose th {
       background: rgba(16, 185, 129, 0.12);
       font-weight: 700;
       color: #34d399;
     }
-
     .academic-prose tr:nth-child(even) {
       background: rgba(255, 255, 255, 0.02);
     }
-
     .academic-prose h3 {
       font-weight: 700;
       font-size: 0.85rem;
@@ -170,7 +131,6 @@
       color: #f8fafc;
       letter-spacing: -0.01em;
     }
-
     .academic-prose h4 {
       font-weight: 600;
       font-size: 0.78rem;
@@ -178,25 +138,22 @@
       margin-bottom: 0.25rem;
       color: #94a3b8;
     }
-
     .academic-prose ul {
       list-style-type: disc;
       margin-left: 1.25rem;
       margin-top: 0.35rem;
       margin-bottom: 0.45rem;
+      space-y: 0.2rem;
     }
-
     .academic-prose ol {
       list-style-type: decimal;
       margin-left: 1.25rem;
       margin-top: 0.35rem;
       margin-bottom: 0.45rem;
     }
-
     .academic-prose li {
       margin-bottom: 0.25rem;
     }
-
     .academic-prose blockquote {
       border-left: 3px solid #10b981;
       padding-left: 0.85rem;
@@ -207,7 +164,6 @@
       padding-top: 0.35rem;
       padding-bottom: 0.35rem;
     }
-
     .academic-prose code {
       font-family: 'JetBrains Mono', monospace;
       background: rgba(255, 255, 255, 0.09);
@@ -216,7 +172,6 @@
       font-size: 0.73rem;
       color: #a7f3d0;
     }
-
     .academic-prose pre {
       margin: 0.65rem 0;
       background: #060911;
@@ -225,14 +180,12 @@
       padding: 0.75rem;
       overflow-x: auto;
     }
-
     .academic-prose pre code {
       background: transparent;
       padding: 0;
       color: #e2e8f0;
       display: block;
     }
-
     .academic-prose .katex-display {
       margin: 0.75rem 0;
       overflow-x: auto;
@@ -256,7 +209,6 @@
       backdrop-filter: blur(28px) !important;
       background: rgba(5, 8, 15, 0.97) !important;
     }
-
     .zen-studio-active #briefing-modal-drawer {
       max-width: 960px !important;
       margin: 1.5vh auto !important;
@@ -272,90 +224,57 @@
       border: 1px solid rgba(255, 255, 255, 0.07);
       backdrop-filter: blur(12px);
     }
-
     .glass-card:hover {
       border-color: rgba(16, 185, 129, 0.35);
       box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.1);
     }
   </style>
 </head>
-
-<body
-  class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
 
   <!-- Ambient top glow aura -->
-  <div
-    class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-64 bg-gradient-to-b from-brand-500/10 via-scholar-500/5 to-transparent blur-3xl -z-10">
-  </div>
+  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-64 bg-gradient-to-b from-brand-500/10 via-scholar-500/5 to-transparent blur-3xl -z-10"></div>
 
   <!-- ================= TOP NAVIGATION BAR ================= -->
   <header class="border-b border-dark-800/80 bg-dark-900/90 backdrop-blur-xl sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-
+      
       <!-- Back to Home Page & Brand Logo -->
       <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        <a href="/"
-          class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold"
-          title="Return to Overview">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          <span class="hidden sm:inline">Overview</span>
+        <a href="/" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Return to PhD Corner">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          <span class="hidden sm:inline">PhD Corner</span>
         </a>
-        <a href="/conferences"
-          class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-indigo-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold"
-          title="Open Conference & Event Scout">
+        <a href="/conferences" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-indigo-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Open Conference & Event Scout">
           <span>🌐</span>
           <span class="hidden md:inline">Event Scout</span>
         </a>
-        <a href="/reviewer"
-          class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-rose-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold"
-          title="AI Reviewer #2 Simulator">
-          <span>⚖️</span>
-          <span class="hidden md:inline">Reviewer #2</span>
-        </a>
-        <a href="/radar"
-          class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-purple-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold"
-          title="Research Gap & Novelty Radar">
-          <span>🔬</span>
-          <span class="hidden md:inline">Novelty Radar</span>
-        </a>
-        <a href="/agent"
-          class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-cyan-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold"
-          title="Academic Co-Pilot">
+        <a href="/agent" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-purple-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="PhD Digital Twin & Co-Pilot">
           <span>🧠</span>
-          <span class="hidden md:inline">Academic Co-Pilot</span>
+          <span class="hidden md:inline">Digital Twin</span>
         </a>
-        <div
-          class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-brand-500/20 flex items-center justify-center">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-brand-500/20 flex items-center justify-center">
           <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
             <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
             </svg>
           </div>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-bold text-base sm:text-lg tracking-tight text-white">ProfFeb</span>
-            <span
-              class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-semibold hidden sm:inline">Research
-              Studio</span>
+            <span class="font-bold text-base sm:text-lg tracking-tight text-white">Zotero Audio Mentor</span>
+            <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-semibold hidden sm:inline">Research Studio</span>
           </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Conversational AI Research Briefings & Spoken Mentorship
-          </p>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Conversational AI Research Briefings & Spoken Mentorship</p>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex items-center gap-2 sm:gap-2.5">
         <!-- Speaking Voice Pill (Ghana / West Africa prominent) -->
-        <div
-          class="flex items-center gap-1.5 bg-dark-850 hover:bg-dark-800 border border-dark-700/80 rounded-xl px-2.5 py-1.5 text-xs transition shadow-sm"
-          title="Choose Speaking Voice Accent">
+        <div class="flex items-center gap-1.5 bg-dark-850 hover:bg-dark-800 border border-dark-700/80 rounded-xl px-2.5 py-1.5 text-xs transition shadow-sm" title="Choose Speaking Voice Accent">
           <span class="text-sm">🇬🇭</span>
-          <select id="quick-voice-select" onchange="handleQuickVoiceChange(this.value)"
-            class="bg-transparent text-xs font-semibold text-slate-200 focus:outline-none cursor-pointer pr-1">
+          <select id="quick-voice-select" onchange="handleQuickVoiceChange(this.value)" class="bg-transparent text-xs font-semibold text-slate-200 focus:outline-none cursor-pointer pr-1">
             <optgroup label="🇬🇭 West African (Ghanaian & Nigerian Accent)">
               <option value="en-NG-AbeoNeural" selected>🇬🇭 Abeo (West Africa - Male)</option>
               <option value="en-NG-EzinneNeural">🇬🇭 Ezinne (West Africa - Female)</option>
@@ -376,58 +295,42 @@
         </div>
 
         <!-- Load Sample Papers Button -->
-        <button id="btn-load-samples" onclick="loadSamplePapers()"
-          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition">
+        <button id="btn-load-samples" onclick="loadSamplePapers()" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition">
           <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
           <span>Demo Papers</span>
         </button>
 
         <!-- Direct PDF Upload Button (Hero Accent) -->
-        <button onclick="openUploadModal()"
-          class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white shadow-lg shadow-brand-500/20 transition active:scale-95">
+        <button onclick="openUploadModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white shadow-lg shadow-brand-500/20 transition active:scale-95">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
           <span>Upload PDF</span>
         </button>
 
         <!-- Sync Zotero Button -->
-        <button id="btn-sync-zotero" onclick="triggerZoteroSync()"
-          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-200 border border-dark-700/80 transition active:scale-95">
-          <svg id="sync-spinner" class="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        <button id="btn-sync-zotero" onclick="triggerZoteroSync()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-200 border border-dark-700/80 transition active:scale-95">
+          <svg id="sync-spinner" class="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <span id="sync-btn-text" class="hidden sm:inline">Sync Zotero</span>
         </button>
 
         <!-- Shortcuts Guide Button -->
-        <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts (?)"
-          class="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 text-xs transition">
+        <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts (?)" class="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 text-xs transition">
           <span class="text-xs">⌨️</span>
           <span class="text-[11px] font-mono">Shortcuts</span>
         </button>
 
         <!-- Settings Button -->
-        <button onclick="openSettingsModal()" title="API & Voice Settings"
-          class="p-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white border border-dark-700/80 transition">
+        <button onclick="openSettingsModal()" title="API & Voice Settings" class="p-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white border border-dark-700/80 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
-
-        <div class="h-5 w-px bg-dark-700/80 mx-0.5 hidden sm:block"></div>
-
-        <!-- Global SaaS User Navigation / Profile Pill -->
-        <div id="user-nav-container"></div>
       </div>
 
     </div>
@@ -438,17 +341,14 @@
 
     <!-- Executive Research HUD & Continue Banner -->
     <section class="flex flex-col gap-3">
-
+      
       <!-- Top Metrics Strip -->
-      <div
-        class="glass-card rounded-2xl p-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
-
+      <div class="glass-card rounded-2xl p-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+        
         <div class="flex items-center gap-6 sm:gap-8 divide-x divide-dark-800">
-
+          
           <div class="flex items-center gap-3">
-            <div
-              class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs">
-              📚</div>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs">📚</div>
             <div>
               <div class="flex items-baseline gap-1.5">
                 <span id="stat-total-papers" class="text-base font-bold text-white">0</span>
@@ -459,9 +359,7 @@
           </div>
 
           <div class="pl-6 sm:pl-8 flex items-center gap-3">
-            <div
-              class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs">
-              🎧</div>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs">🎧</div>
             <div>
               <div class="flex items-baseline gap-1.5">
                 <span id="stat-ready-briefings" class="text-base font-bold text-brand-400">0</span>
@@ -472,9 +370,7 @@
           </div>
 
           <div class="pl-6 sm:pl-8 flex items-center gap-3">
-            <div
-              class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs">
-              ⏱️</div>
+            <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs">⏱️</div>
             <div>
               <div class="flex items-baseline gap-1.5">
                 <span id="stat-audio-time" class="text-base font-bold text-white">0.0 min</span>
@@ -487,13 +383,11 @@
 
         <!-- Right System Badges -->
         <div class="flex items-center gap-2 text-xs font-mono">
-          <div
-            class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-950/60 border border-dark-800 text-slate-300">
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-950/60 border border-dark-800 text-slate-300">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>Edge-TTS Free</span>
           </div>
-          <div
-            class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-950/60 border border-dark-800 text-slate-300">
+          <div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-950/60 border border-dark-800 text-slate-300">
             <span>⚡ Gemini Flash</span>
           </div>
         </div>
@@ -501,29 +395,22 @@
       </div>
 
       <!-- Hero "Continue Listening" Banner (shown when a track is in progress) -->
-      <div id="hero-resume-banner"
-        class="hidden items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-dark-900 to-dark-900 border border-amber-500/30 shadow-lg">
+      <div id="hero-resume-banner" class="hidden items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-dark-900 to-dark-900 border border-amber-500/30 shadow-lg">
         <div class="flex items-center gap-3 min-w-0">
           <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
           </div>
           <div class="truncate">
             <div class="flex items-center gap-2">
-              <span
-                class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">Resume
-                Playing</span>
+              <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">Resume Playing</span>
               <span id="hero-resume-title" class="text-xs font-bold text-white truncate">Paper Title</span>
             </div>
             <p class="text-[11px] text-slate-400 font-mono mt-0.5">
-              Stopped at <strong id="hero-resume-time" class="text-amber-400">0:00</strong> • Click to jump right back
-              in
+              Stopped at <strong id="hero-resume-time" class="text-amber-400">0:00</strong> • Click to jump right back in
             </p>
           </div>
         </div>
-        <button onclick="resumeLastPlayedPaper()"
-          class="shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 text-xs font-bold shadow-md transition active:scale-95 flex items-center gap-1.5">
+        <button onclick="resumeLastPlayedPaper()" class="shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 text-xs font-bold shadow-md transition active:scale-95 flex items-center gap-1.5">
           <span>▶ Resume Listening</span>
         </button>
       </div>
@@ -531,79 +418,63 @@
     </section>
 
     <!-- Filter, Search & View Toolbar -->
-    <section
-      class="glass-card rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
-
+    <section class="glass-card rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
+      
       <!-- Search Input -->
       <div class="relative w-full md:w-80">
-        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor"
-          viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
-        <input id="search-input" type="text" placeholder="Search by title, author, topic..."
+        <input 
+          id="search-input" 
+          type="text" 
+          placeholder="Search by title, author, topic..." 
           oninput="handleSearch(this.value)"
-          class="w-full bg-dark-950/80 border border-dark-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition" />
+          class="w-full bg-dark-950/80 border border-dark-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition"
+        />
       </div>
 
       <!-- Filter Tabs & Mode Segmented Controls -->
       <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-
+        
         <!-- Default Mode Switcher -->
         <div class="flex items-center bg-dark-950 p-1 rounded-xl border border-dark-700 shrink-0">
-          <button id="pref-mode-summary" onclick="setPreferredMode('summary')"
-            class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-brand-600 text-white flex items-center gap-1 transition"
-            title="Default to 4-part conversational summary briefing">
+          <button id="pref-mode-summary" onclick="setPreferredMode('summary')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-brand-600 text-white flex items-center gap-1 transition" title="Default to 4-part conversational summary briefing">
             <span>📝 Summary</span>
           </button>
-          <button id="pref-mode-full" onclick="setPreferredMode('full_paper')"
-            class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition"
-            title="Default to 100% verbatim full paper reading">
+          <button id="pref-mode-full" onclick="setPreferredMode('full_paper')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition" title="Default to 100% verbatim full paper reading">
             <span>📖 Read Full Paper</span>
           </button>
         </div>
 
         <!-- Filter Tabs -->
         <div class="flex items-center gap-1 bg-dark-950 p-1 rounded-xl border border-dark-700 shrink-0">
-          <button onclick="setFilter('all')" id="filter-all"
-            class="filter-tab px-3 py-1 text-xs font-medium rounded-lg bg-brand-500/20 text-brand-400 border border-brand-500/30">
+          <button onclick="setFilter('all')" id="filter-all" class="filter-tab px-3 py-1 text-xs font-medium rounded-lg bg-brand-500/20 text-brand-400 border border-brand-500/30">
             All
           </button>
-          <button onclick="setFilter('ready')" id="filter-ready"
-            class="filter-tab px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200">
+          <button onclick="setFilter('ready')" id="filter-ready" class="filter-tab px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200">
             🎧 Audio Ready
           </button>
-          <button onclick="setFilter('pending')" id="filter-pending"
-            class="filter-tab px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200">
+          <button onclick="setFilter('pending')" id="filter-pending" class="filter-tab px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200">
             ⏳ Pending
           </button>
-          <button onclick="setFilter('has_pdf')" id="filter-has_pdf"
-            class="filter-tab px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200">
+          <button onclick="setFilter('has_pdf')" id="filter-has_pdf" class="filter-tab px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200">
             📄 Has PDF
           </button>
         </div>
 
         <!-- Grid vs Table View Switcher -->
         <div class="flex items-center bg-dark-950 p-1 rounded-xl border border-dark-700 shrink-0">
-          <button id="view-mode-grid" onclick="setViewMode('grid')"
-            class="p-1 rounded-lg bg-dark-800 text-brand-400 transition" title="Grid View">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
+          <button id="view-mode-grid" onclick="setViewMode('grid')" class="p-1 rounded-lg bg-dark-800 text-brand-400 transition" title="Grid View">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
           </button>
-          <button id="view-mode-list" onclick="setViewMode('list')"
-            class="p-1 rounded-lg text-slate-400 hover:text-white transition" title="Table / List View">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button id="view-mode-list" onclick="setViewMode('list')" class="p-1 rounded-lg text-slate-400 hover:text-white transition" title="Table / List View">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
         </div>
 
         <!-- Batch Process -->
-        <button onclick="processAllPending()"
-          class="px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700 flex items-center gap-1.5 transition shrink-0"
-          title="Process all pending papers">
+        <button onclick="processAllPending()" class="px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700 flex items-center gap-1.5 transition shrink-0" title="Process all pending papers">
           <span class="text-amber-400">⚡</span>
           <span id="batch-btn-label">Batch Generate</span>
         </button>
@@ -621,26 +492,21 @@
       </div>
 
       <!-- Empty State -->
-      <div id="empty-state"
-        class="hidden py-16 text-center border border-dashed border-dark-800 rounded-2xl p-8 bg-dark-900/50">
+      <div id="empty-state" class="hidden py-16 text-center border border-dashed border-dark-800 rounded-2xl p-8 bg-dark-900/50">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-dark-800 flex items-center justify-center text-slate-500 mb-4">
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
         <h3 class="text-base font-semibold text-slate-200">No Research Papers Found</h3>
         <p class="text-sm text-slate-400 max-w-md mx-auto mt-1 mb-6">
-          Connect your Zotero reference library, upload a research PDF directly, or load pre-built benchmark papers to
-          get started.
+          Connect your Zotero reference library, upload a research PDF directly, or load pre-built benchmark papers to get started.
         </p>
         <div class="flex items-center justify-center gap-3">
-          <button onclick="loadSamplePapers()"
-            class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">
+          <button onclick="loadSamplePapers()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">
             Load Sample AI Papers
           </button>
-          <button onclick="openUploadModal()"
-            class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700 transition">
+          <button onclick="openUploadModal()" class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700 transition">
             Upload PDF File
           </button>
         </div>
@@ -675,23 +541,17 @@
   </main>
 
   <!-- ================= PERSISTENT AUDIO PLAYER BAR (FLOATING FOOTER) ================= -->
-  <div id="persistent-player"
-    class="hidden fixed bottom-0 left-0 right-0 z-50 bg-dark-900/98 border-t border-dark-800 backdrop-blur-2xl px-4 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.7)]">
-
+  <div id="persistent-player" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-dark-900/98 border-t border-dark-800 backdrop-blur-2xl px-4 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.7)]">
+    
     <!-- Floating Chapters Popover -->
-    <div id="player-chapters-popover"
-      class="hidden absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-full max-w-lg bg-dark-900/98 border border-dark-700 rounded-2xl shadow-2xl p-4 z-50 backdrop-blur-2xl">
+    <div id="player-chapters-popover" class="hidden absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-full max-w-lg bg-dark-900/98 border border-dark-700 rounded-2xl shadow-2xl p-4 z-50 backdrop-blur-2xl">
       <div class="flex items-center justify-between pb-2.5 border-b border-dark-800 mb-3">
         <div class="flex items-center gap-2">
-          <div
-            class="w-6 h-6 rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center text-xs font-bold font-mono">
-            📑</div>
+          <div class="w-6 h-6 rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center text-xs font-bold font-mono">📑</div>
           <span class="text-xs font-bold text-white">Specific Parts & Chapters</span>
-          <span id="chapters-mode-badge"
-            class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20"></span>
+          <span id="chapters-mode-badge" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20"></span>
         </div>
-        <button onclick="toggleChaptersPopover(false)"
-          class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-800 text-xs transition">✕</button>
+        <button onclick="toggleChaptersPopover(false)" class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-800 text-xs transition">✕</button>
       </div>
       <div id="player-chapters-list" class="max-h-64 overflow-y-auto space-y-1 pr-1 divide-y divide-dark-800/40">
         <!-- Rendered chapters dynamically -->
@@ -699,12 +559,11 @@
     </div>
 
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-
+      
       <!-- Left: Paper Info & Mode -->
       <div class="flex items-center gap-3 w-full sm:w-1/3 min-w-0">
         <!-- Equalizer Animated Waveform Badge -->
-        <div
-          class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/25 flex items-center justify-center gap-0.5 px-2 shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/25 flex items-center justify-center gap-0.5 px-2 shrink-0">
           <div class="w-1 bg-brand-400 rounded-full wave-bar h-2"></div>
           <div class="w-1 bg-brand-400 rounded-full wave-bar h-4"></div>
           <div class="w-1 bg-brand-400 rounded-full wave-bar h-3"></div>
@@ -713,8 +572,7 @@
         <div class="truncate">
           <div class="flex items-center gap-2">
             <h4 id="player-title" class="text-xs font-bold text-white truncate">Paper Title</h4>
-            <span id="player-mode-badge"
-              class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-brand-500/10 text-brand-400 border border-brand-500/20 shrink-0">Summary</span>
+            <span id="player-mode-badge" class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-brand-500/10 text-brand-400 border border-brand-500/20 shrink-0">Summary</span>
           </div>
           <p id="player-author" class="text-[11px] text-slate-400 truncate">Author list</p>
         </div>
@@ -724,130 +582,78 @@
       <div class="flex flex-col items-center gap-1.5 w-full sm:w-1/2">
         <div class="flex items-center gap-2 sm:gap-3">
           <!-- Rewind 30s -->
-          <button onclick="skipAudio(-30)"
-            class="p-1 text-slate-400 hover:text-amber-400 transition flex flex-col items-center group"
-            title="Rewind 30s (Shift + Left Arrow)">
-            <span
-              class="text-[10px] font-mono font-bold text-slate-400 group-hover:text-amber-400 leading-none">-30s</span>
+          <button onclick="skipAudio(-30)" class="p-1 text-slate-400 hover:text-amber-400 transition flex flex-col items-center group" title="Rewind 30s (Shift + Left Arrow)">
+            <span class="text-[10px] font-mono font-bold text-slate-400 group-hover:text-amber-400 leading-none">-30s</span>
           </button>
 
           <!-- Rewind 10s -->
-          <button onclick="skipAudio(-10)"
-            class="px-2 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-white border border-dark-700 transition flex items-center gap-1 shadow-sm"
-            title="Rewind 10s (Left Arrow / J)">
+          <button onclick="skipAudio(-10)" class="px-2 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-white border border-dark-700 transition flex items-center gap-1 shadow-sm" title="Rewind 10s (Left Arrow / J)">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
             </svg>
             <span class="text-[10px] font-mono font-semibold">10s</span>
           </button>
 
           <!-- HERO PLAY / PAUSE BUTTON -->
-          <button id="player-play-btn" onclick="togglePlayAudio()"
-            class="w-11 h-11 rounded-full bg-gradient-to-tr from-brand-600 to-emerald-400 hover:from-brand-500 hover:to-emerald-300 text-dark-950 flex items-center justify-center shadow-lg shadow-brand-500/25 transition active:scale-90"
-            title="Play / Pause (Space / K)">
+          <button id="player-play-btn" onclick="togglePlayAudio()" class="w-11 h-11 rounded-full bg-gradient-to-tr from-brand-600 to-emerald-400 hover:from-brand-500 hover:to-emerald-300 text-dark-950 flex items-center justify-center shadow-lg shadow-brand-500/25 transition active:scale-90" title="Play / Pause (Space / K)">
             <svg id="player-play-icon" class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
           </button>
 
           <!-- Fast Forward 10s -->
-          <button onclick="skipAudio(10)"
-            class="px-2 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-white border border-dark-700 transition flex items-center gap-1 shadow-sm"
-            title="Fast Forward 10s (Right Arrow / L)">
+          <button onclick="skipAudio(10)" class="px-2 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-white border border-dark-700 transition flex items-center gap-1 shadow-sm" title="Fast Forward 10s (Right Arrow / L)">
             <span class="text-[10px] font-mono font-semibold">10s</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
             </svg>
           </button>
 
           <!-- Fast Forward 30s -->
-          <button onclick="skipAudio(30)"
-            class="p-1 text-slate-400 hover:text-amber-400 transition flex flex-col items-center group"
-            title="Fast Forward 30s (Shift + Right Arrow)">
-            <span
-              class="text-[10px] font-mono font-bold text-slate-400 group-hover:text-amber-400 leading-none">+30s</span>
+          <button onclick="skipAudio(30)" class="p-1 text-slate-400 hover:text-amber-400 transition flex flex-col items-center group" title="Fast Forward 30s (Shift + Right Arrow)">
+            <span class="text-[10px] font-mono font-bold text-slate-400 group-hover:text-amber-400 leading-none">+30s</span>
           </button>
 
           <!-- Reading Speed Controls -->
           <div class="relative flex items-center bg-dark-800 border border-dark-700 rounded-xl p-0.5 text-xs font-mono">
-            <button onclick="adjustPlaybackSpeed(-0.25)"
-              class="px-1.5 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold"
-              title="Decrease speed (-0.25x)">-</button>
-            <button id="player-speed-btn" onclick="togglePlayerSpeedMenu()"
-              class="px-2 py-0.5 text-[11px] text-slate-200 font-semibold hover:text-brand-400 transition"
-              title="Choose playback speed">
+            <button onclick="adjustPlaybackSpeed(-0.25)" class="px-1.5 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold" title="Decrease speed (-0.25x)">-</button>
+            <button id="player-speed-btn" onclick="togglePlayerSpeedMenu()" class="px-2 py-0.5 text-[11px] text-slate-200 font-semibold hover:text-brand-400 transition" title="Choose playback speed">
               1.0x
             </button>
-            <button onclick="adjustPlaybackSpeed(0.25)"
-              class="px-1.5 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold"
-              title="Increase speed (+0.25x)">+</button>
-
+            <button onclick="adjustPlaybackSpeed(0.25)" class="px-1.5 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold" title="Increase speed (+0.25x)">+</button>
+            
             <!-- Quick Speed Menu -->
-            <div id="player-speed-menu"
-              class="hidden absolute bottom-full mb-2 left-0 w-36 bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl py-1.5 text-xs z-50">
-              <div class="px-3 py-1 font-semibold text-slate-400 text-[10px] uppercase border-b border-dark-800">Reading
-                Speed</div>
-              <button onclick="setPlaybackSpeed(0.75)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">0.75x
-                (Relaxed)</button>
-              <button onclick="setPlaybackSpeed(1.0)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.0x
-                (Normal)</button>
-              <button onclick="setPlaybackSpeed(1.25)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.25x
-                (Brisk)</button>
-              <button onclick="setPlaybackSpeed(1.5)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.5x
-                (Fast)</button>
-              <button onclick="setPlaybackSpeed(1.75)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.75x
-                (Very Fast)</button>
-              <button onclick="setPlaybackSpeed(2.0)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">2.0x
-                (Double Speed)</button>
+            <div id="player-speed-menu" class="hidden absolute bottom-full mb-2 left-0 w-36 bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl py-1.5 text-xs z-50">
+              <div class="px-3 py-1 font-semibold text-slate-400 text-[10px] uppercase border-b border-dark-800">Reading Speed</div>
+              <button onclick="setPlaybackSpeed(0.75)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">0.75x (Relaxed)</button>
+              <button onclick="setPlaybackSpeed(1.0)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.0x (Normal)</button>
+              <button onclick="setPlaybackSpeed(1.25)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.25x (Brisk)</button>
+              <button onclick="setPlaybackSpeed(1.5)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.5x (Fast)</button>
+              <button onclick="setPlaybackSpeed(1.75)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">1.75x (Very Fast)</button>
+              <button onclick="setPlaybackSpeed(2.0)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">2.0x (Double Speed)</button>
             </div>
           </div>
 
           <!-- Specific Part / Chapters Popover Button -->
-          <button id="player-chapters-btn" onclick="toggleChaptersPopover()"
-            class="px-2.5 py-1 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-brand-400 hover:text-brand-300 border border-brand-500/30 flex items-center gap-1.5 shadow-sm transition active:scale-95"
-            title="Choose specific section / chapter to listen to">
+          <button id="player-chapters-btn" onclick="toggleChaptersPopover()" class="px-2.5 py-1 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-brand-400 hover:text-brand-300 border border-brand-500/30 flex items-center gap-1.5 shadow-sm transition active:scale-95" title="Choose specific section / chapter to listen to">
             <span>📑</span>
             <span class="hidden md:inline">Parts</span>
           </button>
 
           <!-- Sleep Timer Button & Dropdown -->
           <div class="relative">
-            <button id="player-sleep-btn" onclick="toggleSleepTimerMenu()"
-              class="px-2 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-amber-300 border border-dark-700 text-xs flex items-center gap-1 transition"
-              title="Audio Sleep Timer">
+            <button id="player-sleep-btn" onclick="toggleSleepTimerMenu()" class="px-2 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-amber-300 border border-dark-700 text-xs flex items-center gap-1 transition" title="Audio Sleep Timer">
               <span>🌙</span>
               <span id="player-sleep-badge" class="hidden text-[10px] font-mono font-bold text-amber-400">Off</span>
             </button>
-            <div id="sleep-timer-menu"
-              class="hidden absolute bottom-full mb-2 right-0 w-36 bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl py-1.5 text-xs z-50">
-              <div class="px-3 py-1 font-semibold text-slate-400 text-[10px] uppercase border-b border-dark-800">Sleep
-                Timer</div>
-              <button onclick="setSleepTimer(0)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">Turn
-                Off</button>
-              <button onclick="setSleepTimer(15)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">15
-                minutes</button>
-              <button onclick="setSleepTimer(30)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">30
-                minutes</button>
-              <button onclick="setSleepTimer(45)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">45
-                minutes</button>
-              <button onclick="setSleepTimer(60)"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">60
-                minutes</button>
-              <button onclick="setSleepTimer('end')"
-                class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">End of
-                Paper</button>
+            <div id="sleep-timer-menu" class="hidden absolute bottom-full mb-2 right-0 w-36 bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl py-1.5 text-xs z-50">
+              <div class="px-3 py-1 font-semibold text-slate-400 text-[10px] uppercase border-b border-dark-800">Sleep Timer</div>
+              <button onclick="setSleepTimer(0)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">Turn Off</button>
+              <button onclick="setSleepTimer(15)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">15 minutes</button>
+              <button onclick="setSleepTimer(30)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">30 minutes</button>
+              <button onclick="setSleepTimer(45)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">45 minutes</button>
+              <button onclick="setSleepTimer(60)" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">60 minutes</button>
+              <button onclick="setSleepTimer('end')" class="w-full text-left px-3 py-1.5 hover:bg-dark-800 text-slate-300 hover:text-white transition">End of Paper</button>
             </div>
           </div>
         </div>
@@ -857,21 +663,26 @@
           <div class="w-full flex items-center justify-between text-[10px] font-mono text-slate-400 px-0.5">
             <div class="flex items-center gap-2">
               <span id="player-cur-time" class="font-bold text-slate-200">0:00</span>
-              <span id="player-active-chapter"
-                class="text-brand-400 font-semibold truncate max-w-[200px] hidden sm:inline"></span>
+              <span id="player-active-chapter" class="text-brand-400 font-semibold truncate max-w-[200px] hidden sm:inline"></span>
             </div>
             <div class="flex items-center gap-2">
               <!-- Resume pill -->
-              <button id="player-resume-pill" onclick="resumeSavedPlayback()"
-                class="hidden text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 hover:bg-amber-500/30 transition text-[9px] font-mono">
+              <button id="player-resume-pill" onclick="resumeSavedPlayback()" class="hidden text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 hover:bg-amber-500/30 transition text-[9px] font-mono">
                 📍 Resume from <span id="player-resume-time-str">0:00</span>
               </button>
               <span id="player-total-time">0:00</span>
             </div>
           </div>
           <div class="relative w-full flex items-center">
-            <input id="player-progress" type="range" min="0" max="100" value="0" oninput="seekAudio(this.value)"
-              class="w-full h-1.5 bg-dark-750 rounded-lg appearance-none cursor-pointer accent-brand-500" />
+            <input 
+              id="player-progress" 
+              type="range" 
+              min="0" 
+              max="100" 
+              value="0" 
+              oninput="seekAudio(this.value)"
+              class="w-full h-1.5 bg-dark-750 rounded-lg appearance-none cursor-pointer accent-brand-500"
+            />
           </div>
         </div>
       </div>
@@ -879,30 +690,33 @@
       <!-- Right Utility Actions -->
       <div class="hidden sm:flex items-center gap-2">
         <!-- Switch between Summary and Full Paper track -->
-        <button id="player-switch-mode-btn" onclick="togglePlayerTrackMode()"
-          class="hidden px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-amber-400 border border-amber-500/30 flex items-center gap-1.5 transition shadow-sm"
-          title="Switch track">
+        <button id="player-switch-mode-btn" onclick="togglePlayerTrackMode()" class="hidden px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-amber-400 border border-amber-500/30 flex items-center gap-1.5 transition shadow-sm" title="Switch track">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
           </svg>
           <span id="player-switch-mode-text">Switch Track</span>
         </button>
 
         <!-- Volume Slider & Mute Toggle -->
         <div class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-dark-800 border border-dark-700/80">
-          <button id="player-mute-btn" onclick="toggleMuteAudio()" class="text-slate-400 hover:text-white text-xs"
-            title="Mute/Unmute (M)">
+          <button id="player-mute-btn" onclick="toggleMuteAudio()" class="text-slate-400 hover:text-white text-xs" title="Mute/Unmute (M)">
             <span id="player-mute-icon">🔊</span>
           </button>
-          <input id="player-volume" type="range" min="0" max="1" step="0.05" value="1"
+          <input 
+            id="player-volume" 
+            type="range" 
+            min="0" 
+            max="1" 
+            step="0.05" 
+            value="1" 
             oninput="handleVolumeChange(this.value)"
-            class="w-16 h-1 bg-dark-700 rounded appearance-none cursor-pointer accent-brand-500" title="Volume" />
+            class="w-16 h-1 bg-dark-700 rounded appearance-none cursor-pointer accent-brand-500"
+            title="Volume"
+          />
         </div>
 
         <!-- Open Reader Studio Drawer -->
-        <button onclick="openBriefingModal(activePlayingPaper)"
-          class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 flex items-center gap-1.5 transition">
+        <button onclick="openBriefingModal(activePlayingPaper)" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 flex items-center gap-1.5 transition">
           <svg class="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
@@ -910,12 +724,9 @@
         </button>
 
         <!-- Download MP3 -->
-        <a id="player-download-btn" href="#" download
-          class="p-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-400 hover:text-white transition"
-          title="Download Audio File">
+        <a id="player-download-btn" href="#" download class="p-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-400 hover:text-white transition" title="Download Audio File">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
         </a>
 
@@ -935,21 +746,17 @@
 
 
   <!-- ================= AI RESEARCH READER STUDIO / DRAWER MODAL ================= -->
-  <div id="briefing-modal"
-    class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-end transition-opacity">
-    <div id="briefing-modal-drawer"
-      class="w-full max-w-4xl bg-dark-900 border-l border-dark-800 h-full flex flex-col shadow-2xl overflow-hidden transition-all duration-300">
-
+  <div id="briefing-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-end transition-opacity">
+    <div id="briefing-modal-drawer" class="w-full max-w-4xl bg-dark-900 border-l border-dark-800 h-full flex flex-col shadow-2xl overflow-hidden transition-all duration-300">
+      
       <!-- Drawer Header -->
       <div class="p-4 sm:p-5 border-b border-dark-800 flex items-start justify-between gap-4 bg-dark-950/70">
         <div class="min-w-0">
           <div class="flex items-center gap-2 mb-1.5">
-            <span
-              class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-bold">
+            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-bold">
               Research Studio Briefing
             </span>
-            <span id="modal-voice-badge"
-              class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-dark-800 text-slate-300 border border-dark-700">
+            <span id="modal-voice-badge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-dark-800 text-slate-300 border border-dark-700">
               Voice: 🇬🇭 Abeo
             </span>
           </div>
@@ -964,38 +771,27 @@
         <div class="flex items-center gap-1.5 shrink-0">
           <!-- Save Paper Dropdown -->
           <div class="relative" id="save-paper-dropdown-container">
-            <button id="save-paper-btn" onclick="toggleSavePaperDropdown(event)"
-              class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
-              title="Save or Export Paper to your Computer">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
+            <button id="save-paper-btn" onclick="toggleSavePaperDropdown(event)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5" title="Save or Export Paper to your Computer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
               <span>📥 Save Paper</span>
-              <svg class="w-3 h-3 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
+              <svg class="w-3 h-3 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div id="save-paper-menu"
-              class="hidden absolute right-0 mt-1.5 w-64 rounded-2xl bg-dark-900 border border-dark-750 shadow-2xl py-1.5 z-50 text-xs">
-              <button onclick="downloadOriginalPdf()"
-                class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
+            <div id="save-paper-menu" class="hidden absolute right-0 mt-1.5 w-64 rounded-2xl bg-dark-900 border border-dark-750 shadow-2xl py-1.5 z-50 text-xs">
+              <button onclick="downloadOriginalPdf()" class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
                 <span class="text-base">📄</span>
                 <div>
                   <div class="font-bold text-white">Download Original PDF</div>
                   <div class="text-[10px] text-slate-400">Save attachment to computer</div>
                 </div>
               </button>
-              <button onclick="exportAnnotatedPaperHtml()"
-                class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
+              <button onclick="exportAnnotatedPaperHtml()" class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
                 <span class="text-base">🌐</span>
                 <div>
                   <div class="font-bold text-emerald-400">Export Annotated Paper (.html)</div>
                   <div class="text-[10px] text-slate-400">Includes all highlights & notes</div>
                 </div>
               </button>
-              <button onclick="exportResearchDossierMarkdown()"
-                class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
+              <button onclick="exportResearchDossierMarkdown()" class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
                 <span class="text-base">📑</span>
                 <div>
                   <div class="font-bold text-blue-400">Export Research Dossier (.md)</div>
@@ -1003,8 +799,7 @@
                 </div>
               </button>
               <div class="border-t border-dark-800 my-1"></div>
-              <button onclick="window.print()"
-                class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
+              <button onclick="window.print()" class="w-full text-left px-3.5 py-2.5 hover:bg-dark-800 text-slate-200 hover:text-white flex items-center gap-2.5 transition">
                 <span class="text-base">🖨️</span>
                 <div>
                   <div class="font-bold text-slate-300">Print / Save as PDF</div>
@@ -1015,17 +810,13 @@
           </div>
 
           <!-- Zen Mode Fullscreen Toggle -->
-          <button id="zen-mode-btn" onclick="toggleZenMode()"
-            class="p-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-400 hover:text-brand-400 border border-dark-700 transition"
-            title="Toggle Zen Fullscreen Academic Reading Studio (Z)">
+          <button id="zen-mode-btn" onclick="toggleZenMode()" class="p-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-400 hover:text-brand-400 border border-dark-700 transition" title="Toggle Zen Fullscreen Academic Reading Studio (Z)">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
             </svg>
           </button>
           <!-- Close Modal -->
-          <button onclick="closeBriefingModal()"
-            class="p-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-400 hover:text-white border border-dark-700 transition">
+          <button onclick="closeBriefingModal()" class="p-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-400 hover:text-white border border-dark-700 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -1038,8 +829,7 @@
         <!-- Audio Options: Summary & Full Paper -->
         <div class="flex items-center gap-2">
           <!-- Summary Audio Button -->
-          <button id="modal-play-summary-btn" onclick="playModalTrack('summary')"
-            class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white shadow-sm transition">
+          <button id="modal-play-summary-btn" onclick="playModalTrack('summary')" class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white shadow-sm transition">
             <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
@@ -1047,8 +837,7 @@
           </button>
 
           <!-- Full Paper Audio Button -->
-          <button id="modal-play-full-btn" onclick="playModalTrack('full_paper')"
-            class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition">
+          <button id="modal-play-full-btn" onclick="playModalTrack('full_paper')" class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition">
             <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
@@ -1056,51 +845,34 @@
           </button>
 
           <!-- Resume from Last Stopped Position Button -->
-          <button id="modal-resume-btn" onclick="resumeModalPaperTrack()"
-            class="hidden items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 shadow-sm transition">
+          <button id="modal-resume-btn" onclick="resumeModalPaperTrack()" class="hidden items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 shadow-sm transition">
             <span>📍 Resume (<span id="modal-resume-time">0:00</span>)</span>
           </button>
 
           <!-- Re-Generate Audio -->
-          <button id="modal-reprocess-btn" onclick="reprocessModalPaperPrompt()"
-            class="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition"
-            title="Re-generate Audio with selected voice">
+          <button id="modal-reprocess-btn" onclick="reprocessModalPaperPrompt()" class="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition" title="Re-generate Audio with selected voice">
             <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span>Re-Generate</span>
           </button>
 
           <!-- Reading Speed Stepper in Reader Studio -->
-          <div class="flex items-center bg-dark-800 border border-dark-700 rounded-xl p-0.5 text-xs font-mono"
-            title="Reading Playback Speed">
-            <button onclick="adjustPlaybackSpeed(-0.25)"
-              class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold"
-              title="Decrease speed (-0.25x)">-</button>
-            <button id="reader-speed-label" onclick="cyclePlaybackRate()"
-              class="px-2 py-1 text-slate-200 font-semibold hover:text-brand-400 transition"
-              title="Current Speed (click to cycle)">1.0x</button>
-            <button onclick="adjustPlaybackSpeed(0.25)"
-              class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold"
-              title="Increase speed (+0.25x)">+</button>
+          <div class="flex items-center bg-dark-800 border border-dark-700 rounded-xl p-0.5 text-xs font-mono" title="Reading Playback Speed">
+            <button onclick="adjustPlaybackSpeed(-0.25)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold" title="Decrease speed (-0.25x)">-</button>
+            <button id="reader-speed-label" onclick="cyclePlaybackRate()" class="px-2 py-1 text-slate-200 font-semibold hover:text-brand-400 transition" title="Current Speed (click to cycle)">1.0x</button>
+            <button onclick="adjustPlaybackSpeed(0.25)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold" title="Increase speed (+0.25x)">+</button>
           </div>
 
           <!-- Voice Accent Switcher in Reader Studio -->
           <div class="relative">
-            <button id="reader-voice-btn" onclick="toggleReaderVoiceMenu()"
-              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 shadow-sm transition"
-              title="Choose Voice & Accent for reading this paper">
+            <button id="reader-voice-btn" onclick="toggleReaderVoiceMenu()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 shadow-sm transition" title="Choose Voice & Accent for reading this paper">
               <span>🗣️</span>
               <span id="reader-voice-label">🇬🇭 Abeo</span>
-              <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
+              <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
-            <div id="reader-voice-menu"
-              class="hidden absolute left-0 mt-1.5 w-72 rounded-2xl bg-dark-900 border border-dark-750 shadow-2xl p-2 z-50 text-xs max-h-80 overflow-y-auto">
-              <div
-                class="px-2 py-1 font-bold text-slate-400 text-[10px] uppercase border-b border-dark-800 mb-1 flex items-center justify-between">
+            <div id="reader-voice-menu" class="hidden absolute left-0 mt-1.5 w-72 rounded-2xl bg-dark-900 border border-dark-750 shadow-2xl p-2 z-50 text-xs max-h-80 overflow-y-auto">
+              <div class="px-2 py-1 font-bold text-slate-400 text-[10px] uppercase border-b border-dark-800 mb-1 flex items-center justify-between">
                 <span>Select Voice & Accent</span>
                 <span class="text-brand-400 font-normal">Edge Neural</span>
               </div>
@@ -1113,32 +885,25 @@
 
         <!-- Navigation Tabs inside Drawer -->
         <div class="flex items-center gap-1 bg-dark-900 p-1 rounded-xl border border-dark-700 overflow-x-auto">
-          <button id="tab-breakdown" onclick="switchModalTab('breakdown')"
-            class="px-3 py-1 text-xs font-semibold rounded-lg bg-dark-800 text-white shrink-0 transition">
+          <button id="tab-breakdown" onclick="switchModalTab('breakdown')" class="px-3 py-1 text-xs font-semibold rounded-lg bg-dark-800 text-white shrink-0 transition">
             4-Part Breakdown
           </button>
-          <button id="tab-fulltext" onclick="switchModalTab('fulltext')"
-            class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
+          <button id="tab-fulltext" onclick="switchModalTab('fulltext')" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
             📖 Full Paper Text
           </button>
-          <button id="tab-figures" onclick="switchModalTab('figures')"
-            class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
+          <button id="tab-figures" onclick="switchModalTab('figures')" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
             🖼 Figures (<span id="drawer-figures-count">0</span>)
           </button>
-          <button id="tab-script" onclick="switchModalTab('script')"
-            class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
+          <button id="tab-script" onclick="switchModalTab('script')" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
             Summary Script
           </button>
-          <button id="tab-abstract" onclick="switchModalTab('abstract')"
-            class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
+          <button id="tab-abstract" onclick="switchModalTab('abstract')" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white shrink-0 transition">
             Abstract & PDF
           </button>
-          <button id="tab-notes" onclick="switchModalTab('notes')"
-            class="px-3 py-1 text-xs font-semibold rounded-lg bg-amber-500/15 text-amber-300 hover:text-white shrink-0 transition flex items-center gap-1">
+          <button id="tab-notes" onclick="switchModalTab('notes')" class="px-3 py-1 text-xs font-semibold rounded-lg bg-amber-500/15 text-amber-300 hover:text-white shrink-0 transition flex items-center gap-1">
             <span>📝 Notes (<span id="drawer-notes-count">0</span>)</span>
           </button>
-          <button id="tab-chat" onclick="switchModalTab('chat')"
-            class="px-3 py-1 text-xs font-semibold rounded-lg bg-brand-500/20 text-brand-300 hover:text-white shrink-0 transition flex items-center gap-1">
+          <button id="tab-chat" onclick="switchModalTab('chat')" class="px-3 py-1 text-xs font-semibold rounded-lg bg-brand-500/20 text-brand-300 hover:text-white shrink-0 transition flex items-center gap-1">
             <span>💬 Ask Prof. Feb</span>
           </button>
         </div>
@@ -1146,147 +911,108 @@
 
       <!-- Drawer Content Scroll Area -->
       <div class="flex-1 overflow-y-auto p-5 space-y-4">
-
+        
         <!-- View 1: 4-Part Structured Breakdown Cards -->
         <div id="view-breakdown" class="space-y-4">
-
+          
           <!-- Breakdown View Mode Switcher -->
           <div class="flex items-center justify-between p-2.5 rounded-2xl bg-dark-900 border border-dark-800">
             <div class="flex items-center gap-2">
               <span class="text-xs text-slate-400 font-medium">Card View:</span>
-              <button id="breakdown-mode-summary-btn" onclick="setBreakdownDisplayMode('summary')"
-                class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-brand-600 text-white shadow-sm transition">
+              <button id="breakdown-mode-summary-btn" onclick="setBreakdownDisplayMode('summary')" class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-brand-600 text-white shadow-sm transition">
                 ⚡ Summary View
               </button>
-              <button id="breakdown-mode-detailed-btn" onclick="setBreakdownDisplayMode('detailed')"
-                class="px-2.5 py-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition">
+              <button id="breakdown-mode-detailed-btn" onclick="setBreakdownDisplayMode('detailed')" class="px-2.5 py-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition">
                 🔬 Detailed Exposition
               </button>
             </div>
-            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">💡 Click any card to view full detailed
-              breakdown & insights</span>
+            <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">💡 Click any card to view full detailed breakdown & insights</span>
           </div>
 
           <!-- Section 1: The Core Problem -->
-          <div id="card-sec-problem" onclick="openSectionDetailModal('problem')"
-            class="glass-card rounded-2xl p-5 border-l-4 border-l-rose-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group"
-            title="Click to view detailed breakdown, formulas & insights">
+          <div id="card-sec-problem" onclick="openSectionDetailModal('problem')" class="glass-card rounded-2xl p-5 border-l-4 border-l-rose-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group" title="Click to view detailed breakdown, formulas & insights">
             <div class="flex items-center justify-between mb-3 pb-2 border-b border-dark-800/80">
               <div class="flex items-center gap-2.5">
-                <div
-                  class="w-6 h-6 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center text-xs font-bold font-mono">
-                  1</div>
-                <h3 class="text-sm font-bold text-rose-400 tracking-wide uppercase">The Core Problem & Theoretical
-                  Foundation</h3>
+                <div class="w-6 h-6 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center text-xs font-bold font-mono">1</div>
+                <h3 class="text-sm font-bold text-rose-400 tracking-wide uppercase">The Core Problem & Theoretical Foundation</h3>
               </div>
               <div class="flex items-center gap-2">
-                <span
-                  class="text-[10px] text-slate-400 font-mono group-hover:text-rose-300 transition flex items-center gap-1">
+                <span class="text-[10px] text-slate-400 font-mono group-hover:text-rose-300 transition flex items-center gap-1">
                   🔍 Details &rarr;
                 </span>
-                <button onclick="event.stopPropagation(); playPaperSection('problem')"
-                  class="text-[11px] font-mono text-rose-300 hover:text-white px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 flex items-center gap-1.5 transition"
-                  title="Start audio from this section">
+                <button onclick="event.stopPropagation(); playPaperSection('problem')" class="text-[11px] font-mono text-rose-300 hover:text-white px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 flex items-center gap-1.5 transition" title="Start audio from this section">
                   <span>▶ Jump here</span>
                   <span id="sec-problem-time" class="text-[10px] text-slate-400 font-mono">(0:00)</span>
                 </button>
               </div>
             </div>
-            <div id="sec-problem"
-              class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
+            <div id="sec-problem" class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
               <!-- Content -->
             </div>
           </div>
 
           <!-- Section 2: Methodology & Architecture -->
-          <div id="card-sec-methodology" onclick="openSectionDetailModal('methodology')"
-            class="glass-card rounded-2xl p-5 border-l-4 border-l-indigo-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group"
-            title="Click to view detailed breakdown, formulas & insights">
+          <div id="card-sec-methodology" onclick="openSectionDetailModal('methodology')" class="glass-card rounded-2xl p-5 border-l-4 border-l-indigo-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group" title="Click to view detailed breakdown, formulas & insights">
             <div class="flex items-center justify-between mb-3 pb-2 border-b border-dark-800/80">
               <div class="flex items-center gap-2.5">
-                <div
-                  class="w-6 h-6 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-xs font-bold font-mono">
-                  2</div>
-                <h3 class="text-sm font-bold text-indigo-400 tracking-wide uppercase">Methodology & Architectural
-                  Formulation</h3>
+                <div class="w-6 h-6 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-xs font-bold font-mono">2</div>
+                <h3 class="text-sm font-bold text-indigo-400 tracking-wide uppercase">Methodology & Architectural Formulation</h3>
               </div>
               <div class="flex items-center gap-2">
-                <span
-                  class="text-[10px] text-slate-400 font-mono group-hover:text-indigo-300 transition flex items-center gap-1">
+                <span class="text-[10px] text-slate-400 font-mono group-hover:text-indigo-300 transition flex items-center gap-1">
                   🔍 Details &rarr;
                 </span>
-                <button onclick="event.stopPropagation(); playPaperSection('methodology')"
-                  class="text-[11px] font-mono text-indigo-300 hover:text-white px-2.5 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 flex items-center gap-1.5 transition"
-                  title="Start audio from this section">
+                <button onclick="event.stopPropagation(); playPaperSection('methodology')" class="text-[11px] font-mono text-indigo-300 hover:text-white px-2.5 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 flex items-center gap-1.5 transition" title="Start audio from this section">
                   <span>▶ Jump here</span>
                   <span id="sec-methodology-time" class="text-[10px] text-slate-400 font-mono">(1:31)</span>
                 </button>
               </div>
             </div>
-            <div id="sec-methodology"
-              class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
+            <div id="sec-methodology" class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
               <!-- Content -->
             </div>
           </div>
 
           <!-- Section 3: Key Results & Findings -->
-          <div id="card-sec-results" onclick="openSectionDetailModal('results')"
-            class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group"
-            title="Click to view detailed breakdown, formulas & insights">
+          <div id="card-sec-results" onclick="openSectionDetailModal('results')" class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group" title="Click to view detailed breakdown, formulas & insights">
             <div class="flex items-center justify-between mb-3 pb-2 border-b border-dark-800/80">
               <div class="flex items-center gap-2.5">
-                <div
-                  class="w-6 h-6 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
-                  3</div>
-                <h3 class="text-sm font-bold text-emerald-400 tracking-wide uppercase">Empirical Results, Benchmarks &
-                  Statistical Significance</h3>
+                <div class="w-6 h-6 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">3</div>
+                <h3 class="text-sm font-bold text-emerald-400 tracking-wide uppercase">Empirical Results, Benchmarks & Statistical Significance</h3>
               </div>
               <div class="flex items-center gap-2">
-                <span
-                  class="text-[10px] text-slate-400 font-mono group-hover:text-emerald-300 transition flex items-center gap-1">
+                <span class="text-[10px] text-slate-400 font-mono group-hover:text-emerald-300 transition flex items-center gap-1">
                   🔍 Details &rarr;
                 </span>
-                <button onclick="event.stopPropagation(); playPaperSection('results')"
-                  class="text-[11px] font-mono text-emerald-300 hover:text-white px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 flex items-center gap-1.5 transition"
-                  title="Start audio from this section">
+                <button onclick="event.stopPropagation(); playPaperSection('results')" class="text-[11px] font-mono text-emerald-300 hover:text-white px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 flex items-center gap-1.5 transition" title="Start audio from this section">
                   <span>▶ Jump here</span>
                   <span id="sec-results-time" class="text-[10px] text-slate-400 font-mono">(3:10)</span>
                 </button>
               </div>
             </div>
-            <div id="sec-results"
-              class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
+            <div id="sec-results" class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
               <!-- Content -->
             </div>
           </div>
 
           <!-- Section 4: Limitations & Future Outlook -->
-          <div id="card-sec-limitations" onclick="openSectionDetailModal('limitations')"
-            class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group"
-            title="Click to view detailed breakdown, formulas & insights">
+          <div id="card-sec-limitations" onclick="openSectionDetailModal('limitations')" class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-500/80 transition shadow-sm cursor-pointer hover:border-dark-600 hover:bg-dark-850/80 hover:shadow-xl group" title="Click to view detailed breakdown, formulas & insights">
             <div class="flex items-center justify-between mb-3 pb-2 border-b border-dark-800/80">
               <div class="flex items-center gap-2.5">
-                <div
-                  class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs font-bold font-mono">
-                  4</div>
-                <h3 class="text-sm font-bold text-amber-400 tracking-wide uppercase">Critical Limitations, Theoretical
-                  Bounds & Future Research</h3>
+                <div class="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs font-bold font-mono">4</div>
+                <h3 class="text-sm font-bold text-amber-400 tracking-wide uppercase">Critical Limitations, Theoretical Bounds & Future Research</h3>
               </div>
               <div class="flex items-center gap-2">
-                <span
-                  class="text-[10px] text-slate-400 font-mono group-hover:text-amber-300 transition flex items-center gap-1">
+                <span class="text-[10px] text-slate-400 font-mono group-hover:text-amber-300 transition flex items-center gap-1">
                   🔍 Details &rarr;
                 </span>
-                <button onclick="event.stopPropagation(); playPaperSection('limitations')"
-                  class="text-[11px] font-mono text-amber-300 hover:text-white px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 flex items-center gap-1.5 transition"
-                  title="Start audio from this section">
+                <button onclick="event.stopPropagation(); playPaperSection('limitations')" class="text-[11px] font-mono text-amber-300 hover:text-white px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 flex items-center gap-1.5 transition" title="Start audio from this section">
                   <span>▶ Jump here</span>
                   <span id="sec-limitations-time" class="text-[10px] text-slate-400 font-mono">(4:25)</span>
                 </button>
               </div>
             </div>
-            <div id="sec-limitations"
-              class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
+            <div id="sec-limitations" class="text-sm text-slate-300 leading-relaxed font-sans prose prose-invert prose-sm max-w-none">
               <!-- Content -->
             </div>
           </div>
@@ -1295,35 +1021,26 @@
 
         <!-- View 2: Full Paper Text & Synchronized Audio Reader -->
         <div id="view-fulltext" class="hidden space-y-4">
-
+          
           <!-- Sticky Reader Toolbar -->
-          <div
-            class="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-dark-900/95 border border-dark-750 backdrop-blur-xl shadow-lg">
-
+          <div class="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-dark-900/95 border border-dark-750 backdrop-blur-xl shadow-lg">
+            
             <div class="flex items-center gap-2">
               <!-- Font Switcher: Serif vs Sans -->
-              <button id="font-family-toggle" onclick="toggleReaderFontFamily()"
-                class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 flex items-center gap-1.5 transition"
-                title="Toggle Serif / Sans Font">
+              <button id="font-family-toggle" onclick="toggleReaderFontFamily()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 flex items-center gap-1.5 transition" title="Toggle Serif / Sans Font">
                 <span class="font-serif italic font-bold">Aa</span>
                 <span id="font-family-label">Serif</span>
               </button>
 
               <!-- Font Size Stepper -->
               <div class="flex items-center bg-dark-800 border border-dark-700 rounded-xl p-0.5 text-xs font-mono">
-                <button onclick="adjustReaderFontSize(-1)"
-                  class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold"
-                  title="Smaller font size">A-</button>
+                <button onclick="adjustReaderFontSize(-1)" class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold" title="Smaller font size">A-</button>
                 <span id="font-size-label" class="px-2 text-[11px] text-slate-300 font-semibold">100%</span>
-                <button onclick="adjustReaderFontSize(1)"
-                  class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold"
-                  title="Larger font size">A+</button>
+                <button onclick="adjustReaderFontSize(1)" class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition font-bold" title="Larger font size">A+</button>
               </div>
 
               <!-- Autoscroll Toggle -->
-              <button id="reader-autoscroll-btn" onclick="toggleReaderAutoscroll()"
-                class="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-brand-500/10 text-brand-400 border border-brand-500/30 flex items-center gap-1.5 transition"
-                title="Auto-scroll as audio reads">
+              <button id="reader-autoscroll-btn" onclick="toggleReaderAutoscroll()" class="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-brand-500/10 text-brand-400 border border-brand-500/30 flex items-center gap-1.5 transition" title="Auto-scroll as audio reads">
                 <span>🔄</span>
                 <span id="reader-autoscroll-text">Auto-scroll ON</span>
               </button>
@@ -1331,21 +1048,15 @@
 
             <div class="flex items-center gap-2 sm:gap-3">
               <span id="fulltext-stats" class="text-[11px] font-mono text-slate-400 hidden sm:inline"></span>
-              <button onclick="switchModalTab('chat')"
-                class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30 hover:bg-brand-500/25 flex items-center gap-1 transition"
-                title="Ask Prof. Feb about this paper">
+              <button onclick="switchModalTab('chat')" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/30 hover:bg-brand-500/25 flex items-center gap-1 transition" title="Ask Prof. Feb about this paper">
                 <span>💬 Ask Prof. Feb</span>
               </button>
-              <button onclick="switchModalTab('notes')"
-                class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 flex items-center gap-1 transition"
-                title="View or take notes on this paper">
+              <button onclick="switchModalTab('notes')" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 flex items-center gap-1 transition" title="View or take notes on this paper">
                 <span>📝 Notes (<span id="sticky-notes-count">0</span>)</span>
               </button>
-              <button onclick="copyFullPaperText()"
-                class="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 transition">
+              <button onclick="copyFullPaperText()" class="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
                 <span>Copy Text</span>
               </button>
@@ -1367,8 +1078,7 @@
           </div>
 
           <!-- Editorial Verbatim Paper Container -->
-          <div id="modal-full-text-content"
-            class="text-base text-slate-200 leading-[1.8] font-serif max-h-[70vh] overflow-y-auto p-6 rounded-2xl bg-dark-950/80 border border-dark-800 select-text space-y-4">
+          <div id="modal-full-text-content" class="text-base text-slate-200 leading-[1.8] font-serif max-h-[70vh] overflow-y-auto p-6 rounded-2xl bg-dark-950/80 border border-dark-800 select-text space-y-4">
             <!-- Rendered interactive paragraphs -->
           </div>
 
@@ -1381,12 +1091,9 @@
               <h3 class="text-sm font-bold text-white">Extracted Visual Figures & Architecture Charts</h3>
               <p class="text-xs text-slate-400">Click any diagram to inspect in high resolution</p>
             </div>
-            <span id="figures-stats-badge"
-              class="text-xs font-mono text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20">0
-              figures</span>
+            <span id="figures-stats-badge" class="text-xs font-mono text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20">0 figures</span>
           </div>
-          <div id="fullpaper-figures-grid"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto p-2">
+          <div id="fullpaper-figures-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto p-2">
             <!-- Figures rendered dynamically -->
           </div>
         </div>
@@ -1399,8 +1106,7 @@
               <span>Copy Full Script</span>
             </button>
           </div>
-          <div id="modal-full-script"
-            class="text-sm text-slate-300 leading-relaxed font-sans whitespace-pre-line select-text">
+          <div id="modal-full-script" class="text-sm text-slate-300 leading-relaxed font-sans whitespace-pre-line select-text">
             <!-- Full script rendered here -->
           </div>
         </div>
@@ -1418,8 +1124,7 @@
           </div>
           <!-- Embedded PDF Frame -->
           <div class="w-full pt-2">
-            <iframe id="fullpaper-pdf-frame" src=""
-              class="w-full h-[600px] rounded-xl border border-dark-750 bg-white shadow-inner"></iframe>
+            <iframe id="fullpaper-pdf-frame" src="" class="w-full h-[600px] rounded-xl border border-dark-750 bg-white shadow-inner"></iframe>
           </div>
         </div>
 
@@ -1429,80 +1134,62 @@
             <div>
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
                 <span>💬 Prof. Feb • Senior Research Mentor & Paper Co-Pilot</span>
-                <span
-                  class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Prof.
-                  Feb AI</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Prof. Feb AI</span>
               </h3>
-              <p class="text-[11px] text-slate-400">Ask Prof. Feb anything about mathematical proofs, algorithmic
-                formulations, Figure diagrams, or PhD extensions.</p>
+              <p class="text-[11px] text-slate-400">Ask Prof. Feb anything about mathematical proofs, algorithmic formulations, Figure diagrams, or PhD extensions.</p>
             </div>
-            <button onclick="clearPaperChat()"
-              class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700 transition">
+            <button onclick="clearPaperChat()" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-dark-800 border border-dark-700 transition">
               Clear
             </button>
           </div>
 
           <!-- Quick Suggestion Chips -->
           <div class="flex items-center gap-1.5 flex-wrap">
-            <button
-              onclick="sendQuickPaperPrompt('Explain the scientific mathematical equations and loss functions in this paper.')"
-              class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
+            <button onclick="sendQuickPaperPrompt('Explain the scientific mathematical equations and loss functions in this paper.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
               📐 Mathematical equations ($...$)
             </button>
-            <button
-              onclick="sendQuickPaperPrompt('Explain the architecture and Figure 1 pipeline diagram in this paper.')"
-              class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
+            <button onclick="sendQuickPaperPrompt('Explain the architecture and Figure 1 pipeline diagram in this paper.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
               🖼️ Figure 1 & diagrams
             </button>
-            <button
-              onclick="sendQuickPaperPrompt('Explain the core methodology and theoretical intuition in simple terms.')"
-              class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
+            <button onclick="sendQuickPaperPrompt('Explain the core methodology and theoretical intuition in simple terms.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
               💡 Explain methodology simply
             </button>
-            <button
-              onclick="sendQuickPaperPrompt('Summarize the empirical results, baselines, and statistical variance.')"
-              class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
+            <button onclick="sendQuickPaperPrompt('Summarize the empirical results, baselines, and statistical variance.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
               📊 Empirical results & baselines
             </button>
-            <button
-              onclick="sendQuickPaperPrompt('What are the critical limitations and unstated assumptions in this paper?')"
-              class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
+            <button onclick="sendQuickPaperPrompt('What are the critical limitations and unstated assumptions in this paper?')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
               ⚖️ Critical limitations
             </button>
-            <button
-              onclick="sendQuickPaperPrompt('How could I extend this paper\'s architecture into my own PhD research?')"
-              class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
+            <button onclick="sendQuickPaperPrompt('How could I extend this paper\'s architecture into my own PhD research?')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 text-[11px] text-slate-300 hover:text-white transition">
               🔬 Ideas to extend for my PhD
             </button>
           </div>
 
           <!-- Chat Messages Scroll Container -->
-          <div id="paper-chat-messages"
-            class="flex-1 overflow-y-auto space-y-3 p-4 rounded-2xl bg-dark-950/80 border border-dark-800 text-xs">
+          <div id="paper-chat-messages" class="flex-1 overflow-y-auto space-y-3 p-4 rounded-2xl bg-dark-950/80 border border-dark-800 text-xs">
             <div class="flex items-start gap-2.5">
-              <span
-                class="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 font-mono shadow-sm border border-brand-400/40"
-                title="Prof. Feb (Academic Research Mentor)">FEB</span>
+              <span class="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 font-mono shadow-sm border border-brand-400/40" title="Prof. Feb (Academic Research Mentor)">FEB</span>
               <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-200 border border-dark-750 leading-relaxed max-w-xl">
-                Hello! I am Prof. Feb, your Senior Research Mentor for this paper. I have analyzed the entire
-                manuscript, mathematical formulations, and extracted figures. What would you like to explore or
-                question?
+                Hello! I am Prof. Feb, your Senior Research Mentor for this paper. I have analyzed the entire manuscript, mathematical formulations, and extracted figures. What would you like to explore or question?
               </div>
             </div>
           </div>
 
           <!-- Chat Input Form -->
-          <form onsubmit="event.preventDefault(); sendPaperChatMessage();"
-            class="pt-2 flex items-center gap-2 shrink-0">
-            <input type="text" id="paper-chat-input"
+          <form onsubmit="event.preventDefault(); sendPaperChatMessage();" class="pt-2 flex items-center gap-2 shrink-0">
+            <input 
+              type="text" 
+              id="paper-chat-input"
               placeholder="Ask Prof. Feb about formulas, diagrams, baselines, proof steps, or future extensions..."
-              class="flex-1 px-4 py-2.5 rounded-xl bg-dark-850 border border-dark-750 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs text-white placeholder-slate-500">
-            <button type="submit" id="paper-chat-send-btn"
-              class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1">
+              class="flex-1 px-4 py-2.5 rounded-xl bg-dark-850 border border-dark-750 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs text-white placeholder-slate-500"
+            >
+            <button 
+              type="submit" 
+              id="paper-chat-send-btn"
+              class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1"
+            >
               <span>Ask Prof. Feb</span>
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
           </form>
         </div>
@@ -1513,20 +1200,15 @@
             <div>
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
                 <span>📝 Professional Research Notes & Highlighted Passages</span>
-                <span id="notes-badge-count"
-                  class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">0
-                  Notes</span>
+                <span id="notes-badge-count" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">0 Notes</span>
               </h3>
-              <p class="text-[11px] text-slate-400">Structured annotations, critical commentary, and theoretical
-                evaluations recorded by the researcher.</p>
+              <p class="text-[11px] text-slate-400">Structured annotations, critical commentary, and theoretical evaluations recorded by Mark Febiri.</p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openNoteModalForSelection()"
-                class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <button onclick="openNoteModalForSelection()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
                 <span>+ Take Note</span>
               </button>
-              <button onclick="exportResearchDossierMarkdown()"
-                class="px-3 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 text-xs font-bold border border-dark-700 transition flex items-center gap-1">
+              <button onclick="exportResearchDossierMarkdown()" class="px-3 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 text-xs font-bold border border-dark-700 transition flex items-center gap-1">
                 <span>⬇️ Export Notes (.md)</span>
               </button>
             </div>
@@ -1534,21 +1216,11 @@
 
           <!-- Notes Filter Bar -->
           <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-            <button onclick="filterPaperNotes('all')"
-              class="note-filter-btn px-2.5 py-1 rounded-lg bg-dark-800 text-white font-bold"
-              data-filter="all">All</button>
-            <button onclick="filterPaperNotes('Methodology')"
-              class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white"
-              data-filter="Methodology">Methodology</button>
-            <button onclick="filterPaperNotes('Finding')"
-              class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-filter="Finding">Key
-              Finding</button>
-            <button onclick="filterPaperNotes('Limitation')"
-              class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white"
-              data-filter="Limitation">Limitations & Gaps</button>
-            <button onclick="filterPaperNotes('Extension')"
-              class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-filter="Extension">PhD
-              Extension</button>
+            <button onclick="filterPaperNotes('all')" class="note-filter-btn px-2.5 py-1 rounded-lg bg-dark-800 text-white font-bold" data-filter="all">All</button>
+            <button onclick="filterPaperNotes('Methodology')" class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-filter="Methodology">Methodology</button>
+            <button onclick="filterPaperNotes('Finding')" class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-filter="Finding">Key Finding</button>
+            <button onclick="filterPaperNotes('Limitation')" class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-filter="Limitation">Limitations & Gaps</button>
+            <button onclick="filterPaperNotes('Extension')" class="note-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-filter="Extension">PhD Extension</button>
           </div>
 
           <!-- Notes Cards Container -->
@@ -1564,18 +1236,14 @@
 
 
   <!-- ================= SETTINGS MODAL ================= -->
-  <div id="settings-modal"
-    class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
-    onclick="closeSettingsModal()">
-    <div class="bg-dark-900 border border-dark-750 w-full max-w-lg rounded-2xl shadow-2xl p-6 overflow-hidden"
-      onclick="event.stopPropagation()">
-
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick="closeSettingsModal()">
+    <div class="bg-dark-900 border border-dark-750 w-full max-w-lg rounded-2xl shadow-2xl p-6 overflow-hidden" onclick="event.stopPropagation()">
+      
       <div class="flex items-center justify-between pb-4 border-b border-dark-800 mb-5">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             </svg>
           </div>
           <h3 class="text-base font-bold text-white">App Configuration</h3>
@@ -1588,19 +1256,21 @@
       </div>
 
       <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
-
+        
         <!-- Google Gemini API Key -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="text-xs font-semibold text-slate-200">Google Gemini API Key (Free Tier)</label>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank"
-              class="text-[11px] text-brand-400 hover:underline">Get Free Key &rarr;</a>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[11px] text-brand-400 hover:underline">Get Free Key &rarr;</a>
           </div>
           <div class="flex gap-2">
-            <input id="setting-gemini-key" type="password" placeholder="AIzaSy..."
-              class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono" />
-            <button onclick="testGeminiKey()"
-              class="px-3 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition">
+            <input 
+              id="setting-gemini-key" 
+              type="password" 
+              placeholder="AIzaSy..." 
+              class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono"
+            />
+            <button onclick="testGeminiKey()" class="px-3 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition">
               Test
             </button>
           </div>
@@ -1611,20 +1281,26 @@
         <div class="pt-3 border-t border-dark-800">
           <div class="flex items-center justify-between mb-1.5">
             <label class="text-xs font-semibold text-slate-200">Zotero User ID (Library ID)</label>
-            <a href="https://www.zotero.org/settings/keys" target="_blank"
-              class="text-[11px] text-brand-400 hover:underline">Find ID &rarr;</a>
+            <a href="https://www.zotero.org/settings/keys" target="_blank" class="text-[11px] text-brand-400 hover:underline">Find ID &rarr;</a>
           </div>
-          <input id="setting-zotero-id" type="text" placeholder="e.g. 1234567"
-            class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono" />
+          <input 
+            id="setting-zotero-id" 
+            type="text" 
+            placeholder="e.g. 1234567" 
+            class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono"
+          />
         </div>
 
         <div>
           <label class="text-xs font-semibold text-slate-200 block mb-1.5">Zotero Private API Key</label>
           <div class="flex gap-2">
-            <input id="setting-zotero-key" type="password" placeholder="e.g. 3jK8n..."
-              class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono" />
-            <button onclick="testZoteroKey()"
-              class="px-3 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition">
+            <input 
+              id="setting-zotero-key" 
+              type="password" 
+              placeholder="e.g. 3jK8n..." 
+              class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono"
+            />
+            <button onclick="testZoteroKey()" class="px-3 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition">
               Test
             </button>
           </div>
@@ -1637,11 +1313,9 @@
             <label class="text-xs font-semibold text-slate-200">Default Speaking Voice (Edge Neural TTS)</label>
             <span class="text-[10px] font-mono text-emerald-400">🇬🇭 African Accents Featured</span>
           </div>
-          <select id="setting-voice"
-            class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+          <select id="setting-voice" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
             <optgroup label="🇬🇭 West African (Ghana & Nigeria)">
-              <option value="en-NG-AbeoNeural" selected>🇬🇭 Abeo (West Africa / Ghana - Male, Expressive & Natural)
-              </option>
+              <option value="en-NG-AbeoNeural" selected>🇬🇭 Abeo (West Africa / Ghana - Male, Expressive & Natural)</option>
               <option value="en-NG-EzinneNeural">🇬🇭 Ezinne (West Africa / Ghana - Female, Melodic & Clear)</option>
             </optgroup>
             <optgroup label="🌍 Other African Voices">
@@ -1672,8 +1346,7 @@
         <!-- Default Audio Generation Mode Selector -->
         <div class="pt-3 border-t border-dark-800">
           <label class="text-xs font-semibold text-slate-200 block mb-1.5">Default Audio Generation Mode</label>
-          <select id="setting-default-mode"
-            class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+          <select id="setting-default-mode" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
             <option value="summary">📝 Conversational Summary (Senior Mentor 4-Part Briefing)</option>
             <option value="full_paper">📖 Full Paper Reading (100% Verbatim Cleaned Document)</option>
           </select>
@@ -1684,36 +1357,33 @@
           <div class="flex items-center justify-between mb-1.5">
             <div class="flex items-center gap-1.5">
               <span class="text-xs font-semibold text-slate-200">Database & Cloud Persistence</span>
-              <span id="setting-db-badge"
-                class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-dark-800 text-slate-300 border border-dark-700">Checking...</span>
+              <span id="setting-db-badge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-dark-800 text-slate-300 border border-dark-700">Checking...</span>
             </div>
-            <a href="https://supabase.com" target="_blank" class="text-[11px] text-emerald-400 hover:underline">Get
-              Supabase DB &rarr;</a>
+            <a href="https://supabase.com" target="_blank" class="text-[11px] text-emerald-400 hover:underline">Get Supabase DB &rarr;</a>
           </div>
           <div class="flex gap-2">
-            <input id="setting-db-url" type="password"
-              placeholder="postgresql://postgres.[ref]:[pass]@aws-0...pooler.supabase.com:6543/postgres"
-              class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono" />
-            <button onclick="testDatabaseUrl()"
-              class="px-3 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition">
+            <input 
+              id="setting-db-url" 
+              type="password" 
+              placeholder="postgresql://postgres.[ref]:[pass]@aws-0...pooler.supabase.com:6543/postgres" 
+              class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono"
+            />
+            <button onclick="testDatabaseUrl()" class="px-3 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 border border-dark-700 transition">
               Test
             </button>
           </div>
           <p class="text-[11px] text-slate-400 mt-1">
-            Connecting to a cloud database (e.g., Supabase PostgreSQL) permanently persists all your synced papers,
-            summaries, and notes across server restarts so you never have to re-sync or re-wait.
+            Connecting to a cloud database (e.g., Supabase PostgreSQL) permanently persists all your synced papers, summaries, and notes across server restarts so you never have to re-sync or re-wait.
           </p>
         </div>
 
       </div>
 
       <div class="pt-5 border-t border-dark-800 mt-5 flex items-center justify-end gap-2">
-        <button onclick="closeSettingsModal()"
-          class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 transition">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 transition">
           Cancel
         </button>
-        <button onclick="saveSettings()"
-          class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">
+        <button onclick="saveSettings()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">
           Save Settings
         </button>
       </div>
@@ -1723,12 +1393,9 @@
 
 
   <!-- ================= UPLOAD PDF MODAL ================= -->
-  <div id="upload-modal"
-    class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
-    onclick="closeUploadModal()">
-    <div class="bg-dark-900 border border-dark-750 w-full max-w-md rounded-2xl shadow-2xl p-6"
-      onclick="event.stopPropagation()">
-
+  <div id="upload-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick="closeUploadModal()">
+    <div class="bg-dark-900 border border-dark-750 w-full max-w-md rounded-2xl shadow-2xl p-6" onclick="event.stopPropagation()">
+      
       <div class="flex items-center justify-between pb-3 border-b border-dark-800 mb-4">
         <h3 class="text-base font-bold text-white">Upload Research Paper PDF</h3>
         <button onclick="closeUploadModal()" class="text-slate-400 hover:text-white transition">
@@ -1740,11 +1407,13 @@
 
       <form id="upload-form" onsubmit="handlePdfUpload(event)" class="space-y-4">
         <!-- Drag and drop zone -->
-        <div id="dropzone" onclick="document.getElementById('pdf-file-input').click()"
-          class="border-2 border-dashed border-dark-700 hover:border-brand-500 rounded-2xl p-6 text-center cursor-pointer transition bg-dark-950/60">
+        <div 
+          id="dropzone" 
+          onclick="document.getElementById('pdf-file-input').click()"
+          class="border-2 border-dashed border-dark-700 hover:border-brand-500 rounded-2xl p-6 text-center cursor-pointer transition bg-dark-950/60"
+        >
           <svg class="w-8 h-8 text-brand-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
           <p id="dropzone-text" class="text-xs text-slate-300 font-medium">Click or drag & drop research PDF here</p>
           <p class="text-[10px] text-slate-500 mt-1">PDF files up to 50MB</p>
@@ -1753,56 +1422,43 @@
 
         <div>
           <label class="text-xs font-semibold text-slate-300 block mb-1">Paper Title (Optional override)</label>
-          <input id="upload-title" type="text" placeholder="Auto-extracted from PDF if empty"
-            class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500" />
+          <input id="upload-title" type="text" placeholder="Auto-extracted from PDF if empty" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500" />
         </div>
 
         <div>
           <label class="text-xs font-semibold text-slate-300 block mb-1">Authors (Optional)</label>
-          <input id="upload-authors" type="text" placeholder="e.g. Jane Doe, John Smith"
-            class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500" />
+          <input id="upload-authors" type="text" placeholder="e.g. Jane Doe, John Smith" class="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500" />
         </div>
 
         <!-- Mode Selection -->
         <div class="space-y-1.5">
           <label class="text-xs font-semibold text-slate-200 block">Audio Generation Mode</label>
           <div class="grid grid-cols-2 gap-2">
-            <label
-              class="flex items-start gap-2 p-2.5 rounded-xl border border-dark-700 bg-dark-950/60 cursor-pointer hover:border-brand-500/60 transition">
-              <input type="radio" name="upload-mode" value="summary" checked
-                class="mt-0.5 text-brand-500 focus:ring-0 bg-dark-900 border-dark-700">
+            <label class="flex items-start gap-2 p-2.5 rounded-xl border border-dark-700 bg-dark-950/60 cursor-pointer hover:border-brand-500/60 transition">
+              <input type="radio" name="upload-mode" value="summary" checked class="mt-0.5 text-brand-500 focus:ring-0 bg-dark-900 border-dark-700">
               <div>
                 <span class="text-xs font-semibold text-white block">📝 Summary Briefing</span>
-                <span class="text-[10px] text-slate-400 block leading-tight mt-0.5">4-part conversational mentor
-                  breakdown</span>
+                <span class="text-[10px] text-slate-400 block leading-tight mt-0.5">4-part conversational mentor breakdown</span>
               </div>
             </label>
-            <label
-              class="flex items-start gap-2 p-2.5 rounded-xl border border-dark-700 bg-dark-950/60 cursor-pointer hover:border-brand-500/60 transition">
-              <input type="radio" name="upload-mode" value="full_paper"
-                class="mt-0.5 text-brand-500 focus:ring-0 bg-dark-900 border-dark-700">
+            <label class="flex items-start gap-2 p-2.5 rounded-xl border border-dark-700 bg-dark-950/60 cursor-pointer hover:border-brand-500/60 transition">
+              <input type="radio" name="upload-mode" value="full_paper" class="mt-0.5 text-brand-500 focus:ring-0 bg-dark-900 border-dark-700">
               <div>
                 <span class="text-xs font-semibold text-white block">📖 Read Full Paper</span>
-                <span class="text-[10px] text-slate-400 block leading-tight mt-0.5">100% verbatim narrated
-                  document</span>
+                <span class="text-[10px] text-slate-400 block leading-tight mt-0.5">100% verbatim narrated document</span>
               </div>
             </label>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <input id="upload-autoprocess" type="checkbox" checked
-            class="rounded border-dark-700 text-brand-500 focus:ring-0 bg-dark-950" />
-          <label for="upload-autoprocess" class="text-xs text-slate-300">Generate audio automatically in background
-            after upload</label>
+          <input id="upload-autoprocess" type="checkbox" checked class="rounded border-dark-700 text-brand-500 focus:ring-0 bg-dark-950" />
+          <label for="upload-autoprocess" class="text-xs text-slate-300">Generate audio automatically in background after upload</label>
         </div>
 
         <div class="pt-3 border-t border-dark-800 flex justify-end gap-2">
-          <button type="button" onclick="closeUploadModal()"
-            class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 transition">Cancel</button>
-          <button type="submit" id="upload-submit-btn"
-            class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">Upload
-            & Ingest</button>
+          <button type="button" onclick="closeUploadModal()" class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 transition">Cancel</button>
+          <button type="submit" id="upload-submit-btn" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">Upload & Ingest</button>
         </div>
       </form>
 
@@ -1811,72 +1467,55 @@
 
 
   <!-- ================= KEYBOARD SHORTCUTS MODAL ================= -->
-  <div id="shortcuts-modal"
-    class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
-    onclick="toggleShortcutsModal(false)">
-    <div class="bg-dark-900 border border-dark-750 w-full max-w-md rounded-2xl shadow-2xl p-6"
-      onclick="event.stopPropagation()">
+  <div id="shortcuts-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick="toggleShortcutsModal(false)">
+    <div class="bg-dark-900 border border-dark-750 w-full max-w-md rounded-2xl shadow-2xl p-6" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between pb-3 border-b border-dark-800 mb-4">
         <div class="flex items-center gap-2">
           <span class="text-base">⌨️</span>
           <h3 class="text-sm font-bold text-white">Keyboard Shortcuts Reference</h3>
         </div>
-        <button onclick="toggleShortcutsModal(false)"
-          class="text-slate-400 hover:text-white transition">&times;</button>
+        <button onclick="toggleShortcutsModal(false)" class="text-slate-400 hover:text-white transition">&times;</button>
       </div>
       <div class="space-y-2 text-xs">
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Play / Pause</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Space
-            / K</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Space / K</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Rewind 10 Seconds</span>
-          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">←
-            / J</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">← / J</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Forward 10 Seconds</span>
-          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">→
-            / L</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">→ / L</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Rewind 30 Seconds</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Shift
-            + ←</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Shift + ←</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Forward 30 Seconds</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Shift
-            + →</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Shift + →</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Jump to 0% – 90%</span>
-          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">0
-            .. 9</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">0 .. 9</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Zen / Fullscreen Focus Studio</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Z</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Z</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Mute / Unmute Audio</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">M</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">M</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5 border-b border-dark-800/60">
           <span class="text-slate-300">Cycle Playback Speed</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">S</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">S</kbd>
         </div>
         <div class="flex items-center justify-between py-1.5">
           <span class="text-slate-300">Close Modals / Exit Zen</span>
-          <kbd
-            class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Esc</kbd>
+          <kbd class="px-2 py-0.5 rounded-lg bg-dark-800 border border-dark-700 font-mono text-slate-300 text-[11px]">Esc</kbd>
         </div>
       </div>
     </div>
@@ -1884,25 +1523,16 @@
 
 
   <!-- ================= FIGURE LIGHTBOX MODAL ================= -->
-  <div id="figure-lightbox-modal"
-    class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4"
-    onclick="closeFigureLightbox()">
-    <div
-      class="relative max-w-5xl max-h-[92vh] w-full flex flex-col items-center bg-dark-900 border border-dark-750 rounded-2xl p-4 shadow-2xl"
-      onclick="event.stopPropagation()">
+  <div id="figure-lightbox-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4" onclick="closeFigureLightbox()">
+    <div class="relative max-w-5xl max-h-[92vh] w-full flex flex-col items-center bg-dark-900 border border-dark-750 rounded-2xl p-4 shadow-2xl" onclick="event.stopPropagation()">
       <div class="w-full flex items-center justify-between pb-3 mb-2 border-b border-dark-800">
         <span id="lightbox-caption" class="text-sm font-semibold text-white truncate pr-4"></span>
         <div class="flex items-center gap-3">
-          <a id="lightbox-download-btn" href="#" target="_blank" download
-            class="text-xs text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
+          <a id="lightbox-download-btn" href="#" target="_blank" download class="text-xs text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             <span>Open High-Res</span>
           </a>
-          <button onclick="closeFigureLightbox()"
-            class="text-slate-400 hover:text-white p-1 text-xl font-bold leading-none">&times;</button>
+          <button onclick="closeFigureLightbox()" class="text-slate-400 hover:text-white p-1 text-xl font-bold leading-none">&times;</button>
         </div>
       </div>
       <div class="overflow-auto max-h-[80vh] w-full flex items-center justify-center">
@@ -1913,46 +1543,32 @@
 
 
   <!-- ================= FLOATING TEXT SELECTION POPOVER ================= -->
-  <div id="paper-selection-popover"
-    class="hidden fixed z-50 bg-dark-900/95 border border-dark-700 shadow-2xl rounded-2xl p-1.5 flex items-center gap-1 text-xs backdrop-blur-xl animate-in fade-in duration-150 select-none">
-    <button onclick="applyHighlight('yellow')" class="p-1.5 rounded-xl hover:bg-amber-500/20 text-amber-300 transition"
-      title="Highlight Yellow (Key Finding)">
+  <div id="paper-selection-popover" class="hidden fixed z-50 bg-dark-900/95 border border-dark-700 shadow-2xl rounded-2xl p-1.5 flex items-center gap-1 text-xs backdrop-blur-xl animate-in fade-in duration-150 select-none">
+    <button onclick="applyHighlight('yellow')" class="p-1.5 rounded-xl hover:bg-amber-500/20 text-amber-300 transition" title="Highlight Yellow (Key Finding)">
       🟡
     </button>
-    <button onclick="applyHighlight('green')"
-      class="p-1.5 rounded-xl hover:bg-emerald-500/20 text-emerald-300 transition"
-      title="Highlight Green (Methodology)">
+    <button onclick="applyHighlight('green')" class="p-1.5 rounded-xl hover:bg-emerald-500/20 text-emerald-300 transition" title="Highlight Green (Methodology)">
       🟢
     </button>
-    <button onclick="applyHighlight('purple')"
-      class="p-1.5 rounded-xl hover:bg-purple-500/20 text-purple-300 transition"
-      title="Highlight Purple (Limitation / Gap)">
+    <button onclick="applyHighlight('purple')" class="p-1.5 rounded-xl hover:bg-purple-500/20 text-purple-300 transition" title="Highlight Purple (Limitation / Gap)">
       🟣
     </button>
     <div class="h-4 w-px bg-dark-750 mx-0.5"></div>
-    <button onclick="openNoteModalForSelection()"
-      class="px-2.5 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 font-semibold flex items-center gap-1 transition"
-      title="Add Professional Research Note on this selection">
+    <button onclick="openNoteModalForSelection()" class="px-2.5 py-1 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 font-semibold flex items-center gap-1 transition" title="Add Professional Research Note on this selection">
       <span>📝 Note</span>
     </button>
-    <button onclick="askAiAboutSelection()"
-      class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold flex items-center gap-1 transition shadow-sm"
-      title="Ask AI Mentor to explain this excerpt from the paper">
+    <button onclick="askAiAboutSelection()" class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold flex items-center gap-1 transition shadow-sm" title="Ask AI Mentor to explain this excerpt from the paper">
       <span>🤖 Ask AI</span>
     </button>
   </div>
 
 
   <!-- ================= PROFESSIONAL RESEARCH NOTE MODAL ================= -->
-  <div id="paper-note-modal"
-    class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-    <div
-      class="bg-dark-900 border border-dark-750 w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4 animate-in fade-in duration-150"
-      onclick="event.stopPropagation()">
+  <div id="paper-note-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-dark-900 border border-dark-750 w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4 animate-in fade-in duration-150" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between border-b border-dark-800 pb-3">
         <div class="flex items-center gap-2.5">
-          <div
-            class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-sm font-bold">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-sm font-bold">
             📝
           </div>
           <div>
@@ -1964,8 +1580,7 @@
       </div>
 
       <!-- Quoted Excerpt Preview -->
-      <div id="note-modal-quote-container"
-        class="p-3 rounded-2xl bg-dark-950 border border-dark-800 text-xs text-slate-300 font-serif italic border-l-4 border-l-brand-500 max-h-28 overflow-y-auto">
+      <div id="note-modal-quote-container" class="p-3 rounded-2xl bg-dark-950 border border-dark-800 text-xs text-slate-300 font-serif italic border-l-4 border-l-brand-500 max-h-28 overflow-y-auto">
         <span id="note-modal-quote-text">Selected passage...</span>
       </div>
 
@@ -1974,17 +1589,22 @@
           <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
             Note Title / Concept Summary
           </label>
-          <input type="text" id="note-input-title"
+          <input 
+            type="text" 
+            id="note-input-title" 
             placeholder="e.g. Attention memory bottleneck in long-context decoding..."
-            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium">
+            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+          >
         </div>
 
         <div>
           <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
             Research Dimension / Category
           </label>
-          <select id="note-input-category"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium">
+          <select 
+            id="note-input-category"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+          >
             <option value="Methodology">📐 Methodology & Architectural Formulation</option>
             <option value="Finding">💡 Empirical Finding & Benchmark Result</option>
             <option value="Limitation">⚖️ Critical Limitation & Unsolved Research Gap</option>
@@ -1997,19 +1617,20 @@
           <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
             Professional Analysis & Mentorship Commentary
           </label>
-          <textarea id="note-input-content" rows="4"
-            placeholder="Record your critical evaluation, theoretical implications, or connection to your doctoral research..."
-            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-sans leading-relaxed"></textarea>
+          <textarea 
+            id="note-input-content" 
+            rows="4"
+            placeholder="Record your critical evaluation, theoretical implications, or connection to Mark Febiri's research..."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-dark-850 border border-dark-750 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-sans leading-relaxed"
+          ></textarea>
         </div>
       </div>
 
       <div class="flex items-center justify-end gap-2 pt-2 border-t border-dark-800">
-        <button onclick="closePaperNoteModal()"
-          class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-dark-800 transition">
+        <button onclick="closePaperNoteModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-dark-800 transition">
           Cancel
         </button>
-        <button onclick="saveProfessionalNote()" id="save-note-btn"
-          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5">
+        <button onclick="saveProfessionalNote()" id="save-note-btn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5">
           <span>💾 Save Note</span>
         </button>
       </div>
@@ -2018,20 +1639,14 @@
 
 
   <!-- ================= SECTION DETAIL & DEEP-DIVE MODAL ================= -->
-  <div id="section-detail-modal"
-    class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-    <div
-      class="bg-dark-900 border border-dark-750 w-full max-w-2xl rounded-3xl shadow-2xl p-6 space-y-4 max-h-[85vh] flex flex-col animate-in fade-in duration-150"
-      onclick="event.stopPropagation()">
+  <div id="section-detail-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-dark-900 border border-dark-750 w-full max-w-2xl rounded-3xl shadow-2xl p-6 space-y-4 max-h-[85vh] flex flex-col animate-in fade-in duration-150" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between border-b border-dark-800 pb-3">
         <div class="flex items-center gap-3">
-          <div id="section-modal-badge"
-            class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-sm font-bold font-mono">
-            1</div>
+          <div id="section-modal-badge" class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-sm font-bold font-mono">1</div>
           <div>
             <h3 id="section-modal-title" class="text-sm font-bold text-white">Section Breakdown</h3>
-            <p id="section-modal-subtitle" class="text-[11px] text-slate-400 font-mono">Detailed Analysis & Key Insights
-            </p>
+            <p id="section-modal-subtitle" class="text-[11px] text-slate-400 font-mono">Detailed Analysis & Key Insights</p>
           </div>
         </div>
         <button onclick="closeSectionDetailModal()" class="text-slate-400 hover:text-white text-base">✕</button>
@@ -2039,19 +1654,16 @@
 
       <!-- Segmented View Toggle in Section Modal -->
       <div class="flex items-center gap-2 bg-dark-950 p-1 rounded-xl border border-dark-800 text-xs">
-        <button id="sec-modal-tab-summary" onclick="switchSectionModalTab('summary')"
-          class="flex-1 py-1.5 rounded-lg bg-dark-800 text-white font-semibold shadow-sm transition">
+        <button id="sec-modal-tab-summary" onclick="switchSectionModalTab('summary')" class="flex-1 py-1.5 rounded-lg bg-dark-800 text-white font-semibold shadow-sm transition">
           ⚡ Executive Highlights
         </button>
-        <button id="sec-modal-tab-detailed" onclick="switchSectionModalTab('detailed')"
-          class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition font-medium">
+        <button id="sec-modal-tab-detailed" onclick="switchSectionModalTab('detailed')" class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition font-medium">
           🔬 Comprehensive Exposition
         </button>
       </div>
 
       <!-- Section Body Scroll Area -->
-      <div
-        class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans prose prose-invert max-w-none">
+      <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans prose prose-invert max-w-none">
         <div id="section-modal-body">
           <!-- Populated by JS -->
         </div>
@@ -2060,21 +1672,17 @@
       <!-- Action Footer -->
       <div class="flex items-center justify-between gap-2 pt-3 border-t border-dark-800 flex-wrap">
         <div class="flex items-center gap-2">
-          <button id="sec-modal-play-btn" onclick="playCurrentSectionFromModal()"
-            class="px-3 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 text-xs font-semibold flex items-center gap-1.5 transition">
+          <button id="sec-modal-play-btn" onclick="playCurrentSectionFromModal()" class="px-3 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-200 border border-dark-700 text-xs font-semibold flex items-center gap-1.5 transition">
             <span>▶ Listen to Section</span>
           </button>
-          <button onclick="askAiAboutCurrentSection()"
-            class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 hover:bg-brand-600/30 text-xs font-semibold flex items-center gap-1.5 transition">
+          <button onclick="askAiAboutCurrentSection()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 hover:bg-brand-600/30 text-xs font-semibold flex items-center gap-1.5 transition">
             <span>💬 Ask AI Mentor</span>
           </button>
-          <button onclick="takeNoteOnCurrentSection()"
-            class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
+          <button onclick="takeNoteOnCurrentSection()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
             <span>📝 Take Note</span>
           </button>
         </div>
-        <button onclick="closeSectionDetailModal()"
-          class="px-4 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 text-xs font-medium transition">
+        <button onclick="closeSectionDetailModal()" class="px-4 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 text-xs font-medium transition">
           Done
         </button>
       </div>
@@ -2145,7 +1753,7 @@
       setViewMode(currentViewMode, false);
       loadSettingsToInputs();
       applyReaderTypography();
-
+      
       // Initialize Ghanaian / African Speaking Voice
       const savedVoice = localStorage.getItem('zam_voice') || 'en-NG-AbeoNeural';
       const quickVoiceEl = document.getElementById('quick-voice-select');
@@ -2166,11 +1774,6 @@
       fetchPapers();
       setupAudioListeners();
       initTextSelectionWatcher();
-
-      // Reactive data refresh when user signs in or out via Supabase
-      window.addEventListener('proffeb-auth-changed', () => {
-        fetchPapers();
-      });
     });
 
     // View Mode Toggle (Grid vs Table)
@@ -2330,7 +1933,7 @@
       try {
         const res = await fetch('/api/settings/test-gemini', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ gemini_api_key: key })
         });
         const data = await res.json();
@@ -2354,7 +1957,7 @@
       try {
         const res = await fetch('/api/settings/test-zotero', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ library_id: id, api_key: key, library_type: 'user' })
         });
         const data = await res.json();
@@ -2384,7 +1987,7 @@
       try {
         const res = await fetch('/api/sync', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             library_id: zoteroId || undefined,
             api_key: zoteroKey || undefined,
@@ -2443,9 +2046,12 @@
           const cachedData = JSON.parse(cached);
           if (cachedData.papers && cachedData.papers.length > 0) {
             allPapers = cachedData.papers;
-            document.getElementById('stat-total-papers').textContent = cachedData.total || allPapers.length;
-            document.getElementById('stat-ready-briefings').textContent = cachedData.ready_count || 0;
-            document.getElementById('stat-audio-time').textContent = `${cachedData.total_audio_minutes || 0.0} min`;
+            const statTotalEl = document.getElementById('stat-total-papers');
+            const statReadyEl = document.getElementById('stat-ready-briefings');
+            const statAudioEl = document.getElementById('stat-audio-time');
+            if (statTotalEl) statTotalEl.textContent = cachedData.total || allPapers.length;
+            if (statReadyEl) statReadyEl.textContent = cachedData.ready_count || 0;
+            if (statAudioEl) statAudioEl.textContent = `${cachedData.total_audio_minutes || 0.0} min`;
             if (loadingEl) loadingEl.classList.add('hidden');
             if (emptyEl) emptyEl.classList.add('hidden');
             if (currentViewMode === 'list') {
@@ -2456,7 +2062,7 @@
             renderPapers();
           }
         }
-      } catch (e) { }
+      } catch (e) {}
 
       if (showSpinner && allPapers.length === 0 && loadingEl) {
         loadingEl.classList.remove('hidden');
@@ -2471,10 +2077,10 @@
       try {
         const res = await fetch('/api/papers', { signal: controller.signal });
         clearTimeout(timeoutId);
-
+        
         if (!res.ok) throw new Error(`Server returned HTTP ${res.status}`);
         const data = await res.json();
-
+        
         allPapers = data.papers || [];
 
         // Save fresh cache
@@ -2485,12 +2091,15 @@
             total_audio_minutes: data.total_audio_minutes,
             papers: allPapers
           }));
-        } catch (e) { }
+        } catch (e) {}
 
         // Update Stats
-        document.getElementById('stat-total-papers').textContent = data.total || 0;
-        document.getElementById('stat-ready-briefings').textContent = data.ready_count || 0;
-        document.getElementById('stat-audio-time').textContent = `${data.total_audio_minutes || 0.0} min`;
+        const statTotalEl = document.getElementById('stat-total-papers');
+        const statReadyEl = document.getElementById('stat-ready-briefings');
+        const statAudioEl = document.getElementById('stat-audio-time');
+        if (statTotalEl) statTotalEl.textContent = data.total || 0;
+        if (statReadyEl) statReadyEl.textContent = data.ready_count || 0;
+        if (statAudioEl) statAudioEl.textContent = `${data.total_audio_minutes || 0.0} min`;
 
         if (loadingEl) loadingEl.classList.add('hidden');
 
@@ -2642,10 +2251,10 @@
             </p>
 
             ${(() => {
-            const savedPos = getPaperSavedPosition(paper.id);
-            if (savedPos && savedPos.time > 5 && (savedPos.duration - savedPos.time > 10)) {
-              const pct = Math.round((savedPos.time / savedPos.duration) * 100);
-              return `
+              const savedPos = getPaperSavedPosition(paper.id);
+              if (savedPos && savedPos.time > 5 && (savedPos.duration - savedPos.time > 10)) {
+                const pct = Math.round((savedPos.time / savedPos.duration) * 100);
+                return `
                   <div onclick="resumeSavedPaperPosition(${paper.id})" class="mb-3 p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 cursor-pointer transition text-amber-300 text-[11px] font-mono group/res" title="Resume audio playback">
                     <div class="flex items-center justify-between mb-1">
                       <span class="flex items-center gap-1.5">
@@ -2659,30 +2268,32 @@
                     </div>
                   </div>
                 `;
-            }
-            return '';
-          })()}
+              }
+              return '';
+            })()}
           </div>
 
           <div class="pt-3 border-t border-dark-800/80 flex flex-col gap-2.5">
             <!-- Dual Action Audio Buttons -->
             <div class="grid grid-cols-2 gap-2">
-              <button onclick="handlePaperAction(${paper.id}, 'summary')" class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition active:scale-95 ${hasSummary
-            ? (isPlayingSummary ? 'bg-brand-500 text-dark-950 font-bold' : 'bg-dark-800 hover:bg-dark-750 text-brand-400 border border-brand-500/30')
-            : 'bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700'
-          }">
+              <button onclick="handlePaperAction(${paper.id}, 'summary')" class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition active:scale-95 ${
+                hasSummary
+                  ? (isPlayingSummary ? 'bg-brand-500 text-dark-950 font-bold' : 'bg-dark-800 hover:bg-dark-750 text-brand-400 border border-brand-500/30')
+                  : 'bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700'
+              }">
                 ${hasSummary
-            ? (isPlayingSummary ? '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause' : '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> ' + (paper.summary_audio_duration ? formatSeconds(paper.summary_audio_duration) : 'Summary'))
-            : '⚡ Gen Summary'}
+                  ? (isPlayingSummary ? '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause' : '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> ' + (paper.summary_audio_duration ? formatSeconds(paper.summary_audio_duration) : 'Summary'))
+                  : '⚡ Gen Summary'}
               </button>
 
-              <button onclick="handlePaperAction(${paper.id}, 'full_paper')" class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition active:scale-95 ${hasFull
-            ? (isPlayingFull ? 'bg-blue-500 text-dark-950 font-bold' : 'bg-dark-800 hover:bg-dark-750 text-blue-400 border border-blue-500/30')
-            : 'bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700'
-          }">
+              <button onclick="handlePaperAction(${paper.id}, 'full_paper')" class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition active:scale-95 ${
+                hasFull
+                  ? (isPlayingFull ? 'bg-blue-500 text-dark-950 font-bold' : 'bg-dark-800 hover:bg-dark-750 text-blue-400 border border-blue-500/30')
+                  : 'bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700'
+              }">
                 ${hasFull
-            ? (isPlayingFull ? '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause' : '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> ' + (paper.full_audio_duration ? formatSeconds(paper.full_audio_duration) : 'Full Paper'))
-            : '📖 Read Full'}
+                  ? (isPlayingFull ? '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause' : '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> ' + (paper.full_audio_duration ? formatSeconds(paper.full_audio_duration) : 'Full Paper'))
+                  : '📖 Read Full'}
               </button>
             </div>
 
@@ -2743,10 +2354,10 @@
         try {
           await fetch(`/api/papers/${paper.id}/switch-mode`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ mode: mode })
           });
-        } catch (e) { }
+        } catch (e) {}
 
         playPaperTrack(paper, mode, audioPath);
       } else {
@@ -2771,7 +2382,7 @@
       try {
         const res = await fetch(`/api/process/${paperId}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             mode: targetMode,
             voice: voice,
@@ -3057,7 +2668,8 @@
         const nextTime = (idx < chapters.length - 1) ? chapters[idx + 1].time : 999999;
         const isActive = curTime >= c.time && curTime < nextTime;
         return `
-          <div onclick="seekToChapter(${c.time}, '${escapeHtml(c.title)}')" class="p-2.5 rounded-xl cursor-pointer flex items-center justify-between transition ${isActive ? 'bg-brand-500/15 border border-brand-500/30 text-white font-semibold' : 'hover:bg-dark-800 text-slate-300'
+          <div onclick="seekToChapter(${c.time}, '${escapeHtml(c.title)}')" class="p-2.5 rounded-xl cursor-pointer flex items-center justify-between transition ${
+            isActive ? 'bg-brand-500/15 border border-brand-500/30 text-white font-semibold' : 'hover:bg-dark-800 text-slate-300'
           }">
             <div class="flex items-center gap-2 truncate">
               <span class="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-mono ${isActive ? 'bg-brand-500 text-dark-950 font-bold' : 'bg-dark-800 text-slate-400'}">${idx + 1}</span>
@@ -3108,9 +2720,9 @@
       if (quickSelect) quickSelect.value = val;
 
       const voiceName = val.includes('Abeo') ? 'Abeo (Ghana & West Africa 🇬🇭)' :
-        val.includes('Ezinne') ? 'Ezinne (Ghana & West Africa 🇬🇭)' :
-          val.includes('Chilemba') ? 'Chilemba (Kenya 🇰🇪)' :
-            val.includes('Luke') ? 'Luke (South Africa 🇿🇦)' : val.split('-')[2];
+                        val.includes('Ezinne') ? 'Ezinne (Ghana & West Africa 🇬🇭)' :
+                        val.includes('Chilemba') ? 'Chilemba (Kenya 🇰🇪)' :
+                        val.includes('Luke') ? 'Luke (South Africa 🇿🇦)' : val.split('-')[2];
 
       showToast(`🗣️ Speaking voice set to ${voiceName}!`, 'success');
     }
@@ -3285,7 +2897,8 @@
       container.innerHTML = AVAILABLE_VOICES_LIST.map(v => {
         const isSelected = v.id === currentVoice;
         return `
-          <div onclick="selectReaderVoice('${v.id}')" class="p-2 rounded-xl cursor-pointer flex items-center justify-between transition ${isSelected ? 'bg-brand-500/15 border border-brand-500/30 text-white font-semibold' : 'hover:bg-dark-800 text-slate-300'
+          <div onclick="selectReaderVoice('${v.id}')" class="p-2 rounded-xl cursor-pointer flex items-center justify-between transition ${
+            isSelected ? 'bg-brand-500/15 border border-brand-500/30 text-white font-semibold' : 'hover:bg-dark-800 text-slate-300'
           }">
             <div class="flex items-center gap-2 truncate">
               <span class="text-xs truncate">${escapeHtml(v.name)}</span>
@@ -3438,7 +3051,7 @@
 
     function getSectionMeta(key) {
       const p = activeModalPaper || {};
-      switch (key) {
+      switch(key) {
         case 'problem':
           return {
             number: 1,
@@ -3573,7 +3186,7 @@
             badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-dark-800 text-slate-400 border border-dark-700';
           }
         }
-      } catch (e) { }
+      } catch (e) {}
     }
 
     async function testDatabaseUrl() {
@@ -3920,14 +3533,14 @@
         try {
           window.renderMathInElement(el, {
             delimiters: [
-              { left: '$$', right: '$$', display: true },
-              { left: '$', right: '$', display: false },
-              { left: '\\(', right: '\\)', display: false },
-              { left: '\\[', right: '\\]', display: true }
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
             ],
             throwOnError: false
           });
-        } catch (e) { }
+        } catch (e) {}
       }
     }
 
@@ -4106,7 +3719,7 @@
 
       document.getElementById('modal-full-script').textContent = paper.summary_text || 'No summary script generated yet. Click "Generate Summary Audio" above.';
       document.getElementById('modal-abstract-text').textContent = paper.abstract || 'No abstract stored for this record.';
-
+      
       const pdfFrame = document.getElementById('fullpaper-pdf-frame');
       const pdfContainer = document.getElementById('modal-pdf-link-container');
 
@@ -4185,7 +3798,7 @@
               populateModalFields(fresh);
             }
           }
-        } catch (e) { }
+        } catch (e) {}
       }
     }
 
@@ -4332,7 +3945,7 @@
           <span class="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 font-mono shadow-sm border border-brand-400/40" title="Prof. Feb (Academic Research Mentor)">FEB</span>
           <div class="p-4 rounded-2xl bg-dark-850 text-slate-200 border border-dark-750 leading-relaxed max-w-xl academic-prose text-xs shadow-sm">
             <p class="font-bold text-brand-300 text-[13px] mb-1">🎓 Academic Mentorship Session with Prof. Feb</p>
-            <p class="text-slate-300">I am <strong>Prof. Feb</strong>, your Senior Research Mentor for <em>"${escapeHtml(title.slice(0, 90))}${title.length > 90 ? '...' : ''}"</em>.</p>
+            <p class="text-slate-300">I am <strong>Prof. Feb</strong> (Professor Febiri), your Senior Research Mentor for <em>"${escapeHtml(title.slice(0, 90))}${title.length > 90 ? '...' : ''}"</em>.</p>
             <p class="mt-2 text-slate-400">Ask me to break down mathematical formulas ($...$, $$...$$), deconstruct architectural figures and diagrams, analyze baseline benchmarks, or brainstorm extensions for your thesis. Every conversation is automatically saved so you can resume where you left off.</p>
           </div>
         </div>
@@ -4345,7 +3958,7 @@
         localStorage.removeItem('zam_paper_chat_' + activeModalPaper.id);
         paperChatHistory = [];
         loadPaperChatHistory(activeModalPaper.id);
-        fetch(`/api/papers/${activeModalPaper.id}/chat`, { method: 'DELETE' }).catch(() => { });
+        fetch(`/api/papers/${activeModalPaper.id}/chat`, { method: 'DELETE' }).catch(() => {});
         showToast('Chat history cleared with Prof. Feb.', 'info');
       }
     }
@@ -4398,7 +4011,7 @@
       try {
         const res = await fetch(`/api/papers/${activeModalPaper.id}/chat`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ message: text, history: paperChatHistory })
         });
         const data = await res.json();
@@ -4434,7 +4047,7 @@
       const isUser = role === 'user';
       const div = document.createElement('div');
       div.className = `flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`;
-
+      
       if (isUser) {
         div.innerHTML = `
           <span class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-[10px] shrink-0 font-mono shadow-sm">YOU</span>
@@ -4451,7 +4064,7 @@
           renderMathInElementSafely(proseDiv);
         }
       }
-
+      
       container.appendChild(div);
       if (scroll) {
         container.scrollTop = container.scrollHeight;
@@ -4468,7 +4081,7 @@
       if (!activeModalPaper) return;
       const currentVoice = localStorage.getItem('zam_voice') || 'en-NG-AbeoNeural';
       const voiceLabel = currentVoice.includes('Abeo') ? '🇬🇭 Abeo (West Africa - Male)' :
-        currentVoice.includes('Ezinne') ? '🇬🇭 Ezinne (West Africa - Female)' : currentVoice.split('-')[2];
+                         currentVoice.includes('Ezinne') ? '🇬🇭 Ezinne (West Africa - Female)' : currentVoice.split('-')[2];
       const choice = confirm(`Re-generate audio for "${activeModalPaper.title.slice(0, 35)}..." using Voice: ${voiceLabel}?\n\n• Click OK for "Full Paper Reading" (100% Verbatim)\n• Click CANCEL for "Summary Briefing" (4-Part Mentor Overview)`);
       const targetMode = choice ? 'full_paper' : 'summary';
       processPaper(activeModalPaper.id, targetMode);
@@ -4535,7 +4148,7 @@
     }
 
     function getCategoryBadge(cat) {
-      switch (cat) {
+      switch(cat) {
         case 'Methodology':
           return '<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-semibold">📐 Methodology</span>';
         case 'Finding':
@@ -4553,7 +4166,7 @@
       if (color === 'yellow') return 'border-l-amber-400';
       if (color === 'green') return 'border-l-emerald-400';
       if (color === 'purple') return 'border-l-purple-400';
-      switch (cat) {
+      switch(cat) {
         case 'Methodology': return 'border-l-emerald-500';
         case 'Finding': return 'border-l-amber-500';
         case 'Limitation': return 'border-l-rose-500';
@@ -4566,8 +4179,8 @@
       const container = document.getElementById('paper-notes-list');
       if (!container) return;
 
-      const filtered = currentNoteFilter === 'all'
-        ? paperNotes
+      const filtered = currentNoteFilter === 'all' 
+        ? paperNotes 
         : paperNotes.filter(n => n.category === currentNoteFilter);
 
       if (filtered.length === 0) {
@@ -4830,7 +4443,7 @@
       const paper = activeModalPaper;
       const cleanTitle = (paper.title || 'Paper').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().slice(0, 50);
 
-      const notesHtml = paperNotes.length > 0
+      const notesHtml = paperNotes.length > 0 
         ? paperNotes.map(n => `
           <div style="margin-bottom: 16px; padding: 14px; background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 6px;">
             <div style="font-weight: bold; color: #1e293b; margin-bottom: 4px;">[${escapeHtml(n.category || 'Note')}] ${escapeHtml(n.title || '')}</div>
@@ -4840,7 +4453,7 @@
         `).join('')
         : '<p style="color: #64748b; font-style: italic;">No annotations or notes recorded for this document.</p>';
 
-      const fullContentHtml = paper.full_text
+      const fullContentHtml = paper.full_text 
         ? escapeHtml(paper.full_text).replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br/>')
         : '<p>Manuscript text not available.</p>';
 
@@ -4864,7 +4477,7 @@
   <div class="meta">
     <strong>Authors:</strong> ${escapeHtml(paper.authors || 'Unknown')}<br/>
     <strong>Year:</strong> ${escapeHtml(paper.publication_year || 'N/A')} | <strong>Journal:</strong> ${escapeHtml(paper.journal || 'N/A')}<br/>
-    <strong>Curated by:</strong> ProfFeb &bull; Neural Audio Mentor
+    <strong>Curated by:</strong> Mark Febiri &bull; Zotero Audio Mentor
   </div>
 
   <div class="section-title">Executive 4-Part Structured Breakdown</div>
@@ -4913,7 +4526,7 @@
       md += `**Authors:** ${paper.authors || 'Unknown'}\n`;
       md += `**Year:** ${paper.publication_year || 'N/A'} | **Journal:** ${paper.journal || 'N/A'}\n`;
       md += `**Zotero Key:** \`${paper.zotero_item_key || 'N/A'}\`\n`;
-      md += `**Curator:** ProfFeb (Neural Audio Mentor)\n\n`;
+      md += `**Curator:** Mark Febiri (Zotero Audio Mentor)\n\n`;
       md += `---\n\n`;
 
       md += `## Abstract\n${paper.abstract || 'No abstract preview available.'}\n\n`;
@@ -5034,5 +4647,4 @@
   </script>
 
 </body>
-
 </html>
