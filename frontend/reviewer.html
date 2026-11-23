@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,61 +8,155 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
             rose: {
-              50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 400: '#fb7185',
-              500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 800: '#9f1239'
+              400: '#fb7185',
+              500: '#f43f5e',
+              600: '#e11d48',
+              700: '#be123c',
+              800: '#9f1239',
+              900: '#881337',
             },
             amber: {
-              50: '#fffbeb', 100: '#fef3c7', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706'
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            },
+            dark: {
+              950: '#070a13',
+              900: '#0d1322',
+              850: '#11192d',
+              800: '#17223c',
+              750: '#1d2c4e',
+              700: '#253761',
             }
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            serif: ['Newsreader', 'Georgia', 'serif'],
-            mono: ['JetBrains Mono', 'monospace']
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
           }
         }
       }
     }
   </script>
-</head>
-<body class="bg-slate-50/60 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
 
-  <!-- Top Nav -->
-  <header class="border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <a href="/" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center font-bold text-base group-hover:bg-rose-600 group-hover:text-white transition">
-            ⚖️
+  <style>
+    /* Premium scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a13; }
+    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f43f5e; }
+
+    /* Subtle grid background */
+    .bg-saas-grid {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* Glass card styling */
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-panel:hover {
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-100 font-sans selection:bg-rose-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden antialiased">
+
+  <!-- Ambient background glow aura -->
+  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] bg-gradient-to-b from-rose-500/15 via-amber-500/10 to-transparent blur-3xl -z-10"></div>
+  <div class="pointer-events-none fixed inset-0 bg-saas-grid opacity-75 -z-20"></div>
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="border-b border-white/[0.08] bg-dark-950/85 backdrop-blur-2xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      
+      <!-- Logo & Engine Badge -->
+      <a href="/" class="flex items-center gap-3 shrink-0 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 via-amber-500 to-brand-400 p-0.5 shadow-lg shadow-rose-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-base tracking-tight text-slate-900">Reviewer #2 Simulator</span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold border border-rose-200">Engine 04</span>
-            </div>
-            <p class="text-[11px] text-slate-500">Ruthless Pre-Submission Paper Stress-Testing</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-rose-400 transition">ProfFeb</span>
+            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold">Engine 04</span>
           </div>
+          <p class="text-[10px] text-slate-400 font-medium hidden md:block">AI Reviewer #2 Simulator • Pre-Submission Stress-Testing</p>
+        </div>
+      </a>
+
+      <!-- Center Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="/app" class="hover:text-brand-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          <span>Research Studio</span>
         </a>
+        <a href="/conferences" class="hover:text-indigo-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+          <span>Conference Scout</span>
+        </a>
+        <a href="/reviewer" class="text-rose-400 flex items-center gap-1.5 font-bold">
+          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Reviewer Simulator</span>
+        </a>
+        <a href="/radar" class="hover:text-purple-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <span>Novelty Radar</span>
+        </a>
+        <a href="/agent" class="hover:text-cyan-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          <span>Academic Co-Pilot</span>
+        </a>
+      </nav>
+
+      <!-- Right CTAs & Auth Menu -->
+      <div class="flex items-center gap-2.5">
+        <!-- Clear Cache Button -->
+        <button 
+          onclick="clearProfFebCache()" 
+          title="Clear local runtime cache and refresh library"
+          class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 text-slate-400 hover:text-white border border-white/[0.08] transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+
+        <div id="user-nav-container"></div>
       </div>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-        <a href="/" class="hover:text-rose-600 transition">🏠 Home Corner</a>
-        <a href="/conferences" class="hover:text-rose-600 transition">🌐 Conference Scout</a>
-        <a href="/app" class="hover:text-rose-600 transition">📖 Paper Reader</a>
-        <a href="/radar" class="hover:text-rose-600 transition">🔬 Novelty Radar</a>
-        <a href="/grants" class="hover:text-rose-600 transition">💰 Funding Radar</a>
-        <a href="/lab-connector" class="hover:text-rose-600 transition">🚀 Lab Connector</a>
-        <a href="/agent" class="hover:text-rose-600 transition font-semibold text-purple-700">🧠 Digital Twin</a>
-      </nav>
     </div>
   </header>
 
@@ -70,39 +164,38 @@
     
     <!-- Hero Header -->
     <div class="text-center max-w-3xl mx-auto mb-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 mb-4">
-        <span>⚡ Uncompromising Peer Review & Document Revision</span>
-        <span>•</span>
-        <span>Copy-Paste Solutions</span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-300 mb-4">
+        <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
+        <span>Uncompromising Peer Review & Document Revision • Copy-Paste Solutions</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
         Stress-Test Your Paper Against <br class="hidden sm:inline" />
-        <span class="bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">The Infamous "Reviewer #2"</span>.
+        <span class="bg-gradient-to-r from-rose-400 via-amber-300 to-brand-400 bg-clip-text text-transparent">The Infamous "Reviewer #2"</span>
       </h1>
-      <p class="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+      <p class="mt-3.5 text-sm sm:text-base text-slate-400 leading-relaxed">
         Upload your draft PDF manuscript or paste your abstract. Our senior AI reviewer critiques baseline gaps, missing ablations, and generates <strong>copy-paste improvements</strong> plus a <strong>complete revised manuscript</strong> you can download directly.
       </p>
     </div>
 
     <!-- Input Mode Switcher & Card -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8 mb-10">
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 mb-10 shadow-2xl">
       
       <!-- Mode Tabs -->
-      <div class="flex items-center gap-3 border-b border-slate-200 pb-4 mb-6">
+      <div class="flex items-center gap-3 border-b border-white/[0.08] pb-4 mb-6">
         <button 
           type="button" 
           id="tab-pdf-btn" 
           onclick="switchInputMode('pdf')"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-rose-50 text-rose-700 border border-rose-200"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-rose-500/20 text-rose-300 border border-rose-500/40"
         >
           <span>📄 Upload Manuscript PDF</span>
-          <span class="px-2 py-0.5 rounded-full bg-rose-200/60 text-[10px] uppercase font-mono tracking-wider">Full Audit</span>
+          <span class="px-2 py-0.5 rounded-full bg-rose-500/30 text-[10px] uppercase font-mono tracking-wider font-bold">Full Audit</span>
         </button>
         <button 
           type="button" 
           id="tab-manual-btn" 
           onclick="switchInputMode('manual')"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850"
         >
           <span>✍️ Paste Abstract Manually</span>
         </button>
@@ -117,7 +210,7 @@
           ondragover="handleDragOver(event)"
           ondragleave="handleDragLeave(event)"
           ondrop="handleDrop(event)"
-          class="border-2 border-dashed border-rose-200 hover:border-rose-400 bg-rose-50/30 hover:bg-rose-50/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 group"
+          class="border-2 border-dashed border-white/15 hover:border-rose-400/60 bg-dark-900/50 hover:bg-dark-850/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 group"
         >
           <input 
             type="file" 
@@ -126,30 +219,30 @@
             class="hidden" 
             onchange="handleFileSelect(this.files)"
           >
-          <div class="w-14 h-14 rounded-2xl bg-white border border-rose-200 shadow-sm flex items-center justify-center text-2xl group-hover:scale-110 transition">
+          <div class="w-14 h-14 rounded-2xl bg-dark-850 border border-white/[0.1] shadow-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">
             📄
           </div>
           <div>
-            <h3 class="text-sm font-bold text-slate-800">
-              Drag & drop your draft paper PDF here, or <span class="text-rose-600 underline">browse</span>
+            <h3 class="text-sm font-bold text-white">
+              Drag & drop your draft paper PDF here, or <span class="text-rose-400 underline">browse</span>
             </h3>
-            <p class="text-xs text-slate-500 mt-1">Supports full research papers, thesis proposals, and manuscripts up to 50MB</p>
+            <p class="text-xs text-slate-400 mt-1">Supports full research papers, thesis proposals, and manuscripts up to 50MB</p>
           </div>
         </div>
 
         <!-- Selected File Status Badge -->
-        <div id="file-status-badge" class="hidden items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+        <div id="file-status-badge" class="hidden items-center justify-between p-3.5 rounded-xl bg-dark-850 border border-white/[0.08]">
           <div class="flex items-center gap-3">
             <span class="text-xl">📑</span>
             <div>
-              <p id="file-name-label" class="text-xs font-bold text-slate-800">manuscript.pdf</p>
-              <p id="file-size-label" class="text-[11px] text-slate-500">2.4 MB</p>
+              <p id="file-name-label" class="text-xs font-bold text-white">manuscript.pdf</p>
+              <p id="file-size-label" class="text-[11px] text-slate-400">2.4 MB</p>
             </div>
           </div>
           <button 
             type="button" 
             onclick="clearSelectedFile()" 
-            class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded hover:bg-rose-50"
+            class="text-xs text-rose-400 hover:text-rose-300 font-semibold px-2 py-1 rounded hover:bg-dark-800 transition"
           >
             Change File
           </button>
@@ -158,12 +251,12 @@
         <!-- Venue Selector -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
               Target Publication Venue
             </label>
             <select 
               id="pdf-venue"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm font-medium bg-white"
+              class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-medium"
             >
               <option value="NeurIPS / ICML (Top ML)">NeurIPS / ICML (Top ML)</option>
               <option value="CVPR / ICCV (Computer Vision)">CVPR / ICCV (Computer Vision)</option>
@@ -173,7 +266,7 @@
             </select>
           </div>
           <div class="flex items-end">
-            <p class="text-xs text-slate-500 leading-relaxed pb-2">
+            <p class="text-xs text-slate-400 leading-relaxed pb-2">
               💡 <strong>Full Manuscript Engine:</strong> PyMuPDF extracts full text, isolates methodology and baselines, and generates ready-to-copy improvements.
             </p>
           </div>
@@ -183,7 +276,7 @@
           <button 
             type="submit" 
             id="pdf-submit-btn"
-            class="px-7 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/20 flex items-center gap-2 transition active:scale-95"
+            class="px-7 py-3 rounded-xl bg-gradient-to-r from-rose-600 via-amber-600 to-brand-600 hover:from-rose-500 hover:to-brand-500 text-white font-bold text-sm shadow-lg shadow-rose-500/25 flex items-center gap-2 transition active:scale-95"
           >
             <span>Audit Full Manuscript PDF</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -195,23 +288,23 @@
       <form id="form-manual" onsubmit="event.preventDefault(); simulateManualReview();" class="space-y-4 hidden">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="md:col-span-2">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
               Draft Paper Title
             </label>
             <input 
               type="text" 
               id="rev-title"
               placeholder="e.g. FlashAttention-X: Hardware-Aware Fast Attention with Subquadratic Memory"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm font-medium"
+              class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-medium"
             >
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
               Target Publication Venue
             </label>
             <select 
               id="rev-venue"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm font-medium bg-white"
+              class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-medium"
             >
               <option value="NeurIPS / ICML (Top ML)">NeurIPS / ICML (Top ML)</option>
               <option value="CVPR / ICCV (Computer Vision)">CVPR / ICCV (Computer Vision)</option>
@@ -223,24 +316,24 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
             Paper Abstract
           </label>
           <textarea 
             id="rev-abstract"
             rows="4"
             placeholder="Paste your draft abstract here..."
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm font-medium"
+            class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-medium"
           ></textarea>
         </div>
 
         <!-- Samples -->
         <div class="flex items-center gap-2 flex-wrap pt-1">
-          <span class="text-xs font-semibold text-slate-400">Sample Drafts:</span>
-          <button type="button" onclick="fillRevSample('UltraEdge: Speculative KV-Cache Eviction for On-Device Transformers', 'We propose UltraEdge, a memory-efficient KV-cache eviction policy that reduces RAM footprint by 65% on mobile GPUs. However, our evaluation is conducted primarily on LLaMA-2 7B on synthetic prompt benchmarks.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+          <span class="text-xs font-semibold text-slate-500">Sample Drafts:</span>
+          <button type="button" onclick="fillRevSample('UltraEdge: Speculative KV-Cache Eviction for On-Device Transformers', 'We propose UltraEdge, a memory-efficient KV-cache eviction policy that reduces RAM footprint by 65% on mobile GPUs. However, our evaluation is conducted primarily on LLaMA-2 7B on synthetic prompt benchmarks.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
             Edge KV-Cache Paper
           </button>
-          <button type="button" onclick="fillRevSample('Provably Robust Multi-Agent Reinforcement Learning Under Adversarial Noise', 'We establish theoretical bounds for convergence in zero-sum Markov games under stochastic channel perturbation and demonstrate 14% improvement over standard PPO.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+          <button type="button" onclick="fillRevSample('Provably Robust Multi-Agent Reinforcement Learning Under Adversarial Noise', 'We establish theoretical bounds for convergence in zero-sum Markov games under stochastic channel perturbation and demonstrate 14% improvement over standard PPO.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
             Robust RL Theory
           </button>
         </div>
@@ -249,7 +342,7 @@
           <button 
             type="submit" 
             id="review-btn"
-            class="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/20 flex items-center gap-2 transition active:scale-95"
+            class="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-600 via-amber-600 to-brand-600 hover:from-rose-500 hover:to-brand-500 text-white font-bold text-sm shadow-lg shadow-rose-500/25 flex items-center gap-2 transition active:scale-95"
           >
             <span>Simulate Peer Review #2</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -261,245 +354,245 @@
     <!-- Review Dashboard -->
     <div id="review-results" class="space-y-8 hidden">
       
-      <!-- Audited Document Banner (shows if PDF was analyzed) -->
-      <div id="doc-meta-banner" class="hidden p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+      <!-- Audited Document Banner -->
+      <div id="doc-meta-banner" class="hidden p-4 rounded-2xl bg-dark-900 border border-white/[0.08] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
         <div class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-lg">📄</span>
+          <span class="w-9 h-9 rounded-xl bg-dark-850 border border-white/[0.1] flex items-center justify-center text-lg">📄</span>
           <div>
             <span class="text-[10px] font-mono uppercase text-slate-400 block">Audited Manuscript</span>
             <h4 id="meta-doc-title" class="text-sm font-bold text-white">paper.pdf</h4>
           </div>
         </div>
         <div class="flex items-center gap-3 text-xs font-mono text-slate-300">
-          <span id="meta-doc-pages" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">12 Pages</span>
-          <span id="meta-doc-words" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">5,400 Words</span>
+          <span id="meta-doc-pages" class="px-2.5 py-1 rounded-lg bg-dark-850 border border-white/[0.1]">12 Pages</span>
+          <span id="meta-doc-words" class="px-2.5 py-1 rounded-lg bg-dark-850 border border-white/[0.1]">5,400 Words</span>
         </div>
       </div>
 
       <!-- Verdict Strip -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 block mb-1">Simulated Reviewer Recommendation</span>
           <div class="flex items-center gap-3">
-            <span id="rev-verdict" class="text-2xl font-extrabold text-rose-700">Borderline / Weak Reject</span>
-            <span class="text-xs font-mono px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold border border-slate-200" id="rev-scale">
+            <span id="rev-verdict" class="text-2xl font-extrabold text-rose-400">Borderline / Weak Reject</span>
+            <span class="text-xs font-mono px-3 py-1 rounded-full bg-dark-850 text-slate-200 font-bold border border-white/[0.1]" id="rev-scale">
               Score: 5 / 10
             </span>
           </div>
-          <p id="rev-summary" class="text-xs sm:text-sm text-slate-600 mt-2 font-normal leading-relaxed max-w-2xl">
+          <p id="rev-summary" class="text-xs sm:text-sm text-slate-300 mt-2 font-normal leading-relaxed max-w-2xl">
             Executive critique from the reviewer...
           </p>
         </div>
-        <div class="shrink-0 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-center">
-          <span class="text-[11px] font-mono font-bold uppercase text-amber-800 block">Acceptance Threshold</span>
-          <span class="text-xl font-bold text-amber-900">Score 6+ Required</span>
-          <span class="text-[11px] text-amber-700 block mt-0.5">Revise key ablations to pass</span>
+        <div class="shrink-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
+          <span class="text-[11px] font-mono font-bold uppercase text-amber-300 block">Acceptance Threshold</span>
+          <span class="text-xl font-bold text-amber-200">Score 6+ Required</span>
+          <span class="text-[11px] text-amber-400/80 block mt-0.5">Revise key ablations to pass</span>
         </div>
       </div>
 
-      <!-- NEW: COPY-PASTE IMPROVEMENTS SECTION -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white to-amber-50/40 border border-amber-200 shadow-sm space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/60 pb-4">
+      <!-- COPY-PASTE IMPROVEMENTS SECTION -->
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4">
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-900 text-[11px] font-mono font-bold mb-1">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[11px] font-mono font-bold mb-1 border border-amber-500/30">
               ✨ COPY-PASTE SOLUTIONS
             </div>
-            <h3 class="text-lg font-bold text-slate-900">Immediate Manuscript Fixes</h3>
-            <p class="text-xs text-slate-600">Click any copy button to directly paste these strengthened sections into your paper.</p>
+            <h3 class="text-lg font-bold text-white">Immediate Manuscript Fixes</h3>
+            <p class="text-xs text-slate-400">Click any copy button to directly paste these strengthened sections into your paper.</p>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           <!-- 1. Revised Abstract -->
-          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div class="p-5 rounded-2xl bg-dark-850 border border-white/[0.08] shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                   <span>📝</span> Revised Abstract
                 </span>
                 <button 
                   type="button" 
                   onclick="copyTextFromElement('sug-abstract', this)"
-                  class="px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition flex items-center gap-1.5"
+                  class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center gap-1.5"
                 >
                   <span>📋 Copy</span>
                 </button>
               </div>
-              <p id="sug-abstract" class="text-xs text-slate-700 leading-relaxed font-serif bg-slate-50/70 p-3.5 rounded-xl border border-slate-100"></p>
+              <p id="sug-abstract" class="text-xs text-slate-300 leading-relaxed font-serif bg-dark-900/90 p-3.5 rounded-xl border border-white/[0.05]"></p>
             </div>
           </div>
 
           <!-- 2. Explicit Contributions -->
-          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div class="p-5 rounded-2xl bg-dark-850 border border-white/[0.08] shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                   <span>💡</span> Strengthened Contributions
                 </span>
                 <button 
                   type="button" 
                   onclick="copyTextFromElement('sug-contributions', this)"
-                  class="px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition flex items-center gap-1.5"
+                  class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center gap-1.5"
                 >
                   <span>📋 Copy</span>
                 </button>
               </div>
-              <div id="sug-contributions" class="space-y-2 text-xs text-slate-700 font-medium bg-slate-50/70 p-3.5 rounded-xl border border-slate-100"></div>
+              <div id="sug-contributions" class="space-y-2 text-xs text-slate-300 font-medium bg-dark-900/90 p-3.5 rounded-xl border border-white/[0.05]"></div>
             </div>
           </div>
 
           <!-- 3. Methodology Defense -->
-          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div class="p-5 rounded-2xl bg-dark-850 border border-white/[0.08] shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                   <span>🛡️</span> Methodology Defense Paragraph
                 </span>
                 <button 
                   type="button" 
                   onclick="copyTextFromElement('sug-defense', this)"
-                  class="px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition flex items-center gap-1.5"
+                  class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center gap-1.5"
                 >
                   <span>📋 Copy</span>
                 </button>
               </div>
-              <p id="sug-defense" class="text-xs text-slate-700 leading-relaxed font-serif bg-slate-50/70 p-3.5 rounded-xl border border-slate-100"></p>
+              <p id="sug-defense" class="text-xs text-slate-300 leading-relaxed font-serif bg-dark-900/90 p-3.5 rounded-xl border border-white/[0.05]"></p>
             </div>
           </div>
 
           <!-- 4. Limitations & Future Work -->
-          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div class="p-5 rounded-2xl bg-dark-850 border border-white/[0.08] shadow-xs flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                   <span>⚠️</span> Limitations (Disarm Reviewers)
                 </span>
                 <button 
                   type="button" 
                   onclick="copyTextFromElement('sug-limitations', this)"
-                  class="px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition flex items-center gap-1.5"
+                  class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center gap-1.5"
                 >
                   <span>📋 Copy</span>
                 </button>
               </div>
-              <p id="sug-limitations" class="text-xs text-slate-700 leading-relaxed font-serif bg-slate-50/70 p-3.5 rounded-xl border border-slate-100"></p>
+              <p id="sug-limitations" class="text-xs text-slate-300 leading-relaxed font-serif bg-dark-900/90 p-3.5 rounded-xl border border-white/[0.05]"></p>
             </div>
           </div>
 
         </div>
       </div>
 
-      <!-- Critical Weaknesses (The Core of Reviewer 2) -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-rose-50/50 border border-rose-200 shadow-sm">
+      <!-- Critical Weaknesses -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-rose-950/40 border border-rose-500/30 shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-bold text-rose-950">Critical Flaws & Methodological Weaknesses</h3>
-            <p class="text-xs text-rose-700">The exact points Reviewer #2 will use to reject your submission if left unaddressed.</p>
+            <h3 class="text-lg font-bold text-white">Critical Flaws & Methodological Weaknesses</h3>
+            <p class="text-xs text-rose-300">The exact points Reviewer #2 will use to reject your submission if left unaddressed.</p>
           </div>
-          <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-800 font-mono text-xs font-bold">Ruthless Audit</span>
+          <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 font-mono text-xs font-bold border border-rose-500/30">Ruthless Audit</span>
         </div>
         <div id="weaknesses-list" class="space-y-3"></div>
       </div>
 
       <!-- Reviewer Questions -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
-        <h3 class="text-lg font-bold text-slate-900 mb-1">Tough Author Questions</h3>
-        <p class="text-xs text-slate-500 mb-6">Prepare quantitative answers for these expected questions in the rebuttal phase.</p>
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel">
+        <h3 class="text-lg font-bold text-white mb-1">Tough Author Questions</h3>
+        <p class="text-xs text-slate-400 mb-6">Prepare quantitative answers for these expected questions in the rebuttal phase.</p>
         <div id="questions-list" class="space-y-3"></div>
       </div>
 
       <!-- Action Plan & Rebuttal -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Action Plan -->
-        <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="p-6 sm:p-8 rounded-3xl glass-panel flex flex-col justify-between">
           <div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Checklist to Flip to "Accept"</h3>
-            <p class="text-xs text-slate-500 mb-4">Complete these before final camera-ready or submission deadline.</p>
-            <div id="action-plan-list" class="space-y-2.5 text-xs text-slate-700"></div>
+            <h3 class="text-lg font-bold text-white mb-1">Checklist to Flip to "Accept"</h3>
+            <p class="text-xs text-slate-400 mb-4">Complete these before final camera-ready or submission deadline.</p>
+            <div id="action-plan-list" class="space-y-2.5 text-xs text-slate-300"></div>
           </div>
         </div>
 
         <!-- Rebuttal Strategy -->
-        <div class="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-sm flex flex-col justify-between">
+        <div class="p-6 sm:p-8 rounded-3xl bg-dark-900 border border-white/[0.08] text-white flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-lg font-bold text-white">Suggested Author Rebuttal Strategy</h3>
-              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-emerald-400 font-bold border border-slate-700">Defense Ready</span>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 font-bold border border-brand-500/30">Defense Ready</span>
             </div>
             <p class="text-xs text-slate-400 mb-4">How to diplomatically address Reviewer #2's concerns without getting defensive.</p>
-            <div id="rebuttal-strategy" class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 text-xs text-slate-300 leading-relaxed font-serif italic"></div>
+            <div id="rebuttal-strategy" class="p-4 rounded-2xl bg-dark-850 border border-white/[0.06] text-xs text-slate-300 leading-relaxed font-serif italic"></div>
           </div>
         </div>
       </div>
 
-      <!-- NEW: FULL REVISED MANUSCRIPT DRAFT & DOWNLOAD -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <!-- FULL REVISED MANUSCRIPT DRAFT & DOWNLOAD -->
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[11px] font-mono font-bold mb-1 border border-emerald-200">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-brand-500/20 text-brand-300 text-[11px] font-mono font-bold mb-1 border border-brand-500/30">
               📥 COMPLETE EDITED MANUSCRIPT
             </div>
-            <h3 class="text-lg font-bold text-slate-900">Full Revised Document Draft</h3>
-            <p class="text-xs text-slate-500">The entire paper rewritten to incorporate all ablation defenses, baseline contexts, and contribution claims.</p>
+            <h3 class="text-lg font-bold text-white">Full Revised Document Draft</h3>
+            <p class="text-xs text-slate-400">The entire paper rewritten to incorporate all ablation defenses, baseline contexts, and contribution claims.</p>
           </div>
           <div class="flex items-center gap-2">
             <button 
               type="button" 
               onclick="copyFullRevisedDraft(this)"
-              class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+              class="px-4 py-2 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-slate-200 text-xs font-bold transition flex items-center gap-1.5"
             >
               <span>📋 Copy Manuscript</span>
             </button>
             <button 
               type="button" 
               onclick="downloadRevisedManuscript()"
-              class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
             >
               <span>⬇️ Download (.md)</span>
             </button>
           </div>
         </div>
 
-        <pre id="revised-draft-preview" class="p-5 rounded-2xl bg-slate-900 text-slate-200 text-xs font-mono leading-relaxed overflow-x-auto max-h-96 overflow-y-auto whitespace-pre-wrap selection:bg-rose-500 selection:text-white"></pre>
+        <pre id="revised-draft-preview" class="p-5 rounded-2xl bg-dark-900 border border-white/[0.06] text-slate-200 text-xs font-mono leading-relaxed overflow-x-auto max-h-96 overflow-y-auto whitespace-pre-wrap selection:bg-rose-500 selection:text-white"></pre>
       </div>
 
       <!-- LIVE AUTHOR REBUTTAL COACH & INTERACTIVE Q&A -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-800 text-[11px] font-mono font-bold mb-1 border border-purple-200">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 text-[11px] font-mono font-bold mb-1 border border-rose-500/30">
               💬 DYNAMIC AI DEFENSE
             </div>
-            <h3 class="text-lg font-bold text-slate-900">Live Rebuttal Coach & Reviewer #2 Q&A</h3>
-            <p class="text-xs text-slate-500">Test your defense arguments in real-time or ask the coach to generate publication-grade rebuttal paragraphs.</p>
+            <h3 class="text-lg font-bold text-white">Live Rebuttal Coach & Reviewer #2 Q&A</h3>
+            <p class="text-xs text-slate-400">Test your defense arguments in real-time or ask the coach to generate publication-grade rebuttal paragraphs.</p>
           </div>
-          <button onclick="clearRebuttalChat()" class="text-xs text-slate-400 hover:text-slate-700 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 transition">
+          <button onclick="clearRebuttalChat()" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-xl bg-dark-850 border border-white/[0.08] transition">
             Clear Chat
           </button>
         </div>
 
         <!-- Quick Prompt Chips -->
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="sendQuickRebuttalPrompt('How should I rebut Reviewer #2\'s critique about missing contemporary SOTA baselines?')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRebuttalPrompt('How should I rebut Reviewer #2\'s critique about missing contemporary SOTA baselines?')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             🥊 Defend against baseline critique
           </button>
-          <button onclick="sendQuickRebuttalPrompt('Draft an author response defending our ablation studies and component isolation.')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRebuttalPrompt('Draft an author response defending our ablation studies and component isolation.')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             🔬 Defend ablation studies
           </button>
-          <button onclick="sendQuickRebuttalPrompt('Draft the formal, respectful opening statement of our conference rebuttal letter.')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRebuttalPrompt('Draft the formal, respectful opening statement of our conference rebuttal letter.')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             ✉️ Draft formal rebuttal opening
           </button>
-          <button onclick="sendQuickRebuttalPrompt('What lightweight experiment can we run in 48 hours to decisively flip this score to an Accept?')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRebuttalPrompt('What lightweight experiment can we run in 48 hours to decisively flip this score to an Accept?')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             ⚡ 48-hour experiment to flip to Accept
           </button>
         </div>
 
         <!-- Chat Messages Container -->
-        <div id="rebuttal-chat-messages" class="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 max-h-80 overflow-y-auto text-xs">
+        <div id="rebuttal-chat-messages" class="space-y-3 p-4 rounded-2xl bg-dark-900 border border-white/[0.08] max-h-80 overflow-y-auto text-xs">
           <div class="flex items-start gap-2.5">
-            <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">R2</span>
-            <div class="p-3.5 rounded-2xl bg-white text-slate-800 border border-slate-200 shadow-xs leading-relaxed max-w-xl">
+            <span class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">R2</span>
+            <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] shadow-xs leading-relaxed max-w-xl">
               I am your Rebuttal Defense Coach. I have internalized Reviewer #2's critique of your manuscript. Ask me how to answer any tough question, defend your methodology, or generate point-by-point rebuttal text.
             </div>
           </div>
@@ -511,12 +604,12 @@
             type="text" 
             id="rebuttal-chat-input"
             placeholder="Ask how to rebut specific weaknesses, request exact rebuttal phrasing, or defend assumptions..."
-            class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 text-xs"
+            class="flex-1 px-4 py-2.5 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 text-xs"
           >
           <button 
             type="submit" 
             id="rebuttal-send-btn"
-            class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1 shrink-0"
+            class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md shadow-rose-600/20 transition flex items-center gap-1 shrink-0"
           >
             <span>Send</span>
           </button>
@@ -526,6 +619,22 @@
     </div>
 
   </main>
+
+  <footer class="border-t border-white/[0.08] bg-dark-950/80 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-300">ProfFeb</span>
+        <span>— Reviewer Simulator (Engine 04)</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="text-brand-400 hover:underline font-semibold">Home</a>
+        <a href="/app" class="text-emerald-400 hover:underline font-semibold">Research Studio</a>
+        <a href="/conferences" class="hover:text-slate-300 transition">Conference Scout</a>
+        <a href="/radar" class="hover:text-slate-300 transition">Novelty Radar</a>
+        <a href="/agent" class="hover:text-slate-300 transition">Academic Co-Pilot</a>
+      </div>
+    </div>
+  </footer>
 
   <script>
     let currentInputMode = 'pdf';
@@ -541,13 +650,13 @@
       const manualForm = document.getElementById('form-manual');
 
       if (mode === 'pdf') {
-        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-rose-50 text-rose-700 border border-rose-200";
-        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850";
         pdfForm.classList.remove('hidden');
         manualForm.classList.add('hidden');
       } else {
-        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-rose-50 text-rose-700 border border-rose-200";
-        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850";
         manualForm.classList.remove('hidden');
         pdfForm.classList.add('hidden');
       }
@@ -555,17 +664,17 @@
 
     function handleDragOver(e) {
       e.preventDefault();
-      document.getElementById('dropzone').classList.add('border-rose-500', 'bg-rose-100/50');
+      document.getElementById('dropzone').classList.add('border-rose-400', 'bg-dark-800/80');
     }
 
     function handleDragLeave(e) {
       e.preventDefault();
-      document.getElementById('dropzone').classList.remove('border-rose-500', 'bg-rose-100/50');
+      document.getElementById('dropzone').classList.remove('border-rose-400', 'bg-dark-800/80');
     }
 
     function handleDrop(e) {
       e.preventDefault();
-      document.getElementById('dropzone').classList.remove('border-rose-500', 'bg-rose-100/50');
+      document.getElementById('dropzone').classList.remove('border-rose-400', 'bg-dark-800/80');
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         handleFileSelect(e.dataTransfer.files);
       }
@@ -670,7 +779,6 @@
     function renderReview(data, meta = null) {
       document.getElementById('review-results').classList.remove('hidden');
       
-      // Update meta banner if present
       const metaBanner = document.getElementById('doc-meta-banner');
       if (meta) {
         metaBanner.classList.remove('hidden');
@@ -697,7 +805,7 @@
       const contribsContainer = document.getElementById('sug-contributions');
       contribsContainer.innerHTML = (sugs.strengthened_contributions || []).map(c => `
         <div class="flex items-start gap-2">
-          <span class="text-rose-600 font-bold">▶</span>
+          <span class="text-rose-400 font-bold">▶</span>
           <span>${c}</span>
         </div>
       `).join('');
@@ -708,20 +816,20 @@
       // Critical Weaknesses
       const weakContainer = document.getElementById('weaknesses-list');
       weakContainer.innerHTML = (data.critical_weaknesses || []).map(w => `
-        <div class="p-4 rounded-2xl bg-white border border-rose-200/90 shadow-xs">
+        <div class="p-4 rounded-2xl bg-dark-900 border border-rose-500/30 shadow-xs">
           <div class="flex items-center justify-between mb-1.5">
-            <h4 class="font-bold text-sm text-rose-950">⚠️ ${w.area}</h4>
-            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded ${w.severity === 'Critical' ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">${w.severity} Severity</span>
+            <h4 class="font-bold text-sm text-rose-300">⚠️ ${w.area}</h4>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded ${w.severity === 'Critical' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">${w.severity} Severity</span>
           </div>
-          <p class="text-xs text-slate-700 leading-relaxed">${w.critique}</p>
+          <p class="text-xs text-slate-300 leading-relaxed">${w.critique}</p>
         </div>
       `).join('');
 
       // Questions
       const questContainer = document.getElementById('questions-list');
       questContainer.innerHTML = (data.questions_for_authors || []).map((q, idx) => `
-        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800">
-          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-mono font-bold flex items-center justify-center shrink-0">Q${idx + 1}</span>
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-dark-850 border border-white/[0.08] text-xs text-slate-200">
+          <span class="w-5 h-5 rounded-full bg-dark-800 text-rose-400 font-mono font-bold flex items-center justify-center shrink-0 border border-white/[0.08]">Q${idx + 1}</span>
           <span class="font-medium pt-0.5">${q}</span>
         </div>
       `).join('');
@@ -729,8 +837,8 @@
       // Action Plan
       const actionContainer = document.getElementById('action-plan-list');
       actionContainer.innerHTML = (data.concrete_action_plan_to_accept || []).map(a => `
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-50/60 border border-emerald-100 text-slate-700">
-          <span class="text-emerald-600 font-bold">✔</span>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-brand-500/10 border border-brand-500/20 text-slate-200">
+          <span class="text-brand-400 font-bold">✔</span>
           <span>${a}</span>
         </div>
       `).join('');
@@ -750,10 +858,10 @@
       navigator.clipboard.writeText(text).then(() => {
         const originalText = btn.innerHTML;
         btn.innerHTML = `<span>✅ Copied!</span>`;
-        btn.classList.add('bg-emerald-100', 'text-emerald-800');
+        btn.classList.add('bg-brand-500/30', 'text-brand-300');
         setTimeout(() => {
           btn.innerHTML = originalText;
-          btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+          btn.classList.remove('bg-brand-500/30', 'text-brand-300');
         }, 2000);
       });
     }
@@ -791,8 +899,8 @@
       if (container) {
         container.innerHTML = `
           <div class="flex items-start gap-2.5">
-            <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">R2</span>
-            <div class="p-3.5 rounded-2xl bg-white text-slate-800 border border-slate-200 shadow-xs leading-relaxed max-w-xl">
+            <span class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">R2</span>
+            <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] shadow-xs leading-relaxed max-w-xl">
               Chat cleared. Ask me how to answer any critique, defend assumptions, or format rebuttal responses.
             </div>
           </div>
@@ -823,20 +931,19 @@
         btn.innerHTML = `<svg class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Thinking...</span>`;
       }
 
-      // Append Loading Indicator Bubble
       const container = document.getElementById('rebuttal-chat-messages');
       const loadingDiv = document.createElement('div');
       loadingDiv.id = 'rebuttal-chat-loading';
       loadingDiv.className = 'flex items-start gap-2.5';
       loadingDiv.innerHTML = `
-        <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">R2</span>
-        <div class="p-3.5 rounded-2xl bg-white text-slate-700 border border-slate-200 shadow-xs max-w-xl text-xs flex items-center gap-2.5">
+        <span class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">R2</span>
+        <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-300 border border-white/[0.08] shadow-xs max-w-xl text-xs flex items-center gap-2.5">
           <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-rose-600 animate-bounce" style="animation-delay: 0ms"></span>
-            <span class="w-2 h-2 rounded-full bg-rose-600 animate-bounce" style="animation-delay: 150ms"></span>
-            <span class="w-2 h-2 rounded-full bg-rose-600 animate-bounce" style="animation-delay: 300ms"></span>
+            <span class="w-2 h-2 rounded-full bg-rose-400 animate-bounce" style="animation-delay: 0ms"></span>
+            <span class="w-2 h-2 rounded-full bg-rose-400 animate-bounce" style="animation-delay: 150ms"></span>
+            <span class="w-2 h-2 rounded-full bg-rose-400 animate-bounce" style="animation-delay: 300ms"></span>
           </div>
-          <span class="text-[11px] font-mono text-slate-500 font-medium">Reviewer #2 analyzing manuscript & rebuttal strategy...</span>
+          <span class="text-[11px] font-mono text-slate-400 font-medium">Reviewer #2 analyzing manuscript & rebuttal strategy...</span>
         </div>
       `;
       if (container) {
@@ -878,8 +985,8 @@
       const div = document.createElement('div');
       div.className = `flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`;
       div.innerHTML = `
-        <span class="w-6 h-6 rounded-full ${isUser ? 'bg-slate-800 text-white' : 'bg-rose-100 text-rose-700'} flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">${isUser ? 'YOU' : 'R2'}</span>
-        <div class="p-3.5 rounded-2xl ${isUser ? 'bg-rose-600 text-white' : 'bg-white text-slate-800 border border-slate-200 shadow-xs'} max-w-xl leading-relaxed whitespace-pre-wrap">${content}</div>
+        <span class="w-6 h-6 rounded-full ${isUser ? 'bg-rose-600 text-white' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'} flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">${isUser ? 'YOU' : 'R2'}</span>
+        <div class="p-3.5 rounded-2xl ${isUser ? 'bg-rose-600 text-white' : 'bg-dark-850 text-slate-200 border border-white/[0.08] shadow-xs'} max-w-xl leading-relaxed whitespace-pre-wrap">${content}</div>
       `;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
@@ -989,7 +1096,6 @@ ${sugs.limitations_paragraph}
       };
     }
 
-    // Pre-populate and render an interactive sample review on initial page load
     window.addEventListener('DOMContentLoaded', () => {
       const sampleTitle = "UltraEdge: Speculative KV-Cache Eviction for On-Device Transformers";
       const sampleVenue = "NeurIPS / ICML (Top ML)";

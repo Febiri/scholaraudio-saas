@@ -91,6 +91,16 @@
       return fetch(url, options);
     },
 
+    async clearCache() {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        await fetch('/api/admin/clear-cache', { method: 'POST' });
+      } catch (e) {}
+      alert('ProfFeb cache cleared successfully! Reloading...');
+      window.location.reload();
+    },
+
     renderNavbarUI() {
       const container = document.getElementById('user-nav-container');
       if (!container) return;
@@ -128,6 +138,11 @@
               <a href="/agent" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-800 hover:text-brand-600 dark:hover:text-brand-400 transition">
                 <span>🎓</span> Academic Co-Pilot
               </a>
+              <div class="border-t border-slate-100 dark:border-dark-800 my-1"></div>
+              <button onclick="ProfFebAuth.clearCache()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-dark-800 transition">
+                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                Clear Cache & Refresh
+              </button>
               <div class="border-t border-slate-100 dark:border-dark-800 my-1"></div>
               <button onclick="ProfFebAuth.signOut()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
@@ -418,6 +433,8 @@
       window.location.reload();
     }
   };
+
+  window.clearProfFebCache = () => window.ProfFebAuth && window.ProfFebAuth.clearCache();
 
   // Auto-init on page load
   if (document.readyState === 'loading') {

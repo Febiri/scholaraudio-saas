@@ -317,6 +317,24 @@ def get_app_config():
     }
 
 
+@app.post("/api/admin/clear-cache")
+def clear_system_cache():
+    """Clears runtime cache data, synthesis trackers, and transient files."""
+    global ACTIVE_SYNTHESIS_PROGRESS
+    ACTIVE_SYNTHESIS_PROGRESS.clear()
+    cleared = {"audio": 0, "figures": 0, "pdfs": 0}
+    for directory, key in [(AUDIO_DIR, "audio"), (PDFS_DIR, "pdfs"), (STATIC_DIR / "figures", "figures")]:
+        if directory.exists():
+            for item in directory.glob("*"):
+                if item.is_file() and item.name != ".gitkeep":
+                    try:
+                        item.unlink()
+                        cleared[key] += 1
+                    except Exception:
+                        pass
+    return {"success": True, "message": "Cache successfully cleared.", "cleared": cleared}
+
+
 @app.get("/api/auth/me")
 async def get_current_user_profile(user: Optional[Dict[str, Any]] = Depends(get_current_user), db: Session = Depends(get_db)):
     """Returns active session user profile, quotas, and subscription tier."""

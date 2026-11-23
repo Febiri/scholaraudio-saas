@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,60 +8,153 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
             indigo: {
-              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 400: '#818cf8',
-              500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3'
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
             },
             sky: {
-              50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7'
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            dark: {
+              950: '#070a13',
+              900: '#0d1322',
+              850: '#11192d',
+              800: '#17223c',
+              750: '#1d2c4e',
+              700: '#253761',
             }
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
           }
         }
       }
     }
   </script>
-</head>
-<body class="bg-slate-50/60 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-  <!-- Top Navigation -->
-  <header class="border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <a href="/" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center font-bold text-base group-hover:bg-indigo-600 group-hover:text-white transition">
-            🚀
+  <style>
+    /* Premium scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a13; }
+    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+    /* Subtle grid background */
+    .bg-saas-grid {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* Glass card styling */
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-panel:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden antialiased">
+
+  <!-- Ambient background glow aura -->
+  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] bg-gradient-to-b from-indigo-500/15 via-sky-500/10 to-transparent blur-3xl -z-10"></div>
+  <div class="pointer-events-none fixed inset-0 bg-saas-grid opacity-75 -z-20"></div>
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="border-b border-white/[0.08] bg-dark-950/85 backdrop-blur-2xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      
+      <!-- Logo & Engine Badge -->
+      <a href="/" class="flex items-center gap-3 shrink-0 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-sky-500 to-teal-400 p-0.5 shadow-lg shadow-indigo-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-base tracking-tight text-slate-900">Tech Summit & Lab Connector</span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold border border-indigo-200">Engine 06</span>
-            </div>
-            <p class="text-[11px] text-slate-500">Matched by Your Research Field & Preferred Location</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-indigo-400 transition">ProfFeb</span>
+            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 font-bold">Engine 06</span>
           </div>
+          <p class="text-[10px] text-slate-400 font-medium hidden md:block">Tech Summit & Lab Connector • Google DeepMind, FAIR, MSR & Internships</p>
+        </div>
+      </a>
+
+      <!-- Center Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="/app" class="hover:text-brand-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          <span>Research Studio</span>
         </a>
+        <a href="/conferences" class="hover:text-indigo-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+          <span>Conference Scout</span>
+        </a>
+        <a href="/reviewer" class="hover:text-rose-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Reviewer Simulator</span>
+        </a>
+        <a href="/radar" class="hover:text-purple-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <span>Novelty Radar</span>
+        </a>
+        <a href="/agent" class="hover:text-cyan-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          <span>Academic Co-Pilot</span>
+        </a>
+      </nav>
+
+      <!-- Right CTAs & Auth Menu -->
+      <div class="flex items-center gap-2.5">
+        <!-- Clear Cache Button -->
+        <button 
+          onclick="clearProfFebCache()" 
+          title="Clear local runtime cache and refresh library"
+          class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 text-slate-400 hover:text-white border border-white/[0.08] transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+
+        <div id="user-nav-container"></div>
       </div>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-        <a href="/" class="hover:text-indigo-600 transition">🏠 Home Corner</a>
-        <a href="/conferences" class="hover:text-indigo-600 transition">🌐 Conference Scout</a>
-        <a href="/app" class="hover:text-indigo-600 transition">📖 Paper Reader</a>
-        <a href="/radar" class="hover:text-indigo-600 transition">🔬 Novelty Radar</a>
-        <a href="/reviewer" class="hover:text-indigo-600 transition">⚖️ Reviewer #2</a>
-        <a href="/grants" class="hover:text-indigo-600 transition">💰 Funding Radar</a>
-        <a href="/agent" class="hover:text-indigo-600 transition font-semibold text-purple-700">🧠 Digital Twin</a>
-      </nav>
     </div>
   </header>
 
@@ -69,28 +162,27 @@
     
     <!-- Hero Banner -->
     <div class="text-center max-w-3xl mx-auto mb-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-xs font-semibold text-indigo-700 mb-4">
-        <span>🚀 Fast-Track Post-PhD Career</span>
-        <span>•</span>
-        <span>Google DeepMind • FAIR • MSR</span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-300 mb-4">
+        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+        <span>Fast-Track Research Careers • Google DeepMind • Meta FAIR • Microsoft Research</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-        You Know Your Research & Preferred Location. <br class="hidden sm:inline" />
-        <span class="bg-gradient-to-r from-indigo-600 to-sky-600 bg-clip-text text-transparent">We Match the Labs & Summits</span>.
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        You Know Your Research & Preferred Region. <br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-indigo-400 via-sky-300 to-teal-400 bg-clip-text text-transparent">We Match the Labs & Summits</span>
       </h1>
-      <p class="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+      <p class="mt-3.5 text-sm sm:text-base text-slate-400 leading-relaxed">
         Don't worry about knowing every lab division. Tell us what research problem you're solving and where in the world you want to be. We match paid Research Scientist Internships ($8k-$12k/mo) and flagship tech expos.
       </p>
     </div>
 
-    <!-- Intelligent Lab & Summit Matcher Card -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8 mb-8 space-y-5">
+    <!-- Matcher Card -->
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 mb-8 space-y-6 shadow-2xl">
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         
         <!-- Field 1: What research work are you doing? -->
         <div class="md:col-span-2">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
             1. What Research Work Are You Doing?
           </label>
           <div class="relative">
@@ -99,7 +191,7 @@
               id="lab-work"
               placeholder="e.g. Large Language Models, Edge Computing, Reinforcement Learning, Robotics..."
               oninput="filterLabs()"
-              class="w-full px-4 py-3 pl-10 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-medium"
+              class="w-full px-4 py-3 pl-10 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
             >
             <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
@@ -107,13 +199,13 @@
 
         <!-- Field 2: Where do you want to go? -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
             2. Where Do You Want To Go?
           </label>
           <select 
             id="lab-location" 
             onchange="filterLabs()"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-medium bg-white"
+            class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
           >
             <option value="All">All Locations / Global (Anywhere)</option>
             <option value="United States (Silicon Valley, Seattle, NY, Boston)">United States (Silicon Valley, Seattle, NY)</option>
@@ -127,37 +219,37 @@
 
       <!-- Quick Research Topic Chips -->
       <div class="flex items-center gap-2 flex-wrap pt-1">
-        <span class="text-xs font-semibold text-slate-400">Quick Fields:</span>
-        <button type="button" onclick="setLabWork('Generative AI & LLMs')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+        <span class="text-xs font-semibold text-slate-500">Quick Fields:</span>
+        <button type="button" onclick="setLabWork('Generative AI & LLMs')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
           Generative AI & LLMs
         </button>
-        <button type="button" onclick="setLabWork('Robotics & Embodied AI')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+        <button type="button" onclick="setLabWork('Robotics & Embodied AI')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
           Robotics & Embodied AI
         </button>
-        <button type="button" onclick="setLabWork('Edge Silicon & Systems')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+        <button type="button" onclick="setLabWork('Edge Silicon & Systems')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
           Edge Silicon & Systems
         </button>
-        <button type="button" onclick="setLabWork('Computer Vision')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+        <button type="button" onclick="setLabWork('Computer Vision')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
           Computer Vision
         </button>
-        <button type="button" onclick="setLabWork('Cloud & Distributed Systems')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+        <button type="button" onclick="setLabWork('Cloud & Distributed Systems')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
           Cloud & Distributed
         </button>
       </div>
 
       <!-- Type Filter Chips & Action Button -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-100">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-white/[0.08]">
         <div class="flex items-center gap-2 overflow-x-auto pb-1" id="type-chips">
-          <button onclick="setType('All')" class="type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-sm" data-type="All">All Opportunities</button>
-          <button onclick="setType('Research Lab Internship')" class="type-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition" data-type="Research Lab Internship">💼 Research Internships ($8k-$12k/mo)</button>
-          <button onclick="setType('Global Tech Summit')" class="type-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition" data-type="Global Tech Summit">🌐 Global Tech Summits & Expos</button>
+          <button onclick="setType('All')" class="type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm" data-type="All">All Opportunities</button>
+          <button onclick="setType('Research Lab Internship')" class="type-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition" data-type="Research Lab Internship">💼 Research Internships ($8k-$12k/mo)</button>
+          <button onclick="setType('Global Tech Summit')" class="type-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition" data-type="Global Tech Summit">🌐 Global Tech Summits & Expos</button>
         </div>
 
         <button 
           type="button" 
           id="match-labs-btn"
           onclick="searchLiveLabs()"
-          class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-semibold text-xs shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 transition active:scale-95 shrink-0"
+          class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition active:scale-95 shrink-0"
         >
           <span>🚀 Match Labs With Live AI Scout</span>
         </button>
@@ -169,6 +261,22 @@
     <div id="labs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
 
   </main>
+
+  <footer class="border-t border-white/[0.08] bg-dark-950/80 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-300">ProfFeb</span>
+        <span>— Tech Summit & Industry Lab Connector (Engine 06)</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="text-brand-400 hover:underline font-semibold">Home</a>
+        <a href="/app" class="text-emerald-400 hover:underline font-semibold">Research Studio</a>
+        <a href="/conferences" class="hover:text-slate-300 transition">Conference Scout</a>
+        <a href="/reviewer" class="hover:text-slate-300 transition">Reviewer Simulator</a>
+        <a href="/agent" class="hover:text-slate-300 transition">Academic Co-Pilot</a>
+      </div>
+    </div>
+  </footer>
 
   <script>
     let activeType = 'All';
@@ -301,9 +409,9 @@
       activeType = type;
       document.querySelectorAll('.type-btn').forEach(btn => {
         if (btn.dataset.type === type) {
-          btn.className = 'type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-sm';
+          btn.className = 'type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm';
         } else {
-          btn.className = 'type-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition';
+          btn.className = 'type-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition';
         }
       });
       filterLabs();
@@ -314,10 +422,8 @@
       const loc = document.getElementById('lab-location').value;
 
       const filtered = allLabs.filter(item => {
-        // 1. Type check
         if (activeType !== 'All' && item.type !== activeType) return false;
 
-        // 2. Location check
         if (loc !== 'All') {
           const locLower = loc.toLowerCase();
           const labLoc = `${item.location || ''} ${item.description || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
@@ -330,7 +436,6 @@
           }
         }
 
-        // 3. Work check
         if (work) {
           const searchable = `${item.name} ${item.organization} ${item.target_profile || ''} ${item.description} ${(item.tags || []).join(' ')}`.toLowerCase();
           const words = work.split(/\s+/).filter(w => w.length > 2);
@@ -348,10 +453,10 @@
       const grid = document.getElementById('labs-grid');
       if (!list.length) {
         grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-500">
+          <div class="col-span-full py-12 text-center text-slate-400 glass-panel rounded-3xl p-8">
             <span class="text-3xl block mb-2">🔍</span>
-            <p class="font-medium text-sm">No labs or summits matched your research field and location.</p>
-            <button onclick="document.getElementById('lab-work').value=''; document.getElementById('lab-location').value='All'; setType('All');" class="mt-3 text-xs text-indigo-600 font-semibold hover:underline">Reset Filters</button>
+            <p class="font-medium text-sm text-white">No labs or summits matched your research field and location.</p>
+            <button onclick="document.getElementById('lab-work').value=''; document.getElementById('lab-location').value='All'; setType('All');" class="mt-3 text-xs text-indigo-400 font-semibold hover:underline">Reset Filters</button>
           </div>
         `;
         return;
@@ -359,69 +464,69 @@
 
       grid.innerHTML = list.map(item => {
         const matchBadge = item.match_reason ? `
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-mono font-bold mb-2">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold mb-2 border border-indigo-500/30">
             🎯 ${item.match_reason}
           </div>
         ` : '';
 
         return `
-        <div class="rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-500/50 transition-all p-6 sm:p-7 flex flex-col justify-between group">
+        <div class="rounded-3xl glass-panel p-6 sm:p-7 flex flex-col justify-between group transition-all">
           <div>
             ${matchBadge}
             <div class="flex items-start justify-between gap-3 mb-3">
-              <span class="text-[11px] font-mono uppercase font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+              <span class="text-[11px] font-mono uppercase font-bold text-slate-400 bg-dark-850 px-2 py-0.5 rounded border border-white/[0.08]">
                 ${item.type}
               </span>
-              <span class="text-[11px] font-mono font-medium text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200">
+              <span class="text-[11px] font-mono font-medium text-slate-300 bg-dark-850 px-2.5 py-1 rounded-full border border-white/[0.08]">
                 📍 ${item.location}
               </span>
             </div>
 
-            <h3 class="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition">
+            <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition">
               ${item.name}
             </h3>
-            <span class="text-xs font-semibold text-slate-500 block mt-0.5 mb-3">
+            <span class="text-xs font-semibold text-slate-400 block mt-0.5 mb-3">
               ${item.organization}
             </span>
 
-            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
               ${item.description}
             </p>
 
-            <div class="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 mb-4">
+            <div class="space-y-1.5 text-xs text-slate-300 bg-dark-850/80 p-3.5 rounded-2xl border border-white/[0.06] mb-4">
               <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-700 shrink-0">⏳ Cycle:</span>
-                <span class="font-medium text-slate-600">${item.cycle}</span>
+                <span class="font-bold text-white shrink-0">⏳ Cycle:</span>
+                <span class="font-medium text-slate-300">${item.cycle}</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-700 shrink-0">💎 Support:</span>
-                <span class="text-indigo-700 font-semibold">${item.compensation}</span>
+                <span class="font-bold text-white shrink-0">💎 Support:</span>
+                <span class="text-indigo-300 font-semibold">${item.compensation}</span>
               </div>
               <div class="flex items-start gap-2 pt-0.5">
-                <span class="font-bold text-slate-700 shrink-0">🎯 Ideal Profile:</span>
-                <span class="text-slate-600">${item.target_profile}</span>
+                <span class="font-bold text-white shrink-0">🎯 Ideal Profile:</span>
+                <span class="text-slate-300">${item.target_profile}</span>
               </div>
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap mb-5">
-              ${(item.tags || []).map(t => `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${t}</span>`).join('')}
+              ${(item.tags || []).map(t => `<span class="text-[10px] font-mono bg-dark-800 text-slate-400 px-2 py-0.5 rounded border border-white/[0.05]">${t}</span>`).join('')}
             </div>
           </div>
 
-          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+          <div class="pt-4 border-t border-white/[0.06] flex items-center justify-between gap-2 flex-wrap">
             <a 
               href="${item.url}" 
               target="_blank" 
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-semibold border border-white/[0.08] transition"
             >
               <span>Portal</span>
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
             <a 
-              href="/agent?apply_mode=lab&title=${encodeURIComponent(item.title)}&org=${encodeURIComponent(item.organization)}&location=${encodeURIComponent(item.location || '')}&autogen=true"
-              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold transition shadow-xs"
+              href="/agent?apply_mode=lab&title=${encodeURIComponent(item.name || item.title)}&org=${encodeURIComponent(item.organization)}&location=${encodeURIComponent(item.location || '')}&autogen=true"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 text-xs font-bold transition shadow-xs"
             >
-              <span>🧠 Pitch with Twin</span>
+              <span>🧠 Pitch with Co-Pilot</span>
             </a>
           </div>
         </div>
@@ -460,11 +565,8 @@
       }
     }
 
-    // Render local master items immediately
     allLabs = [...MASTER_LOCAL_LABS];
     filterLabs();
-
-    // Refresh from API
     loadLabs();
   </script>
 

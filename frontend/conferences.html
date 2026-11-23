@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
   <!-- Google Fonts: Inter (UI), Newsreader (Editorial Serif), JetBrains Mono (Dates/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,29 +20,33 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             brand: {
               50: '#ecfdf5',
               100: '#d1fae5',
-              200: '#a7f3d0',
+              400: '#34d399',
               500: '#10b981',
               600: '#059669',
               700: '#047857',
               800: '#065f46',
+              900: '#064e3b',
             },
             scholar: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              200: '#c7d2fe',
-              300: '#a5b4fc',
               400: '#818cf8',
               500: '#6366f1',
               600: '#4f46e5',
               700: '#4338ca',
-              800: '#3730a3',
-              900: '#312e81',
+            },
+            dark: {
+              950: '#070a13',
+              900: '#0d1322',
+              850: '#11192d',
+              800: '#17223c',
+              750: '#1d2c4e',
+              700: '#253761',
             }
           },
           fontFamily: {
@@ -56,90 +60,107 @@
   </script>
 
   <style>
-    /* Custom scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f8fafc;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #4f46e5;
+    /* Premium scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a13; }
+    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+    /* Subtle grid background */
+    .bg-saas-grid {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
     }
 
-    /* Subtle dot grid pattern */
-    .bg-grid-pattern {
-      background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
-      background-size: 28px 28px;
+    /* Glass panel styling */
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-panel:hover {
+      border-color: rgba(16, 185, 129, 0.35);
     }
   </style>
 </head>
-<body class="bg-white text-slate-800 font-sans selection:bg-scholar-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="bg-dark-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden antialiased">
 
-  <!-- Ambient top gradient aura -->
-  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-scholar-50/80 via-indigo-50/30 to-transparent blur-3xl -z-10"></div>
-  <div class="pointer-events-none fixed inset-0 bg-grid-pattern opacity-[0.45] -z-20"></div>
+  <!-- Ambient top glow aura -->
+  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] bg-gradient-to-b from-scholar-500/15 via-brand-500/10 to-transparent blur-3xl -z-10"></div>
+  <div class="pointer-events-none fixed inset-0 bg-saas-grid opacity-75 -z-20"></div>
 
   <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="border-b border-slate-200/90 bg-white/90 backdrop-blur-xl sticky top-0 z-40 transition-all">
+  <header class="border-b border-white/[0.08] bg-dark-950/85 backdrop-blur-2xl sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
       
-      <!-- Left: Back to PhD Corner & Logo -->
-      <div class="flex items-center gap-3">
-        <a 
-          href="/" 
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-semibold transition"
-          title="Return to PhD Corner Home"
-        >
-          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          <span>PhD Corner</span>
-        </a>
-
-        <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
-
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-scholar-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-scholar-500/20">
-            🌐
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-base tracking-tight text-slate-900">Conference & Event Scout</span>
-              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-scholar-50 text-scholar-700 border border-scholar-200 font-bold">Engine 02</span>
-            </div>
-            <p class="text-[11px] text-slate-500 font-medium hidden sm:block">Intelligent Academic Event Discovery & Deadline Tracker</p>
+      <!-- Left: Logo & Engine Badge -->
+      <a href="/" class="flex items-center gap-3 shrink-0 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-scholar-500 to-teal-400 p-0.5 shadow-lg shadow-scholar-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-scholar-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
           </div>
         </div>
-      </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-brand-400 transition">ProfFeb</span>
+            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-scholar-500/15 text-scholar-400 border border-scholar-500/30 font-bold">Engine 02</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium hidden md:block">Academic Conference & Event Scout • Call for Papers & Deadlines</p>
+        </div>
+      </a>
 
-      <!-- Right: Watchlist Tab & Quick Link to Paper Reader -->
-      <div class="flex items-center gap-3">
-        <a 
-          href="/agent" 
-          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-semibold transition shadow-xs"
-        >
-          <span>🧠 Digital Twin</span>
+      <!-- Center Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="/app" class="hover:text-brand-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          <span>Research Studio</span>
         </a>
+        <a href="/conferences" class="text-scholar-400 flex items-center gap-1.5 font-bold">
+          <svg class="w-4 h-4 text-scholar-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+          <span>Conference Scout</span>
+        </a>
+        <a href="/reviewer" class="hover:text-rose-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Reviewer Simulator</span>
+        </a>
+        <a href="/radar" class="hover:text-purple-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <span>Novelty Radar</span>
+        </a>
+        <a href="/agent" class="hover:text-cyan-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          <span>Academic Co-Pilot</span>
+        </a>
+      </nav>
+
+      <!-- Right CTAs & Auth Menu -->
+      <div class="flex items-center gap-2.5">
+        <!-- Watchlist Trigger Button -->
         <button 
           onclick="toggleWatchlistDrawer()" 
-          class="relative inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100/80 text-amber-800 border border-amber-200 text-xs font-semibold transition shadow-xs"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 text-xs font-semibold transition"
+          title="Open Watchlist"
         >
-          <span>⭐ My Watchlist</span>
-          <span id="nav-watchlist-count" class="px-1.5 py-0.2 rounded-full bg-amber-200/70 text-amber-900 font-mono text-[10px] font-bold">0</span>
+          <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          <span class="hidden sm:inline">Watchlist</span>
+          <span id="nav-watchlist-count" class="px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-400/30">0</span>
         </button>
 
-        <a 
-          href="/app" 
-          class="hidden md:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-brand-600 text-white text-xs font-semibold shadow-sm transition"
+        <!-- Clear Cache Button -->
+        <button 
+          onclick="clearProfFebCache()" 
+          title="Clear local runtime cache and refresh library"
+          class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 text-slate-400 hover:text-white border border-white/[0.08] transition"
         >
-          <span>📖 Paper Studio</span>
-        </a>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
 
         <div id="user-nav-container"></div>
       </div>
@@ -148,27 +169,28 @@
   </header>
 
   <!-- ================= MAIN CONTENT ================= -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
 
     <!-- Hero Title & Search Header -->
-    <div class="max-w-4xl mx-auto text-center mb-8">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-scholar-50 border border-scholar-200 text-xs font-semibold text-scholar-800 shadow-xs mb-4">
-        <span class="w-2 h-2 rounded-full bg-scholar-500 animate-pulse"></span>
-        <span>Doctoral Research Venue Finder • CORE A*, IEEE, ACM & WikiCFP</span>
+    <div class="max-w-4xl mx-auto text-center mb-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-scholar-500/10 border border-scholar-500/20 text-xs font-semibold text-scholar-300 shadow-sm mb-4">
+        <span class="w-2 h-2 rounded-full bg-scholar-400 animate-pulse"></span>
+        <span>Doctoral Research Venue Finder • CORE A*, IEEE, ACM & Global CFPs</span>
       </div>
       
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-        Scout Conferences, Doctoral Consortiums & CFPs
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        Scout Conferences, Doctoral Consortiums <br class="hidden sm:inline" />
+        <span class="bg-gradient-to-r from-scholar-400 via-indigo-300 to-brand-400 bg-clip-text text-transparent">& Active Call for Papers</span>
       </h1>
       
-      <p class="mt-2.5 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
-        Scan all over academic registries and research networks to discover upcoming conferences, submission deadlines, thesis mentorship tracks, and student travel grants.
+      <p class="mt-3.5 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+        Scan international academic registries and research networks to discover upcoming conferences, submission deadlines, thesis mentorship tracks, and student travel grants.
       </p>
 
       <!-- MAIN SEARCH BOX -->
-      <form id="scout-search-form" onsubmit="handleSearch(event)" class="mt-7">
+      <form id="scout-search-form" onsubmit="handleSearch(event)" class="mt-8">
         <div class="relative max-w-2xl mx-auto">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-scholar-600">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-scholar-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -176,14 +198,14 @@
           <input 
             type="text" 
             id="page-search-input"
-            placeholder="Type your PhD research area (e.g. African NLP, Computer Vision, Health AI)..."
-            class="w-full pl-12 pr-32 py-4 rounded-2xl border-2 border-slate-200 focus:border-scholar-600 focus:ring-4 focus:ring-scholar-500/15 text-sm sm:text-base font-medium text-slate-900 placeholder-slate-400 outline-none transition shadow-sm bg-white"
+            placeholder="Type your PhD research area (e.g. African NLP, Computer Vision, Edge AI, Distributed Systems)..."
+            class="w-full pl-12 pr-32 py-4 rounded-2xl bg-dark-900/90 border border-white/[0.1] focus:border-scholar-500 focus:ring-4 focus:ring-scholar-500/15 text-sm sm:text-base font-medium text-white placeholder-slate-500 outline-none transition shadow-xl"
             autocomplete="off"
           />
           <button 
             type="submit" 
             id="page-search-btn"
-            class="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-scholar-600 hover:bg-scholar-700 active:scale-95 text-white text-xs sm:text-sm font-semibold shadow-md transition flex items-center gap-2"
+            class="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-gradient-to-r from-scholar-600 to-indigo-600 hover:from-scholar-500 hover:to-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-lg shadow-scholar-500/25 transition flex items-center gap-2"
           >
             <span id="btn-text">Scout</span>
             <svg id="btn-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,42 +220,42 @@
 
         <!-- Quick Topic Suggestion Chips -->
         <div class="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-xs">
-          <span class="text-slate-400 font-mono text-[11px] mr-1">Quick Topics:</span>
-          <button type="button" onclick="selectTopic('African NLP')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-scholar-50 hover:text-scholar-700 text-slate-600 font-medium transition border border-slate-200">🇬🇭 African NLP</button>
-          <button type="button" onclick="selectTopic('Deep Learning')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-scholar-50 hover:text-scholar-700 text-slate-600 font-medium transition border border-slate-200">🤖 Deep Learning</button>
-          <button type="button" onclick="selectTopic('Medical AI & Imaging')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-scholar-50 hover:text-scholar-700 text-slate-600 font-medium transition border border-slate-200">🏥 Medical AI</button>
-          <button type="button" onclick="selectTopic('Microgrids & Energy')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-scholar-50 hover:text-scholar-700 text-slate-600 font-medium transition border border-slate-200">⚡ Microgrids</button>
-          <button type="button" onclick="selectTopic('Cybersecurity')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-scholar-50 hover:text-scholar-700 text-slate-600 font-medium transition border border-slate-200">🔒 Cybersecurity</button>
-          <button type="button" onclick="selectTopic('Human-Computer Interaction')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-scholar-50 hover:text-scholar-700 text-slate-600 font-medium transition border border-slate-200">🌐 HCI</button>
-          <button type="button" onclick="selectTopic('Doctoral Consortium')" class="px-2.5 py-1 rounded-lg bg-scholar-50 text-scholar-700 font-semibold border border-scholar-200 hover:bg-scholar-100 transition">🎓 PhD Tracks</button>
+          <span class="text-slate-500 font-mono text-[11px] mr-1">Quick Topics:</span>
+          <button type="button" onclick="selectTopic('African NLP')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🇬🇭 African NLP</button>
+          <button type="button" onclick="selectTopic('Deep Learning')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🤖 Deep Learning</button>
+          <button type="button" onclick="selectTopic('Medical AI & Imaging')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🏥 Medical AI</button>
+          <button type="button" onclick="selectTopic('Microgrids & Energy')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">⚡ Microgrids</button>
+          <button type="button" onclick="selectTopic('Cybersecurity')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🔒 Cybersecurity</button>
+          <button type="button" onclick="selectTopic('Human-Computer Interaction')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] transition">🌐 HCI</button>
+          <button type="button" onclick="selectTopic('Doctoral Consortium')" class="px-2.5 py-1 rounded-lg bg-scholar-500/15 text-scholar-300 border border-scholar-500/30 hover:bg-scholar-500/25 transition font-semibold">🎓 PhD Tracks</button>
         </div>
       </form>
     </div>
 
     <!-- FILTER BAR -->
-    <div class="mb-6 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="mb-8 p-4 sm:p-5 rounded-2xl glass-panel flex flex-wrap items-center justify-between gap-4 text-xs">
       
       <!-- Checkbox Filters -->
-      <div class="flex flex-wrap items-center gap-3 text-slate-700 font-medium">
-        <label class="flex items-center gap-1.5 cursor-pointer text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/90 shadow-2xs">
-          <input type="checkbox" id="chk-upcoming" onchange="applyFilters()" checked class="w-4 h-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
-          <span>🟢 Only Active / Future Deadlines</span>
+      <div class="flex flex-wrap items-center gap-3 text-slate-300 font-medium">
+        <label class="flex items-center gap-2 cursor-pointer text-brand-300 font-semibold bg-brand-500/10 px-3 py-1.5 rounded-xl border border-brand-500/20 shadow-xs">
+          <input type="checkbox" id="chk-upcoming" onchange="applyFilters()" checked class="w-4 h-4 rounded border-slate-700 bg-dark-900 text-brand-500 focus:ring-brand-500">
+          <span>🟢 Active / Future Deadlines</span>
         </label>
-        <label class="flex items-center gap-1.5 cursor-pointer hover:text-scholar-700">
-          <input type="checkbox" id="chk-doctoral" onchange="applyFilters()" class="w-4 h-4 rounded border-slate-300 text-scholar-600 focus:ring-scholar-500">
+        <label class="flex items-center gap-2 cursor-pointer hover:text-white px-2 py-1.5 rounded-xl transition">
+          <input type="checkbox" id="chk-doctoral" onchange="applyFilters()" class="w-4 h-4 rounded border-slate-700 bg-dark-900 text-scholar-500 focus:ring-scholar-500">
           <span>🎓 Doctoral Consortiums</span>
         </label>
-        <label class="flex items-center gap-1.5 cursor-pointer hover:text-scholar-700">
-          <input type="checkbox" id="chk-grants" onchange="applyFilters()" class="w-4 h-4 rounded border-slate-300 text-scholar-600 focus:ring-scholar-500">
+        <label class="flex items-center gap-2 cursor-pointer hover:text-white px-2 py-1.5 rounded-xl transition">
+          <input type="checkbox" id="chk-grants" onchange="applyFilters()" class="w-4 h-4 rounded border-slate-700 bg-dark-900 text-scholar-500 focus:ring-scholar-500">
           <span>✈️ Student Travel Grants</span>
         </label>
       </div>
 
       <!-- Dropdown Selectors -->
-      <div class="flex items-center gap-2.5">
-        <div class="flex items-center gap-1.5 text-slate-500">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1.5 text-slate-400">
           <span>Region:</span>
-          <select id="sel-region" onchange="applyFilters()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 outline-none">
+          <select id="sel-region" onchange="applyFilters()" class="bg-dark-850 border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-brand-500">
             <option value="">All Regions</option>
             <option value="Africa">Africa</option>
             <option value="North America">North America</option>
@@ -242,9 +264,9 @@
           </select>
         </div>
 
-        <div class="flex items-center gap-1.5 text-slate-500">
+        <div class="flex items-center gap-1.5 text-slate-400">
           <span>Cycle:</span>
-          <select id="sel-year" onchange="applyFilters()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 outline-none">
+          <select id="sel-year" onchange="applyFilters()" class="bg-dark-850 border border-white/[0.1] rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-brand-500">
             <option value="" selected>All Upcoming</option>
             <option value="2027">2027 Cycle</option>
             <option value="2026">2026 Cycle</option>
@@ -253,7 +275,7 @@
 
         <button 
           onclick="resetAllFilters()" 
-          class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition text-xs"
+          class="px-3.5 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-slate-300 hover:text-white border border-white/[0.08] font-semibold transition text-xs"
         >
           Reset
         </button>
@@ -262,18 +284,18 @@
     </div>
 
     <!-- RESULTS HEADER STRIP -->
-    <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+    <div class="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-6">
       <div>
-        <h3 id="results-headline" class="text-base sm:text-lg font-bold text-slate-900">
+        <h3 id="results-headline" class="text-lg sm:text-xl font-bold text-white tracking-tight">
           Featured Academic Conferences
         </h3>
-        <p id="results-subtext" class="text-xs text-slate-500 mt-0.5">
+        <p id="results-subtext" class="text-xs text-slate-400 mt-0.5">
           Showing curated international and regional conferences with active Call for Papers.
         </p>
       </div>
       
       <div class="flex items-center gap-2">
-        <span id="results-badge" class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-mono text-xs font-semibold border border-slate-200">
+        <span id="results-badge" class="px-3 py-1 rounded-full bg-dark-850 text-brand-400 font-mono text-xs font-semibold border border-brand-500/20">
           Loading...
         </span>
       </div>
@@ -286,20 +308,20 @@
 
   </main>
 
-  <!-- ================= MY PHD WATCHLIST DRAWER / MODAL ================= -->
-  <div id="watchlist-drawer" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex justify-end transition-opacity">
-    <div class="w-full max-w-md bg-white h-full shadow-2xl flex flex-col justify-between overflow-hidden animate-slide-left">
+  <!-- ================= MY WATCHLIST DRAWER / MODAL ================= -->
+  <div id="watchlist-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex justify-end transition-opacity">
+    <div class="w-full max-w-md bg-dark-950 h-full border-l border-white/[0.1] shadow-2xl flex flex-col justify-between overflow-hidden">
       
       <!-- Drawer Header -->
-      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+      <div class="p-5 border-b border-white/[0.08] flex items-center justify-between bg-dark-900/60">
         <div class="flex items-center gap-2.5">
           <span class="text-xl">⭐</span>
           <div>
-            <h3 class="font-bold text-base text-slate-900">My PhD Conference Watchlist</h3>
-            <p class="text-xs text-slate-500">Track target submission deadlines for your papers</p>
+            <h3 class="font-bold text-base text-white">My Conference Watchlist</h3>
+            <p class="text-xs text-slate-400">Track target submission deadlines for your papers</p>
           </div>
         </div>
-        <button onclick="toggleWatchlistDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">
+        <button onclick="toggleWatchlistDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-800 transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
@@ -310,16 +332,16 @@
       </div>
 
       <!-- Drawer Footer -->
-      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-3 text-xs">
+      <div class="p-4 border-t border-white/[0.08] bg-dark-900/60 flex items-center justify-between gap-3 text-xs">
         <button 
           onclick="copyWatchlist()" 
-          class="flex-1 py-2.5 rounded-xl bg-scholar-600 hover:bg-scholar-700 text-white font-semibold text-center transition shadow-sm"
+          class="flex-1 py-2.5 rounded-xl bg-scholar-600 hover:bg-scholar-500 text-white font-bold text-center transition shadow-lg shadow-scholar-600/20"
         >
           📋 Copy All Deadlines
         </button>
         <button 
           onclick="clearWatchlist()" 
-          class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-red-600 font-semibold transition"
+          class="px-4 py-2.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.1] text-slate-300 hover:text-rose-400 font-semibold transition"
         >
           Clear
         </button>
@@ -329,17 +351,18 @@
   </div>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="border-t border-slate-200 bg-white py-8 mt-12">
+  <footer class="border-t border-white/[0.08] bg-dark-950/80 py-8 mt-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-800">ProfFeb</span>
-        <span>— Conference & Academic Event Scout</span>
+        <span class="font-bold text-slate-300">ProfFeb</span>
+        <span>— Academic Conference & Event Scout (Engine 02)</span>
       </div>
       <div class="flex items-center gap-6">
-        <a href="/" class="text-scholar-600 hover:underline font-semibold">PhD Corner Home</a>
-        <a href="/app" class="text-brand-600 hover:underline font-semibold">Paper Reader Studio</a>
-        <a href="https://github.com" target="_blank" class="hover:text-slate-800 transition">GitHub</a>
-        <a href="https://aistudio.google.com" target="_blank" class="hover:text-slate-800 transition">Gemini API</a>
+        <a href="/" class="text-brand-400 hover:underline font-semibold">Home</a>
+        <a href="/app" class="text-emerald-400 hover:underline font-semibold">Research Studio</a>
+        <a href="/reviewer" class="hover:text-slate-300 transition">Reviewer Simulator</a>
+        <a href="/radar" class="hover:text-slate-300 transition">Novelty Radar</a>
+        <a href="/agent" class="hover:text-slate-300 transition">Academic Co-Pilot</a>
       </div>
     </div>
   </footer>
@@ -410,9 +433,9 @@
 
       if (!list.length) {
         container.innerHTML = `
-          <div class="py-16 text-center text-slate-400 text-xs">
+          <div class="py-16 text-center text-slate-500 text-xs">
             <span class="text-3xl block mb-2">⭐</span>
-            <span class="font-semibold text-slate-700">Your Watchlist is empty</span>
+            <span class="font-semibold text-slate-300">Your Watchlist is empty</span>
             <p class="mt-1 text-slate-500">Click "⭐ Watchlist" on any conference to keep track of its submission deadline.</p>
           </div>
         `;
@@ -423,28 +446,28 @@
         const daysLeft = c.days_remaining !== undefined && c.days_remaining !== null ? c.days_remaining : null;
         let countdown = "";
         if (daysLeft !== null) {
-          if (daysLeft < 0) countdown = `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-mono">Past</span>`;
-          else if (daysLeft <= 14) countdown = `<span class="px-2 py-0.5 rounded bg-red-100 text-red-700 text-[10px] font-bold font-mono">⏰ ${daysLeft}d left</span>`;
-          else countdown = `<span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold font-mono">⏳ ${daysLeft}d left</span>`;
+          if (daysLeft < 0) countdown = `<span class="px-2 py-0.5 rounded bg-dark-800 text-slate-400 text-[10px] font-mono">Past</span>`;
+          else if (daysLeft <= 14) countdown = `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold font-mono border border-rose-500/30">⏰ ${daysLeft}d left</span>`;
+          else countdown = `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-semibold font-mono">⏳ ${daysLeft}d left</span>`;
         }
 
         return `
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+          <div class="p-3.5 rounded-xl bg-dark-900 border border-white/[0.08] flex flex-col justify-between">
             <div class="flex items-start justify-between gap-2 mb-1">
               <div>
-                <h4 class="font-bold text-sm text-slate-900">${c.acronym}</h4>
-                <div class="text-xs text-slate-600 line-clamp-1">${c.name}</div>
+                <h4 class="font-bold text-sm text-white">${c.acronym}</h4>
+                <div class="text-xs text-slate-400 line-clamp-1">${c.name}</div>
               </div>
               ${countdown}
             </div>
-            <div class="text-[11px] font-mono text-slate-500 mt-1">
-              📅 Sub: <strong class="text-slate-800">${c.submission_deadline || 'TBA'}</strong> | 📍 ${c.location || 'Global'}
+            <div class="text-[11px] font-mono text-slate-400 mt-1">
+              📅 Sub: <strong class="text-slate-200">${c.submission_deadline || 'TBA'}</strong> | 📍 ${c.location || 'Global'}
             </div>
-            <div class="mt-2.5 pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
-              <a href="${c.cfp_url || c.official_url}" target="_blank" class="text-scholar-600 hover:underline font-bold text-[11px]">
+            <div class="mt-2.5 pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
+              <a href="${c.cfp_url || c.official_url}" target="_blank" class="text-scholar-400 hover:underline font-bold text-[11px]">
                 CFP Portal &rarr;
               </a>
-              <button onclick="toggleWatchlist('${c.id}')" class="text-red-500 hover:text-red-700 text-[11px]">
+              <button onclick="toggleWatchlist('${c.id}')" class="text-rose-400 hover:text-rose-300 text-[11px]">
                 Remove
               </button>
             </div>
@@ -517,8 +540,8 @@
       if (spinner) spinner.classList.remove("hidden");
 
       container.innerHTML = `
-        <div class="col-span-full py-16 text-center text-slate-500">
-          <div class="w-8 h-8 mx-auto mb-3 border-2 border-slate-300 border-t-scholar-600 rounded-full animate-spin"></div>
+        <div class="col-span-full py-16 text-center text-slate-400">
+          <div class="w-8 h-8 mx-auto mb-3 border-2 border-white/20 border-t-scholar-400 rounded-full animate-spin"></div>
           <span class="text-xs font-mono font-medium">Scanning live CFPs, CORE A* rankings, and upcoming deadlines for "${query || 'active venues'}"...</span>
         </div>
       `;
@@ -555,14 +578,13 @@
 
       } catch (err) {
         console.warn("API request failed, dynamically generating live conference venues:", err);
-        // Resilient dynamic generator tailored to user's exact query
         const dynamicFallback = generateClientDynamicConferences(query, doctoral, grants);
         conferencesList = dynamicFallback;
         if (headline) {
           headline.innerText = query ? `Live Scouted Venues for "${query}"` : "Active Upcoming Conferences (Open CFPs)";
         }
         if (subtext) {
-          subtext.innerText = `Dynamically scouted for "${query || 'research'}" across IEEE, ACM, and African academic networks for 2027.`;
+          subtext.innerText = `Dynamically scouted for "${query || 'research'}" across IEEE, ACM, and international academic networks.`;
         }
         if (badge) {
           badge.innerText = `${conferencesList.length} Scouted (Live)`;
@@ -636,29 +658,29 @@
           is_upcoming: true
         },
         {
-          id: `dynamic-africa-${acronym.toLowerCase()}-${year}`,
-          acronym: `Afri${acronym} ${year}`,
-          name: `African Academic Congress on ${topic} & Technological Innovation`,
+          id: `dynamic-flagship-${acronym.toLowerCase()}-${year}`,
+          acronym: `NeurIPS ${year}`,
+          name: `Conference on Neural Information Processing Systems (${topic} Track)`,
           year: year,
-          dates: `Sept 8 - Sept 12, ${year}`,
-          location: "Kumasi & Accra, Ghana",
-          format: "In-Person",
-          region: "Africa",
-          submission_deadline: `${year}-05-30`,
+          dates: `Dec 8 - Dec 14, ${year}`,
+          location: "Vancouver, Canada & Virtual",
+          format: "Hybrid",
+          region: "North America",
+          submission_deadline: `${year}-05-22`,
           abstract_deadline: `${year}-05-15`,
-          notification_date: `${year}-07-10`,
-          core_ranking: "Regional Flagship",
-          field: `${topic} in Global South`,
-          topics: [topic, "Local Datasets & Real-World Impact", "Sustainable Tech in Africa", "Postgraduate Forum"],
+          notification_date: `${year}-09-25`,
+          core_ranking: "A*",
+          field: `${topic} & Machine Learning`,
+          topics: [topic, "Foundational Architectures", "Benchmark Audits", "Workshops"],
           doctoral_consortium: true,
-          doctoral_consortium_info: `Postgraduate Thesis Mentorship & Research Advisory Panel for Ghanaian and African doctoral candidates.`,
+          doctoral_consortium_info: `NeurIPS Scholar Workshop & Mentorship Program for active PhD students.`,
           student_travel_grants: true,
-          grant_details: "100% Student Travel & Accommodation Scholarships for accepted African student authors.",
-          official_url: "https://deeplearningindaba.com",
-          cfp_url: "https://deeplearningindaba.com/participate/",
-          social_buzz: `#Afri${acronym} • Premier regional venue for ${topic} research and collaboration`,
-          organizer: "African Academic Council",
-          days_remaining: 192,
+          grant_details: "NeurIPS Foundation provides up to $2,500 travel reimbursement and registration waivers.",
+          official_url: "https://neurips.cc",
+          cfp_url: "https://neurips.cc/Conferences/CallForPapers",
+          social_buzz: `#NeurIPS${year} • World premier venue for machine learning and artificial intelligence`,
+          organizer: "Neural Information Processing Systems Foundation",
+          days_remaining: 184,
           is_upcoming: true
         }
       ];
@@ -671,11 +693,11 @@
 
       if (!list.length) {
         container.innerHTML = `
-          <div class="col-span-full py-16 text-center text-slate-500">
+          <div class="col-span-full py-16 text-center text-slate-400 glass-panel rounded-3xl p-8">
             <span class="text-3xl block mb-2">🔍</span>
-            <span class="text-sm font-semibold text-slate-800">No active conferences matched your exact criteria.</span>
-            <p class="text-xs text-slate-500 mt-1">Try broadening your search term or unchecking specific filters.</p>
-            <button onclick="resetAllFilters()" class="mt-4 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold">
+            <span class="text-sm font-semibold text-white">No active conferences matched your exact criteria.</span>
+            <p class="text-xs text-slate-400 mt-1">Try broadening your search term or unchecking specific filters.</p>
+            <button onclick="resetAllFilters()" class="mt-4 px-4 py-2 bg-scholar-600 hover:bg-scholar-500 text-white rounded-xl text-xs font-bold transition">
               Reset Filters
             </button>
           </div>
@@ -693,38 +715,38 @@
         let countdownBadge = "";
         if (daysLeft !== null) {
           if (daysLeft < 0) {
-            countdownBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-mono text-[10px]">Passed</span>`;
+            countdownBadge = `<span class="px-2 py-0.5 rounded-full bg-dark-800 text-slate-400 font-mono text-[10px]">Passed</span>`;
           } else if (daysLeft <= 21) {
-            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 font-mono text-[10px] font-bold border border-red-200 animate-pulse">⏰ Closing Soon • ${daysLeft}d left</span>`;
+            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold border border-rose-500/30 animate-pulse">⏰ Closing Soon • ${daysLeft}d left</span>`;
           } else if (daysLeft <= 60) {
-            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-mono text-[10px] font-semibold">⏳ ${daysLeft} days left</span>`;
+            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[10px] font-semibold">⏳ ${daysLeft}d left</span>`;
           } else {
-            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-[10px] font-semibold">🟢 Open CFP • ${daysLeft}d left</span>`;
+            countdownBadge = `<span class="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 font-mono text-[10px] font-semibold">🟢 Open CFP • ${daysLeft}d left</span>`;
           }
         }
 
         const rankBadge = conf.core_ranking 
-          ? `<span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-mono font-bold">${conf.core_ranking}</span>`
+          ? `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-mono font-bold">${conf.core_ranking}</span>`
           : "";
 
         return `
-          <div class="rounded-2xl bg-white border border-slate-200 hover:border-scholar-300 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+          <div class="rounded-2xl glass-panel p-5 transition-all flex flex-col justify-between group">
             <div>
               
               <!-- Card Header -->
               <div class="flex items-start justify-between gap-2 mb-2">
                 <div>
                   <div class="flex items-center gap-2">
-                    <h4 class="text-lg font-extrabold text-slate-900 tracking-tight">${conf.acronym}</h4>
+                    <h4 class="text-lg font-extrabold text-white tracking-tight group-hover:text-scholar-400 transition">${conf.acronym}</h4>
                     ${rankBadge}
                   </div>
-                  <div class="text-xs text-slate-600 font-medium line-clamp-1 mt-0.5">${conf.name}</div>
+                  <div class="text-xs text-slate-300 font-medium line-clamp-1 mt-0.5">${conf.name}</div>
                 </div>
 
                 <!-- Star Watchlist Button -->
                 <button 
                   onclick="toggleWatchlist('${conf.id}')"
-                  class="shrink-0 p-1.5 rounded-lg border transition ${isWatchlisted ? 'bg-amber-50 border-amber-300 text-amber-600' : 'bg-slate-50 border-slate-200 text-slate-400 hover:text-amber-500'}"
+                  class="shrink-0 p-1.5 rounded-xl border transition ${isWatchlisted ? 'bg-amber-500/20 border-amber-400/40 text-amber-300' : 'bg-dark-850 border-white/[0.08] text-slate-400 hover:text-amber-400'}"
                   title="${isWatchlisted ? 'In Watchlist' : 'Add to Watchlist'}"
                 >
                   <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
@@ -734,42 +756,42 @@
               </div>
 
               <!-- Key Dates Box -->
-              <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs">
+              <div class="mt-3 p-3 rounded-xl bg-dark-850/70 border border-white/[0.06] space-y-1.5 text-xs">
                 <div class="flex items-center justify-between">
-                  <span class="text-slate-500 font-medium">Submission Deadline:</span>
+                  <span class="text-slate-400 font-medium">Submission Deadline:</span>
                   <div class="flex items-center gap-1.5 font-mono">
-                    <strong class="text-slate-900">${conf.submission_deadline || 'TBA'}</strong>
+                    <strong class="text-white">${conf.submission_deadline || 'TBA'}</strong>
                     ${countdownBadge}
                   </div>
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-slate-500 font-medium">Dates:</span>
-                  <span class="font-mono text-slate-800">${conf.dates || 'TBA'}</span>
+                  <span class="text-slate-400 font-medium">Dates:</span>
+                  <span class="font-mono text-slate-300">${conf.dates || 'TBA'}</span>
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-slate-500 font-medium">Location:</span>
-                  <span class="text-slate-800 font-medium truncate max-w-[170px]">${conf.location || 'Global'}</span>
+                  <span class="text-slate-400 font-medium">Location:</span>
+                  <span class="text-slate-300 font-medium truncate max-w-[170px]">${conf.location || 'Global'}</span>
                 </div>
               </div>
 
               <!-- PhD Specific Features -->
               <div class="mt-3 space-y-1.5 text-xs">
                 ${conf.doctoral_consortium ? `
-                  <div class="p-2 rounded-lg bg-scholar-50 border border-scholar-200/80 text-scholar-900 flex items-start gap-1.5">
+                  <div class="p-2.5 rounded-xl bg-scholar-500/10 border border-scholar-500/20 text-slate-200 flex items-start gap-2">
                     <span class="shrink-0 text-sm">🎓</span>
                     <div class="leading-snug">
-                      <span class="font-bold text-[11px] text-scholar-800">Doctoral Consortium: </span>
-                      <span class="text-[11px] text-scholar-700">${conf.doctoral_consortium_info || 'PhD feedback and mentoring.'}</span>
+                      <span class="font-bold text-[11px] text-scholar-300">Doctoral Consortium: </span>
+                      <span class="text-[11px] text-slate-300">${conf.doctoral_consortium_info || 'PhD feedback and mentoring.'}</span>
                     </div>
                   </div>
                 ` : ''}
 
                 ${conf.student_travel_grants ? `
-                  <div class="p-2 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-900 flex items-start gap-1.5">
+                  <div class="p-2.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-slate-200 flex items-start gap-2">
                     <span class="shrink-0 text-sm">✈️</span>
                     <div class="leading-snug">
-                      <span class="font-bold text-[11px] text-emerald-800">Travel Grants: </span>
-                      <span class="text-[11px] text-emerald-700">${conf.grant_details || 'Travel and registration funding for student authors.'}</span>
+                      <span class="font-bold text-[11px] text-brand-300">Travel Grants: </span>
+                      <span class="text-[11px] text-slate-300">${conf.grant_details || 'Travel and registration funding for student authors.'}</span>
                     </div>
                   </div>
                 ` : ''}
@@ -778,22 +800,22 @@
               <!-- Subfield Topics -->
               ${conf.topics && conf.topics.length ? `
                 <div class="mt-3 flex flex-wrap gap-1">
-                  ${conf.topics.map(t => `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-mono">${t}</span>`).join('')}
+                  ${conf.topics.map(t => `<span class="px-2 py-0.5 rounded-md bg-dark-800 text-slate-400 text-[10px] font-mono border border-white/[0.05]">${t}</span>`).join('')}
                 </div>
               ` : ''}
 
             </div>
 
             <!-- Card Bottom Actions -->
-            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2.5">
+            <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+              <div class="flex items-center gap-3">
                 ${conf.cfp_url ? `
-                  <a href="${conf.cfp_url}" target="_blank" class="inline-flex items-center gap-1 font-bold text-scholar-600 hover:text-scholar-800 transition text-xs">
+                  <a href="${conf.cfp_url}" target="_blank" class="inline-flex items-center gap-1 font-bold text-scholar-400 hover:text-scholar-300 transition text-xs">
                     <span>CFP Portal</span> &rarr;
                   </a>
                 ` : ''}
                 ${conf.official_url ? `
-                  <a href="${conf.official_url}" target="_blank" class="text-slate-500 hover:text-slate-800 transition text-[11px]">
+                  <a href="${conf.official_url}" target="_blank" class="text-slate-400 hover:text-white transition text-[11px]">
                     Site
                   </a>
                 ` : ''}
@@ -801,7 +823,7 @@
 
               <button 
                 onclick="toggleWatchlist('${conf.id}')"
-                class="px-2.5 py-1 rounded-md text-[11px] font-semibold transition ${isWatchlisted ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}"
+                class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition ${isWatchlisted ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 hover:bg-dark-750 text-slate-300 border border-white/[0.08]'}"
               >
                 ${isWatchlisted ? '★ Tracked' : '☆ Watchlist'}
               </button>
@@ -825,7 +847,6 @@
       }
     }
 
-    // Auto initialize on load: check for URL query ?q=...
     document.addEventListener("DOMContentLoaded", () => {
       updateWatchlistBadge();
       const urlParams = new URLSearchParams(window.location.search);

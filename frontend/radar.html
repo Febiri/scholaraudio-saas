@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,63 +8,148 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Supabase Auth SDK & ProfFeb Global Session Manager -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/static/js/proffeb-auth.js" defer></script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             brand: {
-              50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 400: '#a78bfa',
-              500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 800: '#5b21b6'
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
             },
-            emerald: {
-              50: '#ecfdf5', 500: '#10b981', 600: '#059669', 700: '#047857'
+            purple: {
+              400: '#c084fc',
+              500: '#a855f7',
+              600: '#9333ea',
+              700: '#7e22ce',
+            },
+            dark: {
+              950: '#070a13',
+              900: '#0d1322',
+              850: '#11192d',
+              800: '#17223c',
+              750: '#1d2c4e',
+              700: '#253761',
             }
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            serif: ['Newsreader', 'Georgia', 'serif'],
-            mono: ['JetBrains Mono', 'monospace']
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
           }
         }
       }
     }
   </script>
-</head>
-<body class="bg-slate-50/60 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
 
-  <!-- Navigation Bar -->
-  <header class="border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <a href="/" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 rounded-xl bg-brand-50 border border-brand-200 text-brand-600 flex items-center justify-center font-bold text-base group-hover:bg-brand-600 group-hover:text-white transition">
-            🔬
+  <style>
+    /* Premium scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a13; }
+    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+
+    /* Subtle grid background */
+    .bg-saas-grid {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* Glass card styling */
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-panel:hover {
+      border-color: rgba(168, 85, 247, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-100 font-sans selection:bg-purple-500 selection:text-white min-h-screen flex flex-col relative overflow-x-hidden antialiased">
+
+  <!-- Ambient background glow aura -->
+  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] bg-gradient-to-b from-purple-500/15 via-indigo-500/10 to-transparent blur-3xl -z-10"></div>
+  <div class="pointer-events-none fixed inset-0 bg-saas-grid opacity-75 -z-20"></div>
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="border-b border-white/[0.08] bg-dark-950/85 backdrop-blur-2xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      
+      <!-- Logo & Engine Badge -->
+      <a href="/" class="flex items-center gap-3 shrink-0 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-brand-400 p-0.5 shadow-lg shadow-purple-500/20 flex items-center justify-center transition-transform group-hover:scale-105">
+          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-base tracking-tight text-slate-900">Research Gap & Novelty Radar</span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-50 text-brand-700 font-bold border border-brand-200">Engine 03</span>
-            </div>
-            <p class="text-[11px] text-slate-500">Validate Research Novelty & Discover SOTA Gaps</p>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-purple-400 transition">ProfFeb</span>
+            <span class="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-bold">Engine 03</span>
           </div>
+          <p class="text-[10px] text-slate-400 font-medium hidden md:block">Prior-Art Radar & Novelty Scorer • SOTA Gap Discovery</p>
+        </div>
+      </a>
+
+      <!-- Center Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="/app" class="hover:text-brand-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          <span>Research Studio</span>
         </a>
+        <a href="/conferences" class="hover:text-indigo-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+          <span>Conference Scout</span>
+        </a>
+        <a href="/reviewer" class="hover:text-rose-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Reviewer Simulator</span>
+        </a>
+        <a href="/radar" class="text-purple-400 flex items-center gap-1.5 font-bold">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <span>Novelty Radar</span>
+        </a>
+        <a href="/agent" class="hover:text-cyan-400 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          <span>Academic Co-Pilot</span>
+        </a>
+      </nav>
+
+      <!-- Right CTAs & Auth Menu -->
+      <div class="flex items-center gap-2.5">
+        <!-- Clear Cache Button -->
+        <button 
+          onclick="clearProfFebCache()" 
+          title="Clear local runtime cache and refresh library"
+          class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 text-slate-400 hover:text-white border border-white/[0.08] transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+
+        <div id="user-nav-container"></div>
       </div>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-        <a href="/" class="hover:text-brand-600 transition flex items-center gap-1.5">
-          <span>🏠 Home Corner</span>
-        </a>
-        <a href="/conferences" class="hover:text-brand-600 transition">🌐 Conference Scout</a>
-        <a href="/app" class="hover:text-brand-600 transition">📖 Paper Reader</a>
-        <a href="/reviewer" class="hover:text-brand-600 transition">⚖️ Reviewer #2</a>
-        <a href="/grants" class="hover:text-brand-600 transition">💰 Funding Radar</a>
-        <a href="/lab-connector" class="hover:text-brand-600 transition">🚀 Lab Connector</a>
-        <a href="/agent" class="hover:text-brand-600 transition font-semibold text-purple-700">🧠 Digital Twin</a>
-      </nav>
     </div>
   </header>
 
@@ -72,39 +157,38 @@
     
     <!-- Hero Banner -->
     <div class="text-center max-w-3xl mx-auto mb-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-xs font-semibold text-brand-700 mb-4">
-        <span>⚡ AI Novelty Verification & Gap Discovery</span>
-        <span>•</span>
-        <span>ArXiv & Benchmark Cross-Check</span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs font-semibold text-purple-300 mb-4">
+        <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+        <span>AI Novelty Verification & Gap Discovery • ArXiv & Benchmark Cross-Check</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
         Never Waste 6 Months on an <br class="hidden sm:inline" />
-        <span class="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">Already-Solved Problem</span>.
+        <span class="bg-gradient-to-r from-purple-400 via-indigo-300 to-brand-400 bg-clip-text text-transparent">Already-Solved Problem</span>
       </h1>
-      <p class="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
-        Upload your thesis proposal or draft paper PDF, or type your research topic. Our AI engine audits current literature, calculates your novelty index, surfaces existing competitors, and pinpoints exact unsolved benchmark gaps.
+      <p class="mt-3.5 text-sm sm:text-base text-slate-400 leading-relaxed">
+        Upload your thesis proposal or draft paper PDF, or type your research topic. Our engine audits current literature, calculates your novelty index, surfaces existing competitors, and pinpoints exact unsolved benchmark gaps.
       </p>
     </div>
 
     <!-- Search / Idea Submission Card -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8 mb-10">
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 mb-10 shadow-2xl">
       
       <!-- Mode Tabs -->
-      <div class="flex items-center gap-3 border-b border-slate-200 pb-4 mb-6">
+      <div class="flex items-center gap-3 border-b border-white/[0.08] pb-4 mb-6">
         <button 
           type="button" 
           id="tab-pdf-btn" 
           onclick="switchRadarMode('pdf')"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-brand-50 text-brand-700 border border-brand-200"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-purple-500/20 text-purple-300 border border-purple-500/40"
         >
           <span>📄 Upload Paper / Proposal PDF</span>
-          <span class="px-2 py-0.5 rounded-full bg-brand-200/60 text-[10px] uppercase font-mono tracking-wider">Auto-Detect</span>
+          <span class="px-2 py-0.5 rounded-full bg-purple-500/30 text-[10px] uppercase font-mono tracking-wider font-bold">Auto-Detect</span>
         </button>
         <button 
           type="button" 
           id="tab-manual-btn" 
           onclick="switchRadarMode('manual')"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850"
         >
           <span>✍️ Enter Topic Manually</span>
         </button>
@@ -119,7 +203,7 @@
           ondragover="handleRadarDragOver(event)"
           ondragleave="handleRadarDragLeave(event)"
           ondrop="handleRadarDrop(event)"
-          class="border-2 border-dashed border-brand-200 hover:border-brand-400 bg-brand-50/30 hover:bg-brand-50/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 group"
+          class="border-2 border-dashed border-white/15 hover:border-purple-400/60 bg-dark-900/50 hover:bg-dark-850/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 group"
         >
           <input 
             type="file" 
@@ -128,30 +212,30 @@
             class="hidden" 
             onchange="handleRadarFileSelect(this.files)"
           >
-          <div class="w-14 h-14 rounded-2xl bg-white border border-brand-200 shadow-sm flex items-center justify-center text-2xl group-hover:scale-110 transition">
+          <div class="w-14 h-14 rounded-2xl bg-dark-850 border border-white/[0.1] shadow-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">
             📄
           </div>
           <div>
-            <h3 class="text-sm font-bold text-slate-800">
-              Drag & drop your thesis proposal or paper PDF, or <span class="text-brand-600 underline">browse</span>
+            <h3 class="text-sm font-bold text-white">
+              Drag & drop your thesis proposal or paper PDF, or <span class="text-purple-400 underline">browse</span>
             </h3>
-            <p class="text-xs text-slate-500 mt-1">Our engine automatically extracts the problem, methodology, and computes the Novelty Index</p>
+            <p class="text-xs text-slate-400 mt-1">Our engine automatically extracts the problem, methodology, and computes the Novelty Index</p>
           </div>
         </div>
 
         <!-- Selected File Status Badge -->
-        <div id="radar-file-badge" class="hidden items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+        <div id="radar-file-badge" class="hidden items-center justify-between p-3.5 rounded-xl bg-dark-850 border border-white/[0.08]">
           <div class="flex items-center gap-3">
             <span class="text-xl">📑</span>
             <div>
-              <p id="radar-file-name" class="text-xs font-bold text-slate-800">proposal.pdf</p>
-              <p id="radar-file-size" class="text-[11px] text-slate-500">1.8 MB</p>
+              <p id="radar-file-name" class="text-xs font-bold text-white">proposal.pdf</p>
+              <p id="radar-file-size" class="text-[11px] text-slate-400">1.8 MB</p>
             </div>
           </div>
           <button 
             type="button" 
             onclick="clearRadarFile()" 
-            class="text-xs text-brand-600 hover:text-brand-800 font-semibold px-2 py-1 rounded hover:bg-brand-50"
+            class="text-xs text-purple-400 hover:text-purple-300 font-semibold px-2 py-1 rounded hover:bg-dark-800 transition"
           >
             Change File
           </button>
@@ -160,12 +244,12 @@
         <!-- Target Domain Selector -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
               Primary Research Domain
             </label>
             <select 
               id="radar-pdf-domain"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm font-medium bg-white"
+              class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm font-medium"
             >
               <option value="Artificial Intelligence & Machine Learning">Artificial Intelligence & Machine Learning</option>
               <option value="Computer Systems & High-Performance Computing">Computer Systems & High-Performance Computing</option>
@@ -177,7 +261,7 @@
             </select>
           </div>
           <div class="flex items-end">
-            <p class="text-xs text-slate-500 leading-relaxed pb-2">
+            <p class="text-xs text-slate-400 leading-relaxed pb-2">
               🔍 <strong>Cross-Check Algorithm:</strong> Evaluates proposal novelty against contemporary arXiv pre-prints, SOTA benchmarks, and leading industry labs.
             </p>
           </div>
@@ -187,7 +271,7 @@
           <button 
             type="submit" 
             id="radar-pdf-btn"
-            class="px-7 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-md shadow-brand-500/20 flex items-center gap-2 transition active:scale-95"
+            class="px-7 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-brand-600 hover:from-purple-500 hover:to-brand-500 text-white font-bold text-sm shadow-lg shadow-purple-500/25 flex items-center gap-2 transition active:scale-95"
           >
             <span>Scan Literature & Validate Novelty</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -198,39 +282,39 @@
       <!-- Mode 2: Manual Topic Input Form (Initially Hidden) -->
       <form id="radar-form" onsubmit="event.preventDefault(); analyzeIdea();" class="space-y-4 hidden">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
             Research Topic or Domain
           </label>
           <input 
             type="text" 
             id="topic-input"
             placeholder="e.g. Distributed LLM Inference on Edge Accelerators, Privacy in Graph Neural Networks"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm font-medium"
+            class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm font-medium"
           >
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-            Proposed Methodology / Novel Angle <span class="text-slate-400 font-normal lowercase">(Optional but recommended)</span>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Proposed Methodology / Novel Angle <span class="text-slate-500 font-normal lowercase">(Optional but recommended)</span>
           </label>
           <textarea 
             id="idea-input"
             rows="3"
             placeholder="e.g. We propose an adaptive speculative decoding algorithm that uses local device cache to bypass memory bandwidth bottlenecks without accuracy loss."
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm font-medium"
+            class="w-full px-4 py-3 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm font-medium"
           ></textarea>
         </div>
 
         <!-- Quick Sample Chips -->
         <div class="flex items-center gap-2 flex-wrap pt-1">
-          <span class="text-xs font-semibold text-slate-400">Quick Try:</span>
-          <button type="button" onclick="fillSample('Distributed LLM Speculative Decoding for Edge Devices', 'Adaptive draft-verification pipeline optimizing memory throughput on Apple Silicon & mobile NPUs.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+          <span class="text-xs font-semibold text-slate-500">Quick Try:</span>
+          <button type="button" onclick="fillSample('Distributed LLM Speculative Decoding for Edge Devices', 'Adaptive draft-verification pipeline optimizing memory throughput on Apple Silicon & mobile NPUs.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
             Edge LLM Inference
           </button>
-          <button type="button" onclick="fillSample('Sample-Efficient Offline Reinforcement Learning in Robotics', 'Conservative Q-learning with diffusion priors to train robotic arms on 5x fewer demonstrations.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+          <button type="button" onclick="fillSample('Sample-Efficient Offline Reinforcement Learning in Robotics', 'Conservative Q-learning with diffusion priors to train robotic arms on 5x fewer demonstrations.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
             Offline RL Robotics
           </button>
-          <button type="button" onclick="fillSample('Differential Privacy in Heterogeneous Federated Graph Learning', 'Client-side perturbation preserving structural node topology under non-IID partitions.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition">
+          <button type="button" onclick="fillSample('Differential Privacy in Heterogeneous Federated Graph Learning', 'Client-side perturbation preserving structural node topology under non-IID partitions.')" class="px-2.5 py-1 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium transition">
             Federated GNNs
           </button>
         </div>
@@ -239,7 +323,7 @@
           <button 
             type="submit" 
             id="analyze-btn"
-            class="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-md shadow-brand-500/20 flex items-center gap-2 transition active:scale-95"
+            class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-brand-600 hover:from-purple-500 hover:to-brand-500 text-white font-bold text-sm shadow-lg shadow-purple-500/25 flex items-center gap-2 transition active:scale-95"
           >
             <span>Scan Literature & Validate Novelty</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -252,17 +336,17 @@
     <div id="results-container" class="space-y-8 hidden">
       
       <!-- Audited PDF Info Banner -->
-      <div id="radar-meta-banner" class="hidden p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+      <div id="radar-meta-banner" class="hidden p-4 rounded-2xl bg-dark-900 border border-white/[0.08] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
         <div class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-lg">📄</span>
+          <span class="w-9 h-9 rounded-xl bg-dark-850 border border-white/[0.1] flex items-center justify-center text-lg">📄</span>
           <div>
             <span class="text-[10px] font-mono uppercase text-slate-400 block">Extracted From Document</span>
             <h4 id="radar-meta-title" class="text-sm font-bold text-white">proposal.pdf</h4>
           </div>
         </div>
         <div class="flex items-center gap-3 text-xs font-mono text-slate-300">
-          <span id="radar-meta-pages" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">6 Pages</span>
-          <span id="radar-meta-words" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">3,100 Words</span>
+          <span id="radar-meta-pages" class="px-2.5 py-1 rounded-lg bg-dark-850 border border-white/[0.1]">6 Pages</span>
+          <span id="radar-meta-words" class="px-2.5 py-1 rounded-lg bg-dark-850 border border-white/[0.1]">3,100 Words</span>
         </div>
       </div>
 
@@ -270,24 +354,24 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         <!-- Novelty Score Card -->
-        <div class="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="p-6 rounded-3xl glass-panel flex flex-col justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Novelty Score Index</span>
           <div class="my-4 flex items-baseline gap-3">
-            <span id="novelty-score" class="text-5xl font-black text-brand-600">88%</span>
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="novelty-badge">
+            <span id="novelty-score" class="text-5xl font-black text-purple-400">88%</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30" id="novelty-badge">
               High Impact Potential
             </span>
           </div>
-          <p id="novelty-verdict" class="text-xs text-slate-600 font-medium">Strong academic contribution with open benchmark opportunities.</p>
+          <p id="novelty-verdict" class="text-xs text-slate-300 font-medium">Strong academic contribution with open benchmark opportunities.</p>
         </div>
 
         <!-- SOTA Summary Card -->
-        <div class="md:col-span-2 p-6 rounded-3xl bg-white border border-slate-200 shadow-sm">
+        <div class="md:col-span-2 p-6 rounded-3xl glass-panel">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 block">State of the Art (SOTA) Assessment</span>
-          <p id="sota-summary" class="text-sm text-slate-700 leading-relaxed font-normal">
+          <p id="sota-summary" class="text-sm text-slate-300 leading-relaxed font-normal">
             Evaluating recent advances across arXiv and top conference proceedings...
           </p>
-          <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-mono text-slate-500">
+          <div class="mt-4 pt-4 border-t border-white/[0.06] flex items-center gap-2 text-xs font-mono text-slate-400">
             <span>Target Venues:</span>
             <div id="target-venues" class="flex items-center gap-1.5 flex-wrap"></div>
           </div>
@@ -296,67 +380,67 @@
       </div>
 
       <!-- Competitors & SOTA Baselines -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
-        <h3 class="text-lg font-bold text-slate-900 mb-1">Current Leading Baselines & Limitations</h3>
-        <p class="text-xs text-slate-500 mb-6">What existing papers and top labs have accomplished—and where they fall short.</p>
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel">
+        <h3 class="text-lg font-bold text-white mb-1">Current Leading Baselines & Limitations</h3>
+        <p class="text-xs text-slate-400 mb-6">What existing papers and top labs have accomplished—and where they fall short.</p>
         <div id="competitors-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
       <!-- Unsolved Gaps -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-brand-50/50 border border-brand-200 shadow-sm">
+      <div class="p-6 sm:p-8 rounded-3xl bg-purple-950/40 border border-purple-500/30">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-bold text-brand-900">Unsolved Research Gaps (Your Publication Opportunity)</h3>
-            <p class="text-xs text-brand-700">Tackle these exact bottlenecks to secure Tier-1 acceptance.</p>
+            <h3 class="text-lg font-bold text-white">Unsolved Research Gaps (Your Publication Opportunity)</h3>
+            <p class="text-xs text-purple-300">Tackle these exact bottlenecks to secure Tier-1 acceptance.</p>
           </div>
-          <span class="px-3 py-1 rounded-full bg-brand-100 text-brand-700 font-mono text-xs font-bold">Opportunity Goldmine</span>
+          <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 font-mono text-xs font-bold border border-purple-500/30">Opportunity Goldmine</span>
         </div>
         <div id="gaps-list" class="space-y-3"></div>
       </div>
 
       <!-- Actionable 3-Phase Roadmap -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
-        <h3 class="text-lg font-bold text-slate-900 mb-1">Actionable 6-Month Experiment Plan</h3>
-        <p class="text-xs text-slate-500 mb-6">Step-by-step doctoral validation roadmap to execute before your next paper submission.</p>
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel">
+        <h3 class="text-lg font-bold text-white mb-1">Actionable 6-Month Experiment Plan</h3>
+        <p class="text-xs text-slate-400 mb-6">Step-by-step doctoral validation roadmap to execute before your next paper submission.</p>
         <div id="roadmap-list" class="space-y-4"></div>
       </div>
 
       <!-- DYNAMIC AI RESEARCH GAP DEEP-DIVE -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="p-6 sm:p-8 rounded-3xl glass-panel space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-700 text-[11px] font-mono font-bold mb-1 border border-brand-200">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-500/20 text-purple-300 text-[11px] font-mono font-bold mb-1 border border-purple-500/30">
               💬 NOVELTY CO-PILOT
             </div>
-            <h3 class="text-lg font-bold text-slate-900">Gap Deep-Dive & Architecture Workshop</h3>
-            <p class="text-xs text-slate-500">Brainstorm concrete mathematical formulations, ablation designs, and baseline datasets with the Novelty Advisor.</p>
+            <h3 class="text-lg font-bold text-white">Gap Deep-Dive & Architecture Workshop</h3>
+            <p class="text-xs text-slate-400">Brainstorm concrete mathematical formulations, ablation designs, and baseline datasets with the Novelty Advisor.</p>
           </div>
-          <button onclick="clearRadarChat()" class="text-xs text-slate-400 hover:text-slate-700 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 transition">
+          <button onclick="clearRadarChat()" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-xl bg-dark-850 border border-white/[0.08] transition">
             Clear
           </button>
         </div>
 
         <!-- Quick Prompt Chips -->
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="sendQuickRadarPrompt('Propose a concrete mathematical loss function and architecture formulation for Gap 1.')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRadarPrompt('Propose a concrete mathematical loss function and architecture formulation for Gap 1.')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             📐 Formulate loss function for Gap 1
           </button>
-          <button onclick="sendQuickRadarPrompt('What publicly available datasets on HuggingFace can I evaluate this novel hypothesis on?')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRadarPrompt('What publicly available datasets on HuggingFace can I evaluate this novel hypothesis on?')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             📊 Recommend evaluation datasets
           </button>
-          <button onclick="sendQuickRadarPrompt('How can I prove this method outperforms standard Transformers with lower compute?')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRadarPrompt('How can I prove this method outperforms standard Transformers with lower compute?')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             ⚡ Prove compute-efficiency over SOTA
           </button>
-          <button onclick="sendQuickRadarPrompt('Which Tier-1 conference tracks (e.g. NeurIPS, ICML, CVPR, ICLR) are the best fit for this idea?')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-700 transition">
+          <button onclick="sendQuickRadarPrompt('Which Tier-1 conference tracks (e.g. NeurIPS, ICML, CVPR, ICLR) are the best fit for this idea?')" class="px-3 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 border border-white/[0.08] text-xs text-slate-300 hover:text-white transition">
             🌐 Best Tier-1 conference tracks
           </button>
         </div>
 
         <!-- Chat Container -->
-        <div id="radar-chat-messages" class="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 max-h-80 overflow-y-auto text-xs">
+        <div id="radar-chat-messages" class="space-y-3 p-4 rounded-2xl bg-dark-900 border border-white/[0.08] max-h-80 overflow-y-auto text-xs">
           <div class="flex items-start gap-2.5">
-            <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">NV</span>
-            <div class="p-3.5 rounded-2xl bg-white text-slate-800 border border-slate-200 shadow-xs leading-relaxed max-w-xl">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">NV</span>
+            <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] shadow-xs leading-relaxed max-w-xl">
               Hello researcher! I have analyzed the novelty landscape, benchmark ceilings, and open gaps for this topic. How can I help you design the architecture or validation experiments?
             </div>
           </div>
@@ -368,12 +452,12 @@
             type="text" 
             id="radar-chat-input"
             placeholder="Ask about equations, baseline comparisons, dataset selection, or proof techniques..."
-            class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs"
+            class="flex-1 px-4 py-2.5 rounded-xl bg-dark-850 border border-white/[0.1] text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-xs"
           >
           <button 
             type="submit" 
             id="radar-send-btn"
-            class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1 shrink-0"
+            class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md shadow-purple-600/20 transition flex items-center gap-1 shrink-0"
           >
             <span>Ask</span>
           </button>
@@ -382,6 +466,22 @@
     </div>
 
   </main>
+
+  <footer class="border-t border-white/[0.08] bg-dark-950/80 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-300">ProfFeb</span>
+        <span>— Prior-Art Radar & Novelty Scorer (Engine 03)</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="/" class="text-brand-400 hover:underline font-semibold">Home</a>
+        <a href="/app" class="text-emerald-400 hover:underline font-semibold">Research Studio</a>
+        <a href="/conferences" class="hover:text-slate-300 transition">Conference Scout</a>
+        <a href="/reviewer" class="hover:text-slate-300 transition">Reviewer Simulator</a>
+        <a href="/agent" class="hover:text-slate-300 transition">Academic Co-Pilot</a>
+      </div>
+    </div>
+  </footer>
 
   <script>
     let currentRadarMode = 'pdf';
@@ -395,13 +495,13 @@
       const manualForm = document.getElementById('radar-form');
 
       if (mode === 'pdf') {
-        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-brand-50 text-brand-700 border border-brand-200";
-        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-purple-500/20 text-purple-300 border border-purple-500/40";
+        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850";
         pdfForm.classList.remove('hidden');
         manualForm.classList.add('hidden');
       } else {
-        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-brand-50 text-brand-700 border border-brand-200";
-        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        manualBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-purple-500/20 text-purple-300 border border-purple-500/40";
+        pdfBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850";
         manualForm.classList.remove('hidden');
         pdfForm.classList.add('hidden');
       }
@@ -409,17 +509,17 @@
 
     function handleRadarDragOver(e) {
       e.preventDefault();
-      document.getElementById('radar-dropzone').classList.add('border-brand-500', 'bg-brand-100/50');
+      document.getElementById('radar-dropzone').classList.add('border-purple-400', 'bg-dark-800/80');
     }
 
     function handleRadarDragLeave(e) {
       e.preventDefault();
-      document.getElementById('radar-dropzone').classList.remove('border-brand-500', 'bg-brand-100/50');
+      document.getElementById('radar-dropzone').classList.remove('border-purple-400', 'bg-dark-800/80');
     }
 
     function handleRadarDrop(e) {
       e.preventDefault();
-      document.getElementById('radar-dropzone').classList.remove('border-brand-500', 'bg-brand-100/50');
+      document.getElementById('radar-dropzone').classList.remove('border-purple-400', 'bg-dark-800/80');
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         handleRadarFileSelect(e.dataTransfer.files);
       }
@@ -544,40 +644,40 @@
       // Target venues
       const venuesContainer = document.getElementById('target-venues');
       venuesContainer.innerHTML = (data.suggested_target_venues || ['NeurIPS', 'ICML', 'IEEE TPAMI', 'ACM']).map(v => `
-        <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold">${v}</span>
+        <span class="px-2 py-0.5 rounded bg-dark-850 text-purple-300 border border-white/[0.08] font-bold">${v}</span>
       `).join('');
 
       // Competitors
       const compContainer = document.getElementById('competitors-list');
       compContainer.innerHTML = (data.existing_competitors_and_baselines || []).map(c => `
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+        <div class="p-4 rounded-2xl bg-dark-850 border border-white/[0.08]">
           <div class="flex items-center justify-between mb-1.5">
-            <h4 class="font-bold text-sm text-slate-900">${c.name}</h4>
-            <span class="text-[10px] font-mono font-medium text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">${c.organization || 'Research Lab'}</span>
+            <h4 class="font-bold text-sm text-white">${c.name}</h4>
+            <span class="text-[10px] font-mono font-medium text-slate-400 bg-dark-900 px-2 py-0.5 rounded border border-white/[0.06]">${c.organization || 'Research Lab'}</span>
           </div>
-          <p class="text-xs text-slate-600 mb-2"><strong class="text-emerald-700">Strength:</strong> ${c.strengths}</p>
-          <p class="text-xs text-rose-700 bg-rose-50/70 p-2 rounded-lg border border-rose-100 font-medium"><strong>⚠️ Limitation:</strong> ${c.deficiency}</p>
+          <p class="text-xs text-slate-300 mb-2"><strong class="text-brand-400">Strength:</strong> ${c.strengths}</p>
+          <p class="text-xs text-rose-300 bg-rose-500/10 p-2 rounded-lg border border-rose-500/20 font-medium"><strong>⚠️ Limitation:</strong> ${c.deficiency}</p>
         </div>
       `).join('');
 
       // Unsolved Gaps
       const gapsContainer = document.getElementById('gaps-list');
       gapsContainer.innerHTML = (data.unsolved_research_gaps || []).map(g => `
-        <div class="p-4 rounded-2xl bg-white border border-brand-200/80 shadow-xs">
+        <div class="p-4 rounded-2xl bg-dark-900/90 border border-purple-500/30 shadow-xs">
           <div class="flex items-center justify-between mb-1">
-            <h4 class="font-bold text-sm text-brand-900">🎯 ${g.title}</h4>
-            <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200">${g.impact_level}</span>
+            <h4 class="font-bold text-sm text-purple-200">🎯 ${g.title}</h4>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">${g.impact_level}</span>
           </div>
-          <p class="text-xs text-slate-600 leading-relaxed">${g.description}</p>
+          <p class="text-xs text-slate-300 leading-relaxed">${g.description}</p>
         </div>
       `).join('');
 
       // Roadmap
       const roadmapContainer = document.getElementById('roadmap-list');
       roadmapContainer.innerHTML = (data.actionable_experiment_roadmap || []).map(r => `
-        <div class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-          <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-mono text-xs font-bold shrink-0">${r.phase}</span>
-          <p class="text-xs sm:text-sm text-slate-700 font-medium pt-0.5">${r.task}</p>
+        <div class="flex items-start gap-4 p-4 rounded-2xl bg-dark-850 border border-white/[0.08]">
+          <span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono text-xs font-bold shrink-0">${r.phase}</span>
+          <p class="text-xs sm:text-sm text-slate-200 font-medium pt-0.5">${r.task}</p>
         </div>
       `).join('');
 
@@ -594,8 +694,8 @@
       if (container) {
         container.innerHTML = `
           <div class="flex items-start gap-2.5">
-            <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">NV</span>
-            <div class="p-3.5 rounded-2xl bg-white text-slate-800 border border-slate-200 shadow-xs leading-relaxed max-w-xl">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">NV</span>
+            <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-200 border border-white/[0.06] shadow-xs leading-relaxed max-w-xl">
               Chat cleared. What aspect of the research gaps or architecture would you like to explore?
             </div>
           </div>
@@ -626,20 +726,19 @@
         btn.innerHTML = `<svg class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Thinking...</span>`;
       }
 
-      // Append Loading Indicator Bubble
       const container = document.getElementById('radar-chat-messages');
       const loadingDiv = document.createElement('div');
       loadingDiv.id = 'radar-chat-loading';
       loadingDiv.className = 'flex items-start gap-2.5';
       loadingDiv.innerHTML = `
-        <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">NV</span>
-        <div class="p-3.5 rounded-2xl bg-white text-slate-700 border border-slate-200 shadow-xs max-w-xl text-xs flex items-center gap-2.5">
+        <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">NV</span>
+        <div class="p-3.5 rounded-2xl bg-dark-850 text-slate-300 border border-white/[0.08] shadow-xs max-w-xl text-xs flex items-center gap-2.5">
           <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-brand-600 animate-bounce" style="animation-delay: 0ms"></span>
-            <span class="w-2 h-2 rounded-full bg-brand-600 animate-bounce" style="animation-delay: 150ms"></span>
-            <span class="w-2 h-2 rounded-full bg-brand-600 animate-bounce" style="animation-delay: 300ms"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style="animation-delay: 0ms"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style="animation-delay: 150ms"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style="animation-delay: 300ms"></span>
           </div>
-          <span class="text-[11px] font-mono text-slate-500 font-medium">Novelty Advisor formulating research gap analysis...</span>
+          <span class="text-[11px] font-mono text-slate-400 font-medium">Novelty Advisor formulating research gap analysis...</span>
         </div>
       `;
       if (container) {
@@ -681,8 +780,8 @@
       const div = document.createElement('div');
       div.className = `flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`;
       div.innerHTML = `
-        <span class="w-6 h-6 rounded-full ${isUser ? 'bg-slate-800 text-white' : 'bg-brand-100 text-brand-700'} flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">${isUser ? 'YOU' : 'NV'}</span>
-        <div class="p-3.5 rounded-2xl ${isUser ? 'bg-brand-600 text-white' : 'bg-white text-slate-800 border border-slate-200 shadow-xs'} max-w-xl leading-relaxed whitespace-pre-wrap">${content}</div>
+        <span class="w-6 h-6 rounded-full ${isUser ? 'bg-purple-600 text-white' : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'} flex items-center justify-center font-bold text-[10px] shrink-0 font-mono">${isUser ? 'YOU' : 'NV'}</span>
+        <div class="p-3.5 rounded-2xl ${isUser ? 'bg-purple-600 text-white' : 'bg-dark-850 text-slate-200 border border-white/[0.08] shadow-xs'} max-w-xl leading-relaxed whitespace-pre-wrap">${content}</div>
       `;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
@@ -728,7 +827,6 @@
       };
     }
 
-    // Pre-populate and render an interactive sample on initial page load
     window.addEventListener('DOMContentLoaded', () => {
       const sampleTopic = "Distributed LLM Speculative Decoding for Edge Devices";
       const sampleIdea = "Adaptive draft-verification pipeline optimizing memory throughput on Apple Silicon & mobile NPUs.";
