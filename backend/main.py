@@ -36,7 +36,10 @@ try:
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
         DATABASE_URL, normalize_database_url, SUPABASE_URL, SUPABASE_KEY, APP_NAME, APP_TAGLINE
     )
-    from backend.database import init_db, get_db, Paper, Note, ConferenceWatchlist
+    from backend.database import (
+        init_db, get_db, Paper, Note, ConferenceWatchlist,
+        PaperAudio, save_paper_audio, get_paper_audio, has_paper_audio, restore_paper_audio_file
+    )
     from backend.auth import get_current_user, require_current_user
     from backend.zotero_sync import ZoteroSyncService
     from backend.processor import (
@@ -61,7 +64,10 @@ except ImportError:
         ZOTERO_LIBRARY_TYPE, DEFAULT_TTS_VOICE, AVAILABLE_VOICES, IS_SERVERLESS, is_writable,
         DATABASE_URL, normalize_database_url, SUPABASE_URL, SUPABASE_KEY, APP_NAME, APP_TAGLINE
     )
-    from database import init_db, get_db, Paper, Note, ConferenceWatchlist
+    from database import (
+        init_db, get_db, Paper, Note, ConferenceWatchlist,
+        PaperAudio, save_paper_audio, get_paper_audio, has_paper_audio, restore_paper_audio_file
+    )
     from auth import get_current_user, require_current_user
     from zotero_sync import ZoteroSyncService
     from processor import (
@@ -107,6 +113,38 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def startup_sync_audio_cache():
+    """
+    On system launch, verifies papers with database-cached audio are marked Ready.
+    Does NOT generate any audio on launch - preserves database space, system memory,
+    and network bandwidth by relying on persisted database audio records.
+    """
+    try:
+        init_db()
+        try:
+            from backend.database import SessionLocal, Paper, PaperAudio
+        except ImportError:
+            from database import SessionLocal, Paper, PaperAudio
+
+        with SessionLocal() as db:
+            audio_records = db.query(PaperAudio.paper_id, PaperAudio.mode, PaperAudio.duration).all()
+            if audio_records:
+                for p_id, mode, dur in audio_records:
+                    p = db.query(Paper).filter(Paper.id == p_id).first()
+                    if p:
+                        if p.status != "Ready":
+                            p.status = "Ready"
+                        if mode == "full_paper" and not p.full_audio_duration:
+                            p.full_audio_duration = dur or 0.0
+                        elif mode == "summary" and not p.summary_audio_duration:
+                            p.summary_audio_duration = dur or 0.0
+                db.commit()
+                logger.info(f"Startup verified {len(audio_records)} pre-existing audio records from database.")
+    except Exception as e:
+        logger.warning(f"Audio cache startup sync notice: {e}")
 
 
 # Pydantic Request Schemas
@@ -355,7 +393,27 @@ async def execute_processing_pipeline(
         if mode == "full_paper":
             # --- 100% VERBATIM FULL PAPER READING PIPELINE ---
             logger.info(f"Processing Paper ID {paper.id} in 100% VERBATIM FULL PAPER mode (no words omitted or replaced)...")
-            
+            audio_filename = f"paper_{paper.id}_full_{paper.zotero_item_key or 'direct'}.mp3"
+
+            # Check if audio already exists in the database cache to prevent redundant synthesis
+            db_audio = get_paper_audio(db, paper_id=paper.id, mode="full_paper")
+            if db_audio and (not voice or db_audio[2] == selected_voice):
+                raw_bytes, dur, stored_voice = db_audio
+                audio_file = AUDIO_DIR / audio_filename
+                if not audio_file.exists():
+                    audio_file.write_bytes(raw_bytes)
+                paper.full_audio_path = f"/api/audio/{audio_filename}"
+                paper.full_audio_duration = dur
+                paper.audio_path = paper.full_audio_path
+                paper.audio_duration = dur
+                paper.audio_mode = "full_paper"
+                paper.voice_used = stored_voice
+                paper.status = "Ready"
+                paper.error_message = None
+                db.commit()
+                logger.info(f"Restored cached database audio for full paper '{paper.title}' (Synthesis skipped)")
+                return
+
             # Extract complete verbatim text with PyMuPDF
             if paper.pdf_path and os.path.exists(paper.pdf_path):
                 verbatim_text, total_p = PDFProcessor.extract_verbatim_text(paper.pdf_path, scope=scope or "article")
@@ -376,13 +434,23 @@ async def execute_processing_pipeline(
                     "mode": mode
                 }
 
-            audio_filename = f"paper_{paper.id}_full_{paper.zotero_item_key or 'direct'}.mp3"
             audio_path, duration = await AudioSynthesizer.synthesize_long_text_async(
                 text=cleaned_speech,
                 output_filename=audio_filename,
                 voice=selected_voice,
                 concurrency=5,
                 progress_callback=on_progress
+            )
+
+            # Persist compressed audio to database
+            save_paper_audio(
+                db=db,
+                paper_id=paper.id,
+                mode="full_paper",
+                voice=selected_voice,
+                duration=duration,
+                audio_data_or_path=AUDIO_DIR / audio_filename,
+                user_id=paper.user_id
             )
 
             paper.full_audio_path = f"/api/audio/{audio_filename}"
@@ -399,6 +467,27 @@ async def execute_processing_pipeline(
         else:
             # --- SUMMARY BRIEFING PIPELINE ---
             logger.info(f"Processing Paper ID {paper.id} in SUMMARY BRIEFING mode...")
+            audio_filename = f"paper_{paper.id}_{paper.zotero_item_key or 'direct'}.mp3"
+
+            # Check if summary audio already exists in the database cache to prevent redundant synthesis
+            db_audio = get_paper_audio(db, paper_id=paper.id, mode="summary")
+            if db_audio and paper.summary_problem and (not voice or db_audio[2] == selected_voice):
+                raw_bytes, dur, stored_voice = db_audio
+                audio_file = AUDIO_DIR / audio_filename
+                if not audio_file.exists():
+                    audio_file.write_bytes(raw_bytes)
+                paper.summary_audio_path = f"/api/audio/{audio_filename}"
+                paper.summary_audio_duration = dur
+                paper.audio_path = paper.summary_audio_path
+                paper.audio_duration = dur
+                paper.audio_mode = "summary"
+                paper.voice_used = stored_voice
+                paper.status = "Ready"
+                paper.error_message = None
+                db.commit()
+                logger.info(f"Restored cached database audio for summary '{paper.title}' (Synthesis skipped)")
+                return
+
             # Step 1: Text Extraction for summary
             extracted_text = ""
             if paper.pdf_path and os.path.exists(paper.pdf_path):
@@ -424,11 +513,21 @@ async def execute_processing_pipeline(
             # Parse 4 structured sections
             sections = parse_briefing_sections(briefing_script)
 
-            audio_filename = f"paper_{paper.id}_{paper.zotero_item_key or 'direct'}.mp3"
             audio_path, duration = await AudioSynthesizer.synthesize_audio_async(
                 text=briefing_script,
                 output_filename=audio_filename,
                 voice=selected_voice
+            )
+
+            # Persist compressed audio to database
+            save_paper_audio(
+                db=db,
+                paper_id=paper.id,
+                mode="summary",
+                voice=selected_voice,
+                duration=duration,
+                audio_data_or_path=AUDIO_DIR / audio_filename,
+                user_id=paper.user_id
             )
 
             paper.summary_text = briefing_script
@@ -1230,6 +1329,12 @@ def delete_paper(paper_id: int, db: Session = Depends(get_db)):
         except Exception as e:
             logger.warning(f"Could not remove PDF file {paper.pdf_path}: {e}")
 
+    # Delete associated cached audio records from database
+    try:
+        db.query(PaperAudio).filter(PaperAudio.paper_id == paper.id).delete()
+    except Exception as e:
+        logger.warning(f"Could not remove database audio record for paper {paper.id}: {e}")
+
     db.delete(paper)
     db.commit()
     return {"success": True, "message": f"Paper '{paper.title}' deleted."}
@@ -1237,7 +1342,7 @@ def delete_paper(paper_id: int, db: Session = Depends(get_db)):
 
 @app.get("/api/audio/{filename}")
 async def stream_audio(filename: str, db: Session = Depends(get_db)):
-    """Streams generated MP3 audio files with support for HTTP Range requests and on-demand synthesis."""
+    """Streams generated MP3 audio files with support for HTTP Range requests and on-demand DB cache restoration."""
     audio_path = AUDIO_DIR / filename
     if not audio_path.exists():
         import re
@@ -1245,43 +1350,68 @@ async def stream_audio(filename: str, db: Session = Depends(get_db)):
         if match:
             paper_id = int(match.group(1))
             is_full = bool(match.group(2))
-            paper = db.query(Paper).filter(Paper.id == paper_id).first()
-            if paper:
-                selected_voice = paper.voice_used or DEFAULT_TTS_VOICE
-                try:
-                    if is_full:
-                        text_to_speak = paper.full_text or paper.summary_text or paper.abstract
-                        if text_to_speak and text_to_speak.strip():
-                            cleaned = AudioSynthesizer.prepare_verbatim_for_speech(text_to_speak)
-                            _, dur = await AudioSynthesizer.synthesize_long_text_async(
-                                text=cleaned,
-                                output_filename=filename,
-                                voice=selected_voice
-                            )
-                            paper.full_audio_duration = dur
-                            db.commit()
-                    else:
-                        text_to_speak = paper.summary_text
-                        if not text_to_speak or not text_to_speak.strip():
-                            if paper.summary_problem:
-                                text_to_speak = (
-                                    f"## 1. The Core Problem\n{paper.summary_problem}\n\n"
-                                    f"## 2. Methodology\n{paper.summary_methodology or ''}\n\n"
-                                    f"## 3. Key Results\n{paper.summary_results or ''}\n\n"
-                                    f"## 4. Limitations\n{paper.summary_limitations or ''}"
+            mode = "full_paper" if is_full else "summary"
+
+            # Step 1: Check database cache first (instant restoration, zero synthesis!)
+            if restore_paper_audio_file(db, paper_id=paper_id, mode=mode, target_path=audio_path):
+                logger.info(f"Restored audio '{filename}' from database cache without synthesis.")
+            else:
+                # Step 2: Fallback to on-demand synthesis only if never synthesized before
+                paper = db.query(Paper).filter(Paper.id == paper_id).first()
+                if paper:
+                    selected_voice = paper.voice_used or DEFAULT_TTS_VOICE
+                    try:
+                        if is_full:
+                            text_to_speak = paper.full_text or paper.summary_text or paper.abstract
+                            if text_to_speak and text_to_speak.strip():
+                                cleaned = AudioSynthesizer.prepare_verbatim_for_speech(text_to_speak)
+                                _, dur = await AudioSynthesizer.synthesize_long_text_async(
+                                    text=cleaned,
+                                    output_filename=filename,
+                                    voice=selected_voice
                                 )
-                            else:
-                                text_to_speak = paper.abstract or paper.title
-                        if text_to_speak and text_to_speak.strip():
-                            _, dur = await AudioSynthesizer.synthesize_audio_async(
-                                text=text_to_speak,
-                                output_filename=filename,
-                                voice=selected_voice
-                            )
-                            paper.summary_audio_duration = dur
-                            db.commit()
-                except Exception as e:
-                    logger.warning(f"On-demand audio recovery failed: {e}")
+                                paper.full_audio_duration = dur
+                                db.commit()
+                                save_paper_audio(
+                                    db=db,
+                                    paper_id=paper_id,
+                                    mode="full_paper",
+                                    voice=selected_voice,
+                                    duration=dur,
+                                    audio_data_or_path=audio_path,
+                                    user_id=paper.user_id
+                                )
+                        else:
+                            text_to_speak = paper.summary_text
+                            if not text_to_speak or not text_to_speak.strip():
+                                if paper.summary_problem:
+                                    text_to_speak = (
+                                        f"## 1. The Core Problem\n{paper.summary_problem}\n\n"
+                                        f"## 2. Methodology\n{paper.summary_methodology or ''}\n\n"
+                                        f"## 3. Key Results\n{paper.summary_results or ''}\n\n"
+                                        f"## 4. Limitations\n{paper.summary_limitations or ''}"
+                                    )
+                                else:
+                                    text_to_speak = paper.abstract or paper.title
+                            if text_to_speak and text_to_speak.strip():
+                                _, dur = await AudioSynthesizer.synthesize_audio_async(
+                                    text=text_to_speak,
+                                    output_filename=filename,
+                                    voice=selected_voice
+                                )
+                                paper.summary_audio_duration = dur
+                                db.commit()
+                                save_paper_audio(
+                                    db=db,
+                                    paper_id=paper_id,
+                                    mode="summary",
+                                    voice=selected_voice,
+                                    duration=dur,
+                                    audio_data_or_path=audio_path,
+                                    user_id=paper.user_id
+                                )
+                    except Exception as e:
+                        logger.warning(f"On-demand audio recovery failed: {e}")
 
     if not audio_path.exists():
         raise HTTPException(status_code=404, detail=f"Audio file '{filename}' not found.")
@@ -1296,7 +1426,7 @@ async def stream_audio(filename: str, db: Session = Depends(get_db)):
 
 @app.post("/api/papers/{paper_id}/change-voice")
 async def change_paper_voice(paper_id: int, payload: VoiceChangeRequest, db: Session = Depends(get_db)):
-    """Re-synthesizes paper audio with a newly selected accent/voice."""
+    """Re-synthesizes paper audio with a newly selected accent/voice and caches in database."""
     paper = db.query(Paper).filter(Paper.id == paper_id).first()
     if not paper:
         raise HTTPException(status_code=404, detail="Paper not found")
@@ -1320,6 +1450,15 @@ async def change_paper_voice(paper_id: int, payload: VoiceChangeRequest, db: Ses
             output_filename=audio_filename,
             voice=selected_voice
         )
+        save_paper_audio(
+            db=db,
+            paper_id=paper.id,
+            mode="full_paper",
+            voice=selected_voice,
+            duration=duration,
+            audio_data_or_path=AUDIO_DIR / audio_filename,
+            user_id=paper.user_id
+        )
         paper.full_audio_path = f"/api/audio/{audio_filename}"
         paper.full_audio_duration = duration
         paper.audio_path = paper.full_audio_path
@@ -1340,6 +1479,15 @@ async def change_paper_voice(paper_id: int, payload: VoiceChangeRequest, db: Ses
             text=briefing_script,
             output_filename=audio_filename,
             voice=selected_voice
+        )
+        save_paper_audio(
+            db=db,
+            paper_id=paper.id,
+            mode="summary",
+            voice=selected_voice,
+            duration=duration,
+            audio_data_or_path=AUDIO_DIR / audio_filename,
+            user_id=paper.user_id
         )
         paper.summary_audio_path = f"/api/audio/{audio_filename}"
         paper.summary_audio_duration = duration

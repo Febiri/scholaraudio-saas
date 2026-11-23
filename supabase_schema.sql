@@ -75,8 +75,25 @@ CREATE TABLE IF NOT EXISTS public.conference_watchlists (
     created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- 5. Paper Audio Cache Table (Space-Optimized Compressed Storage)
+CREATE TABLE IF NOT EXISTS public.paper_audio (
+    id BIGSERIAL PRIMARY KEY,
+    paper_id BIGINT REFERENCES public.papers(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    mode VARCHAR(32) NOT NULL DEFAULT 'summary',
+    voice VARCHAR(64),
+    duration FLOAT DEFAULT 0.0,
+    audio_format VARCHAR(16) DEFAULT 'mp3_zlib',
+    audio_bytes BYTEA NOT NULL,
+    file_size_bytes INT DEFAULT 0,
+    compressed_size_bytes INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    CONSTRAINT uq_paper_audio_mode UNIQUE (paper_id, mode)
+);
+
 -- ==============================================================================
--- 5. Row-Level Security (RLS) Policies
+-- 6. Row-Level Security (RLS) Policies
 -- Ensures complete air-gap and multi-tenant data isolation between users
 -- ==============================================================================
 
@@ -85,6 +102,7 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.papers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.conference_watchlists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.paper_audio ENABLE ROW LEVEL SECURITY;
 
 -- Profiles Policies
 CREATE POLICY "Users can view own profile"
@@ -146,8 +164,14 @@ CREATE POLICY "Users can delete from own watchlist"
     ON public.conference_watchlists FOR DELETE
     USING (auth.uid() = user_id);
 
+-- Paper Audio Policies (Cached compressed speech audio)
+CREATE POLICY "Users can manage paper audio"
+    ON public.paper_audio FOR ALL
+    USING (auth.uid() = user_id OR user_id IS NULL)
+    WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
 -- ==============================================================================
--- 6. Trigger: Auto-create Profile on Supabase User Sign Up
+-- 7. Trigger: Auto-create Profile on Supabase User Sign Up
 -- ==============================================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
