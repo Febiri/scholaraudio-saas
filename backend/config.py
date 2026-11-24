@@ -111,8 +111,17 @@ APP_TAGLINE = "The Global Neural Audio Research Workstation & AI Academic Mentor
 BACKEND_URL = os.getenv("BACKEND_URL", "").strip().rstrip("/")
 
 # Supabase Configuration (Multi-Tenant Auth & Storage)
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://lbwdlisjvrlbfqonioed.supabase.co").strip()
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxid2RsaXNqdnJsYmZxb25pb2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0NDg0NDksImV4cCI6MjExMTAyNDQ0OX0.HpHr1J7UHEI49Oekk_Wzlo050MI5KukHaU1b-NQvN6g").strip()
+_raw_sup_url = os.getenv("SUPABASE_URL", "").strip()
+if not _raw_sup_url or "your-project" in _raw_sup_url:
+    SUPABASE_URL = "https://lbwdlisjvrlbfqonioed.supabase.co"
+else:
+    SUPABASE_URL = _raw_sup_url
+
+_raw_sup_key = os.getenv("SUPABASE_KEY", "").strip()
+if not _raw_sup_key or "your_supabase_anon_key" in _raw_sup_key or "your-anon-key" in _raw_sup_key:
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxid2RsaXNqdnJsYmZxb25pb2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0NDg0NDksImV4cCI6MjExMTAyNDQ0OX0.HpHr1J7UHEI49Oekk_Wzlo050MI5KukHaU1b-NQvN6g"
+else:
+    SUPABASE_KEY = _raw_sup_key
 
 # Gemini API Configuration
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
