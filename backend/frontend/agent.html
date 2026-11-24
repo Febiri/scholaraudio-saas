@@ -1120,7 +1120,21 @@
       if (activePanel) activePanel.classList.remove('hidden');
 
       if (tab === 'suggestions') {
-        loadStrategicSuggestions();
+        const grid = document.getElementById('suggestions-grid');
+        if (grid && !grid.innerHTML.trim()) {
+          grid.innerHTML = `
+            <div class="col-span-full p-8 rounded-3xl border border-dashed text-center" style="background:var(--pf-bg-surface-elevated);border-color:var(--pf-border-default);">
+              <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-bg-surface);border:1px solid var(--pf-border-default);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;">🧭</div>
+              <h4 class="font-bold text-base" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Strategic Advisory Engine Ready</h4>
+              <p class="text-xs max-w-md mx-auto mt-1 mb-4 leading-relaxed" style="color:var(--pf-text-secondary);">Click below to have ProfFeb calculate high-leverage strategic research moves, upcoming funding windows, and publication milestones.</p>
+              <button onclick="loadStrategicSuggestions()" class="px-5 py-2.5 rounded-xl text-white font-bold text-xs shadow-sm transition inline-flex items-center gap-1.5" style="background:var(--pf-engine-copilot);">
+                <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+                <span>Generate Real-Time Strategy</span>
+              </button>
+            </div>
+          `;
+          if (window.lucide) lucide.createIcons();
+        }
       } else if (tab === 'brain') {
         loadBrainProfile();
         loadLiveGitHubRepos();

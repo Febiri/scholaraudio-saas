@@ -333,15 +333,17 @@
     const grid = document.getElementById('labs-grid');
     if (!list.length) {
       grid.innerHTML = `
-        <div class="col-span-full pf-empty-state py-12 text-center rounded-2xl border border-dashed p-8" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
-          <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-            <i data-lucide="search-x" style="width:24px;height:24px;"></i>
+                <div class="col-span-full pf-empty-state py-16 text-center rounded-3xl border border-dashed p-8 shadow-xs" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
+          <div style="width:52px;height:52px;border-radius:16px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:1px solid var(--pf-engine-lab-border);">
+            <i data-lucide="building-2" style="width:26px;height:26px;"></i>
           </div>
-          <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No labs or summits matched your criteria</h4>
-          <p class="text-xs max-w-sm mx-auto mt-1 mb-4" style="color:var(--pf-text-muted);">Try clearing specific keywords or selecting 'All Locations'.</p>
-          <button onclick="document.getElementById('lab-work').value=''; document.getElementById('lab-location').value='All'; setType('All');" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-lab);border-color:var(--pf-engine-lab);">
-            <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
-            <span>Reset Filters</span>
+          <h4 class="font-bold text-base" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Lab Connector Ready</h4>
+          <p class="text-xs max-w-md mx-auto mt-1.5 mb-5 leading-relaxed" style="color:var(--pf-text-secondary);">
+            Enter your doctoral specialization above or click <strong>"Discover Active Labs & Summits"</strong> to query current industry research residencies, PhD internships, and developer summits in real-time.
+          </p>
+          <button onclick="loadLabs()" class="pf-btn pf-btn-primary px-5 py-2.5 text-xs font-bold shadow-sm" style="background:var(--pf-engine-lab);border-color:var(--pf-engine-lab);">
+            <i data-lucide="search" style="width:14px;height:14px;"></i>
+            <span>Discover Active Labs & Summits</span>
           </button>
         </div>
       `;
@@ -473,7 +475,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadLabs();
+    allLabs = [];
+    renderLabs([]);
+    if (window.lucide) lucide.createIcons();
   });
 </script>
 

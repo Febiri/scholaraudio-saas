@@ -607,15 +607,17 @@
 
     if (!filtered.length) {
       container.innerHTML = `
-        <div class="col-span-full pf-empty-state py-12 text-center rounded-2xl border border-dashed p-8" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
-          <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-            <i data-lucide="search-x" style="width:24px;height:24px;"></i>
+                <div class="col-span-full pf-empty-state py-16 text-center rounded-3xl border border-dashed p-8 shadow-xs" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
+          <div style="width:52px;height:52px;border-radius:16px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:1px solid var(--pf-engine-scout-border);">
+            <i data-lucide="compass" style="width:26px;height:26px;"></i>
           </div>
-          <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No conferences matched your criteria</h4>
-          <p class="text-xs max-w-sm mx-auto mt-1 mb-4" style="color:var(--pf-text-muted);">Try adjusting your search terms, clearing the region filter, or resetting all filters.</p>
-          <button onclick="resetAllFilters()" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-scout);border-color:var(--pf-engine-scout);">
-            <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
-            <span>Reset All Filters</span>
+          <h4 class="font-bold text-base" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Conference Scout Ready</h4>
+          <p class="text-xs max-w-md mx-auto mt-1.5 mb-5 leading-relaxed" style="color:var(--pf-text-secondary);">
+            Search for conferences by acronym (e.g. NeurIPS, ICML, CVPR, ACL), enter your research topic above, or click <strong>"Scout All Deadlines"</strong> to query live CORE A* CFP deadlines in real-time.
+          </p>
+          <button onclick="loadFeatured()" class="pf-btn pf-btn-primary px-5 py-2.5 text-xs font-bold shadow-sm" style="background:var(--pf-engine-scout);border-color:var(--pf-engine-scout);">
+            <i data-lucide="scan" style="width:14px;height:14px;"></i>
+            <span>Scout All Deadlines Now</span>
           </button>
         </div>
       `;
@@ -745,7 +747,12 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    loadFeatured();
+    conferencesList = [];
+    renderConferences([]);
+    const badge = document.getElementById("results-badge");
+    if (badge) badge.innerText = "Ready to Scout";
+    updateWatchlistBadge();
+    if (window.lucide) lucide.createIcons();
   });
 </script>
 

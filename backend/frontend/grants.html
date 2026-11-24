@@ -334,15 +334,17 @@
     const grid = document.getElementById('grants-grid');
     if (!list.length) {
       grid.innerHTML = `
-        <div class="col-span-full pf-empty-state py-12 text-center rounded-2xl border border-dashed p-8" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
-          <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-            <i data-lucide="search-x" style="width:24px;height:24px;"></i>
+                <div class="col-span-full pf-empty-state py-16 text-center rounded-3xl border border-dashed p-8 shadow-xs" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
+          <div style="width:52px;height:52px;border-radius:16px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:1px solid var(--pf-engine-grants-border);">
+            <i data-lucide="coins" style="width:26px;height:26px;"></i>
           </div>
-          <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No funding opportunities matched your criteria</h4>
-          <p class="text-xs max-w-sm mx-auto mt-1 mb-4" style="color:var(--pf-text-muted);">Try clearing specific research keywords or choosing 'All Destinations'.</p>
-          <button onclick="document.getElementById('grant-work').value=''; document.getElementById('grant-dest').value='All'; setCategory('All');" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-grants);border-color:var(--pf-engine-grants);">
-            <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
-            <span>Reset Filters</span>
+          <h4 class="font-bold text-base" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Funding Radar Ready</h4>
+          <p class="text-xs max-w-md mx-auto mt-1.5 mb-5 leading-relaxed" style="color:var(--pf-text-secondary);">
+            Enter your research focus or destination above and click <strong>"Scout Live Funding Feed"</strong> to discover active travel grants, PhD fellowships, and student conference sponsorship programs in real-time.
+          </p>
+          <button onclick="loadGrants()" class="pf-btn pf-btn-primary px-5 py-2.5 text-xs font-bold shadow-sm" style="background:var(--pf-engine-grants);border-color:var(--pf-engine-grants);">
+            <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+            <span>Scout Live Funding Feed</span>
           </button>
         </div>
       `;
@@ -482,7 +484,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadGrants();
+    allGrants = [];
+    renderGrants([]);
+    if (window.lucide) lucide.createIcons();
   });
 </script>
 
