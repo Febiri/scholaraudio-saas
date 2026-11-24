@@ -348,102 +348,59 @@
 
         </div>
 
-        <!-- Right: Sample Scorecard Preview & Attack Profile (5 cols) -->
+        <!-- Right: "Reviewer #2 Attack Profile & Rubric" (5 cols) -->
         <div class="lg:col-span-5 reviewer-card p-6 flex flex-col justify-between" style="background:var(--pf-bg-surface-elevated);">
           <div>
             <div class="flex items-center justify-between mb-3 border-b pb-2.5" style="border-color:var(--pf-border-subtle);">
               <div class="flex items-center gap-2">
-                <span class="pf-badge" style="background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);font-size: 13px;">SAMPLE SCORECARD</span>
-                <h3 class="font-bold text-sm" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Reviewer #2 Scorecard Preview</h3>
+                <span class="pf-badge" style="background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);font-size:13px;">PROGRAM COMMITTEE RUBRIC</span>
+                <h3 class="font-bold text-sm" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Reviewer #2 Attack Profile</h3>
               </div>
-              <span class="pf-badge pf-badge-rose font-mono font-bold text-[13px]">4.8 / 10 Reject</span>
+              <span class="pf-badge pf-badge-rose font-mono font-bold text-xs">Zero Leniency</span>
             </div>
 
-            <!-- Severity Tags Breakdown -->
-            <div class="space-y-2 mb-3.5">
-              <div class="p-2.5 rounded-xl border flex items-start gap-2" style="background:var(--pf-bg-surface);border-color:rgba(225,29,72,0.3);">
-                <span class="pf-badge pf-badge-rose text-[13px] font-bold shrink-0">CRITICAL</span>
-                <div class="text-xs">
-                  <div class="font-bold" style="color:var(--pf-text-primary);">Missing Recent Baseline (2025/2026)</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-secondary);">Fails to compare against FlashAttention-3 on sequence lengths > 64k.</div>
-                </div>
-              </div>
+            <p class="text-xs leading-relaxed mb-4" style="color:var(--pf-text-secondary);">
+              Upload your draft manuscript PDF or abstract on the left. Reviewer #2 rigorously tests for common rejection vectors before formal submission:
+            </p>
 
-              <div class="p-2.5 rounded-xl border flex items-start gap-2" style="background:var(--pf-bg-surface);border-color:rgba(245,158,11,0.3);">
-                <span class="pf-badge pf-badge-amber text-[13px] font-bold shrink-0">MAJOR</span>
-                <div class="text-xs">
-                  <div class="font-bold" style="color:var(--pf-text-primary);">Ablation Granularity Gap</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-secondary);">Table 3 conflates quantization with pruning effects without isolating variables.</div>
-                </div>
-              </div>
-
-              <div class="p-2.5 rounded-xl border flex items-start gap-2" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <span class="pf-badge text-[13px] font-bold shrink-0" style="background:var(--pf-primary-subtle);color:var(--pf-primary);">MINOR</span>
-                <div class="text-xs">
-                  <div class="font-bold" style="color:var(--pf-text-primary);">Formula Indexing Typo</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-secondary);">Equation 4 sums over dimension $j$ instead of $k$.</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Rebuttal Defense Snippet -->
-            <div class="p-3 rounded-xl border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-              <div class="text-[13px] font-bold uppercase tracking-wider mb-1 flex items-center justify-between" style="color:var(--pf-engine-reviewer);">
-                <span>Auto Rebuttal Defense Draft</span>
-                <span class="text-[13px] font-mono" style="color:var(--pf-text-muted);">Camera-Ready Safe</span>
-              </div>
-              <p class="text-[13px] leading-relaxed italic" style="color:var(--pf-text-secondary);">
-                "We thank Reviewer #2 for the rigorous critique. We have added FlashAttention-3 benchmarks in Appendix B.4 demonstrating a 1.28x throughput advantage across 64k contexts with zero perplexity degradation."
-              </p>
-            </div>
-          </div>
-
-            <div class="space-y-3 text-xs">
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">
-                  <i data-lucide="git-pull-request" style="width:12px;height:12px;"></i>
-                </div>
+            <div class="space-y-2.5 text-xs">
+              <div class="p-2.5 rounded-xl border flex items-start gap-2.5" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="pf-badge pf-badge-rose text-xs font-bold shrink-0">CRITICAL</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Missing Recent Baselines</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Detects if you compare only against weak or outdated benchmarks.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Missing Recent Baselines</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Detects if you compare only against outdated benchmarks instead of latest SOTA.</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">
-                  <i data-lucide="layers" style="width:12px;height:12px;"></i>
-                </div>
+              <div class="p-2.5 rounded-xl border flex items-start gap-2.5" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="pf-badge pf-badge-amber text-xs font-bold shrink-0">MAJOR</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Inadequate Ablation Studies</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Catches claims that lack modular component-level ablation tables.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Inadequate Ablation Studies</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Flags claims that lack modular ablation tables isolating individual components.</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">
-                  <i data-lucide="bar-chart-2" style="width:12px;height:12px;"></i>
-                </div>
+              <div class="p-2.5 rounded-xl border flex items-start gap-2.5" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="pf-badge text-xs font-bold shrink-0" style="background:var(--pf-primary-subtle);color:var(--pf-primary);">METHOD</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Statistical Significance Gaps</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Flags results without multiple random seeds or error bars.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Statistical Significance Gaps</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Catches evaluation tables missing multiple random seeds, confidence bounds, or error bars.</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">
-                  <i data-lucide="shield-check" style="width:12px;height:12px;"></i>
-                </div>
+              <div class="p-2.5 rounded-xl border flex items-start gap-2.5" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="pf-badge text-xs font-bold shrink-0" style="background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">REBUTTAL</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Preemptive Rebuttal Ready</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Generates camera-ready prose fixes before formal review cycles.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Camera-Ready Rebuttal Generation</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Produces authoritative, polite rebuttal prose defending your contributions.</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="mt-4 pt-3 border-t flex items-center justify-between text-[13px] font-mono" style="border-color:var(--pf-border-subtle);color:var(--pf-text-muted);">
-            <span>Review Standard: CORE A*</span>
-            <span style="color:var(--pf-engine-reviewer);font-weight:700;">Zero Leniency</span>
+          <div class="mt-4 pt-3 border-t flex items-center justify-between text-xs font-mono" style="border-color:var(--pf-border-subtle);color:var(--pf-text-muted);">
+            <span>Audit Standard: CORE A*</span>
+            <span style="color:var(--pf-engine-reviewer);font-weight:700;">Awaiting Upload</span>
           </div>
         </div>
 

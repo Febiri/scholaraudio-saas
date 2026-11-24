@@ -784,30 +784,14 @@
             <button onclick="loadLiveGitHubRepos()" class="text-xs font-bold hover:underline" style="color:var(--pf-engine-copilot);">Refresh Repos</button>
           </div>
           <div id="github-repos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-4 rounded-2xl border" style="background:var(--pf-bg-surface-elevated);border-color:var(--pf-border-subtle);">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="font-bold text-sm" style="color:var(--pf-text-primary);">neuro-symbolic-rag</span>
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded font-bold" style="background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);border:1px solid var(--pf-engine-copilot-border);">Featured AI</span>
-              </div>
-              <p class="text-xs leading-relaxed mb-3" style="color:var(--pf-text-secondary);">Enterprise AI framework combining stochastic LLM reasoning with deterministic symbolic logic verification and PubMed literature grounding.</p>
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded border" style="background:var(--pf-bg-surface);color:var(--pf-text-muted);border-color:var(--pf-border-subtle);">Python</span>
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded border" style="background:var(--pf-bg-surface);color:var(--pf-text-muted);border-color:var(--pf-border-subtle);">FastAPI</span>
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded border" style="background:var(--pf-bg-surface);color:var(--pf-text-muted);border-color:var(--pf-border-subtle);">Knowledge Graphs</span>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-2xl border" style="background:var(--pf-bg-surface-elevated);border-color:var(--pf-border-subtle);">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="font-bold text-sm" style="color:var(--pf-text-primary);">ClawBio-Pipeline</span>
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded font-bold" style="background:var(--pf-primary-subtle);color:var(--pf-primary);border:1px solid var(--pf-primary-border);">Multi-Omics</span>
-              </div>
-              <p class="text-xs leading-relaxed mb-3" style="color:var(--pf-text-secondary);">Production multi-omics workflow orchestrator with ClinVar ACMG variant annotation and automated pipeline execution.</p>
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded border" style="background:var(--pf-bg-surface);color:var(--pf-text-muted);border-color:var(--pf-border-subtle);">Biopython</span>
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded border" style="background:var(--pf-bg-surface);color:var(--pf-text-muted);border-color:var(--pf-border-subtle);">ClinVar</span>
-                <span class="text-[13px] font-mono px-2 py-0.5 rounded border" style="background:var(--pf-bg-surface);color:var(--pf-text-muted);border-color:var(--pf-border-subtle);">Genomics</span>
-              </div>
+            <div class="col-span-full p-6 rounded-2xl border border-dashed text-center" style="background:var(--pf-bg-surface-elevated);border-color:var(--pf-border-default);">
+              <div style="width:40px;height:40px;border-radius:12px;background:var(--pf-bg-surface);border:1px solid var(--pf-border-default);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;">🐙</div>
+              <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No Connected GitHub Repositories</h4>
+              <p class="text-xs max-w-sm mx-auto mt-1 mb-3" style="color:var(--pf-text-secondary);">Connect your GitHub Personal Access Token to allow your Academic Co-Pilot to read and log directly to your research repositories.</p>
+              <button onclick="openGitHubModal()" class="px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition inline-flex items-center gap-1.5" style="background:var(--pf-engine-copilot);">
+                <i data-lucide="key" style="width:13px;height:13px;"></i>
+                <span>Connect GitHub PAT</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1267,10 +1251,23 @@
               </div>
             </div>
           `).join('');
+        } else {
+          grid.innerHTML = `
+            <div class="col-span-full p-6 rounded-2xl border border-dashed text-center" style="background:var(--pf-bg-surface-elevated);border-color:var(--pf-border-default);">
+              <div style="width:40px;height:40px;border-radius:12px;background:var(--pf-bg-surface);border:1px solid var(--pf-border-default);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;">🐙</div>
+              <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No Connected GitHub Repositories</h4>
+              <p class="text-xs max-w-sm mx-auto mt-1 mb-3" style="color:var(--pf-text-secondary);">Connect your GitHub Personal Access Token to allow your Academic Co-Pilot to read and log directly to your research repositories.</p>
+              <button onclick="openGitHubModal()" class="px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition inline-flex items-center gap-1.5" style="background:var(--pf-engine-copilot);">
+                <i data-lucide="key" style="width:13px;height:13px;"></i>
+                <span>Connect GitHub PAT</span>
+              </button>
+            </div>
+          `;
         }
       } catch (err) {
         console.warn('Failed to load GitHub repos:', err);
       }
+      if (window.lucide) lucide.createIcons();
     }
 
     // ================= AUTONOMOUS "CHECK & PROCEED" PIPELINE =================
@@ -1299,15 +1296,19 @@
         latestPacket = packet;
         latestDossier = packet.dossier || packet;
 
+        const authUser = window.ProfFebAuth ? ProfFebAuth.getUser() : null;
         const info = packet.applicant_info || packet.applicant || {};
-        document.getElementById('cp-name').value = info.name || 'Scholar Researcher';
-        document.getElementById('cp-email').value = info.email || 'scholar@university.edu';
+        const fallbackName = authUser ? (authUser.user_metadata?.full_name || authUser.email.split('@')[0]) : 'Academic Scholar';
+        const fallbackEmail = authUser ? authUser.email : '';
+        
+        document.getElementById('cp-name').value = (info.name && info.name !== 'Academic Researcher' && info.name !== 'Scholar Researcher') ? info.name : fallbackName;
+        document.getElementById('cp-email').value = (info.email && info.email !== 'researcher@proffeb.ai' && info.email !== 'scholar@university.edu') ? info.email : fallbackEmail;
         document.getElementById('cp-phone').value = info.phone || '';
-        document.getElementById('cp-org').value = info.affiliation || info.title || 'Department of Computer Science & AI';
-        document.getElementById('cp-location').value = info.location || 'Global Academic Community';
+        document.getElementById('cp-org').value = info.affiliation || info.title || '';
+        document.getElementById('cp-location').value = info.location || '';
         document.getElementById('cp-portfolio').value = info.portfolio || '';
         document.getElementById('cp-github').value = info.github || '';
-        document.getElementById('cp-repos').value = (info.featured_repos || []).join(', ') || 'multimodal-ai, scientific-computing';
+        document.getElementById('cp-repos').value = (info.featured_repos || []).join(', ');
 
         document.getElementById('cp-target-title').value = packet.opportunity_title || oppTitle;
         document.getElementById('cp-target-award').value = packet.requested_award || '$50,000 / Travel Grant';
@@ -1585,10 +1586,21 @@
 
     async function loadBrainProfile() {
       try {
+        const authUser = window.ProfFebAuth ? ProfFebAuth.getUser() : null;
         const res = await fetch('/api/twin/profile');
         const p = await res.json();
-        document.getElementById('brain-name').textContent = p.name || 'Dr. Scholar';
-        document.getElementById('brain-title').textContent = p.title || 'PhD Researcher & Scientific Author';
+
+        if (authUser) {
+          const userMeta = authUser.user_metadata || {};
+          const displayName = userMeta.full_name || (authUser.email ? authUser.email.split('@')[0] : 'Scholar');
+          document.getElementById('brain-name').textContent = displayName;
+          document.getElementById('brain-title').textContent = userMeta.title || 'PhD Researcher & Scientific Author';
+          document.getElementById('brain-email').textContent = '📧 ' + authUser.email;
+        } else {
+          document.getElementById('brain-name').textContent = 'Scholar Researcher';
+          document.getElementById('brain-title').textContent = 'Sign in for multi-tenant brain personalization';
+          document.getElementById('brain-email').textContent = '📧 Not signed in';
+        }
         document.getElementById('brain-notes-input').value = p.custom_notes || '';
       } catch (err) {
         console.warn('Could not load profile:', err);
@@ -1715,7 +1727,9 @@
       const container = document.getElementById('chat-messages');
       if (!container) return;
 
-      const saved = localStorage.getItem('zam_twin_chat_history');
+      const currentUserId = window.ProfFebAuth && ProfFebAuth.getUser() ? ProfFebAuth.getUser().id : 'guest';
+      const chatStorageKey = 'proffeb_chat_history_' + currentUserId;
+      const saved = localStorage.getItem(chatStorageKey);
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -1784,7 +1798,8 @@
     function appendMessage(role, content) {
       chatHistory.push({ role, content });
       try {
-        localStorage.setItem('zam_twin_chat_history', JSON.stringify(chatHistory));
+        const currentUserId = window.ProfFebAuth && ProfFebAuth.getUser() ? ProfFebAuth.getUser().id : 'guest';
+      localStorage.setItem('proffeb_chat_history_' + currentUserId, JSON.stringify(chatHistory));
       } catch (e) {}
       const container = document.getElementById('chat-messages');
       if (!container) return;
@@ -1793,7 +1808,8 @@
 
     function clearChat() {
       if (confirm('Clear Academic Co-Pilot chat history?')) {
-        localStorage.removeItem('zam_twin_chat_history');
+        const currentUserId = window.ProfFebAuth && ProfFebAuth.getUser() ? ProfFebAuth.getUser().id : 'guest';
+      localStorage.removeItem('proffeb_chat_history_' + currentUserId);
         chatHistory = [];
         loadTwinChatHistory();
       }

@@ -340,97 +340,57 @@
 
         </div>
 
-        <!-- Right: "How Novelty Radar Works" & Sample Report Preview (5 cols) -->
+        <!-- Right: "Novelty Radar Methodology" (5 cols) -->
         <div class="lg:col-span-5 radar-card p-6 flex flex-col justify-between" style="background:var(--pf-bg-surface-elevated);">
           <div>
             <div class="flex items-center justify-between mb-3 border-b pb-2.5" style="border-color:var(--pf-border-subtle);">
               <div class="flex items-center gap-2">
-                <span class="pf-badge" style="background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);font-size: 13px;">LIVE SAMPLE AUDIT</span>
-                <h3 class="font-bold text-sm" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Sample Novelty Benchmark</h3>
+                <span class="pf-badge" style="background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);font-size:13px;">REAL-TIME ENGINE</span>
+                <h3 class="font-bold text-sm" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Novelty Radar Methodology</h3>
               </div>
-              <span class="pf-badge pf-badge-emerald font-mono font-bold text-[13px]">88% Novel</span>
+              <span class="pf-badge font-mono font-bold text-xs" style="background:var(--pf-bg-surface);color:var(--pf-engine-radar);border:1px solid var(--pf-engine-radar-border);">Awaiting Input</span>
             </div>
 
-            <!-- Sample SOTA Gap Matrix & Roadmap Preview -->
-            <div class="p-3.5 rounded-xl border mb-3 space-y-2.5" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-              <div class="text-[13px] font-bold uppercase tracking-wider flex items-center justify-between" style="color:var(--pf-text-muted);">
-                <span>Speculative Decoding Benchmark</span>
-                <span style="color:var(--pf-engine-radar);">ICML / NeurIPS</span>
-              </div>
-              <div class="space-y-1.5 text-xs font-mono">
-                <div class="flex items-center justify-between p-1.5 rounded" style="background:var(--pf-bg-surface-elevated);">
-                  <span style="color:var(--pf-text-primary);font-weight:700;">Proposed Adaptive Decoder:</span>
-                  <span style="color:#059669;font-weight:800;">3.8x Speedup (Ours)</span>
-                </div>
-                <div class="flex items-center justify-between p-1.5 rounded" style="background:var(--pf-bg-surface-elevated);">
-                  <span style="color:var(--pf-text-secondary);">Medusa SOTA Baseline:</span>
-                  <span style="color:var(--pf-text-muted);">2.1x Speedup</span>
-                </div>
-                <div class="flex items-center justify-between p-1.5 rounded" style="background:var(--pf-bg-surface-elevated);">
-                  <span style="color:var(--pf-text-secondary);">FlashAttention-2 Baseline:</span>
-                  <span style="color:var(--pf-text-muted);">1.8x Speedup</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="text-xs font-semibold uppercase tracking-wider mb-2" style="color:var(--pf-text-muted);">3-Phase Experimental Roadmap</div>
-            <div class="space-y-2 text-xs">
-              <div class="flex items-start gap-2.5 p-2 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <span class="w-4 h-4 rounded-full text-white text-[13px] font-bold flex items-center justify-center shrink-0" style="background:var(--pf-engine-radar);">1</span>
-                <div>
-                  <div class="font-bold" style="color:var(--pf-text-primary);">Kernel Memory Profiling</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-secondary);">Benchmark VRAM bandwidth on Apple Silicon M-series.</div>
-                </div>
-              </div>
-              <div class="flex items-start gap-2.5 p-2 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <span class="w-4 h-4 rounded-full text-white text-[13px] font-bold flex items-center justify-center shrink-0" style="background:var(--pf-engine-radar);">2</span>
-                <div>
-                  <div class="font-bold" style="color:var(--pf-text-primary);">Multi-Task Perplexity Eval</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-secondary);">Verify zero degradation on GSM8K & HumanEval.</div>
-                </div>
-              </div>
-            </div>
-          </div>
             <p class="text-xs leading-relaxed mb-4" style="color:var(--pf-text-secondary);">
-              Novelty Radar continuously indexes hundreds of thousands of arXiv pre-prints and CORE A* conference proceedings to defend your PhD dissertation against prior-art pre-emption.
+              Upload a manuscript PDF or enter your research topic on the left. Novelty Radar cross-checks hundreds of thousands of arXiv pre-prints and CORE A* conference proceedings in real-time.
             </p>
 
-            <div class="space-y-3 text-xs">
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">1</div>
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="w-5 h-5 rounded-full text-white text-[11px] font-bold flex items-center justify-center shrink-0" style="background:var(--pf-engine-radar);">1</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Deconstruct Problem Formulation</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Extracts hypotheses, assumptions, and proposed algorithmic components.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Deconstruct Problem Formulation</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Extracts core hypotheses, algorithmic innovations, and methodology claims.</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">2</div>
+              <div class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="w-5 h-5 rounded-full text-white text-[11px] font-bold flex items-center justify-center shrink-0" style="background:var(--pf-engine-radar);">2</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Cross-Check SOTA Literature</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Checks leading baselines across NeurIPS, ICML, ICLR, and arXiv.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Real-Time SOTA Cross-Check</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Cross-checks baselines across NeurIPS, ICML, ICLR, and current arXiv literature.</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">3</div>
+              <div class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="w-5 h-5 rounded-full text-white text-[11px] font-bold flex items-center justify-center shrink-0" style="background:var(--pf-engine-radar);">3</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Compute Novelty Index & Gaps</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Synthesizes unaddressed trade-offs and competitive weaknesses.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Compute Novelty Index & Gap Matrix</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Identifies unaddressed trade-offs, empirical bottlenecks, and competition gaps.</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
-                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size: 13px;flex-shrink:0;">4</div>
+              <div class="flex items-start gap-2.5 p-2.5 rounded-xl border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <span class="w-5 h-5 rounded-full text-white text-[11px] font-bold flex items-center justify-center shrink-0" style="background:var(--pf-engine-radar);">4</span>
                 <div>
-                  <div class="font-semibold" style="color:var(--pf-text-primary);">Generate Actionable Roadmap</div>
-                  <div class="text-[13px]" style="color:var(--pf-text-muted);">Formulates concrete experimental phases to validate contributions.</div>
+                  <div class="font-bold" style="color:var(--pf-text-primary);">Generate Actionable Roadmap</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-secondary);">Formulates concrete experimental phases to validate novel contributions.</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="mt-4 pt-3 border-t flex items-center justify-between text-[13px] font-mono" style="border-color:var(--pf-border-subtle);color:var(--pf-text-muted);">
+          <div class="mt-4 pt-3 border-t flex items-center justify-between text-xs font-mono" style="border-color:var(--pf-border-subtle);color:var(--pf-text-muted);">
             <span>Cross-Check: arXiv & SOTA</span>
             <span style="color:var(--pf-engine-radar);font-weight:700;">Empirical SOTA Benchmarking</span>
           </div>

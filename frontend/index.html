@@ -573,22 +573,22 @@
       </div>
 
       <!-- Empty State -->
-      <div id="empty-state" class="hidden py-16 text-center border border-dashed border-dark-800 rounded-2xl p-8 bg-dark-900/50">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-dark-800 flex items-center justify-center text-slate-500 mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
+      <div id="empty-state" class="hidden py-16 text-center border border-dashed rounded-3xl p-8 shadow-xs" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
+        <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4" style="background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);border:1px solid var(--pf-engine-studio-border);">
+          <i data-lucide="headphones" style="width:28px;height:28px;"></i>
         </div>
-        <h3 class="text-base font-semibold text-slate-200">No Research Papers Found</h3>
-        <p class="text-sm text-slate-400 max-w-md mx-auto mt-1 mb-6">
-          Connect your Zotero reference library, upload a research PDF directly, or load pre-built benchmark papers to get started.
+        <h3 class="text-base font-bold" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Your Research Library is Ready</h3>
+        <p class="text-xs max-w-md mx-auto mt-1 mb-6 leading-relaxed" style="color:var(--pf-text-secondary);">
+          Upload your draft research paper PDF directly or connect your personal Zotero reference library to generate real-time neural audio briefings.
         </p>
         <div class="flex items-center justify-center gap-3">
-          <button onclick="loadSamplePapers()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition">
-            Load Sample AI Papers
+          <button onclick="openUploadModal()" class="px-5 py-2.5 text-xs font-bold rounded-xl text-white shadow-sm transition flex items-center gap-1.5" style="background:var(--pf-primary);">
+            <i data-lucide="upload" style="width:14px;height:14px;"></i>
+            <span>Upload PDF Manuscript</span>
           </button>
-          <button onclick="openUploadModal()" class="px-4 py-2 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700 transition">
-            Upload PDF File
+          <button onclick="if(window.ProfFebUI&&ProfFebUI.zotero)ProfFebUI.zotero.open();" class="px-5 py-2.5 text-xs font-bold rounded-xl border transition flex items-center gap-1.5" style="background:var(--pf-bg-surface-elevated);color:var(--pf-text-primary);border-color:var(--pf-border-default);">
+            <i data-lucide="library" style="width:14px;height:14px;"></i>
+            <span>Connect Zotero Library</span>
           </button>
         </div>
       </div>
@@ -2198,9 +2198,8 @@
         const data = await res.json();
         
         const freshPapers = data.papers || [];
+        allPapers = freshPapers;
         if (freshPapers.length > 0) {
-          allPapers = freshPapers;
-          // Save fresh cache
           try {
             localStorage.setItem('zam_papers_cache', JSON.stringify({
               total: data.total,
@@ -2209,8 +2208,10 @@
               papers: allPapers
             }));
           } catch (e) {}
-        } else if (allPapers.length === 0) {
-          allPapers = [];
+        } else {
+          try {
+            localStorage.removeItem('zam_papers_cache');
+          } catch (e) {}
         }
 
         // Update Stats
