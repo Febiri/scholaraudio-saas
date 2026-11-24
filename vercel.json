@@ -4,6 +4,7 @@
     "app": {
       "root": ".",
       "framework": "fastapi",
+      "installCommand": "python -c \"import shutil, os; shutil.rmtree('.venv', ignore_errors=True); shutil.rmtree(os.path.expanduser('~/.cache/uv'), ignore_errors=True)\" && uv sync --frozen",
       "bindings": [
         {
           "type": "service",
@@ -15,7 +16,8 @@
     },
     "backend": {
       "root": "backend",
-      "framework": "fastapi"
+      "framework": "fastapi",
+      "installCommand": "python -c \"import shutil, os; shutil.rmtree('.venv', ignore_errors=True); shutil.rmtree(os.path.expanduser('~/.cache/uv'), ignore_errors=True)\" && uv sync --frozen"
     }
   },
   "rewrites": [
