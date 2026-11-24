@@ -676,3 +676,21 @@ code, pre, .font-mono {
     box-shadow: var(--pf-shadow-xl);
   }
 }
+
+/* Spinners and Animation Utilities */
+@keyframes pf-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pf-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(148, 163, 184, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: pf-spin 0.75s linear infinite;
+  vertical-align: middle;
+}
+

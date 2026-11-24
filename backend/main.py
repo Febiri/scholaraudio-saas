@@ -4,6 +4,7 @@ import json
 import shutil
 import asyncio
 import logging
+import httpx
 from datetime import datetime
 from pathlib import Path
 
@@ -596,6 +597,208 @@ async def get_auth_me(current_user: Optional[Dict[str, Any]] = Depends(get_curre
     return {
         "authenticated": False,
         "user": None
+    }
+
+
+class ProfileUpdateRequest(BaseModel):
+    full_name: Optional[str] = None
+    academic_title: Optional[str] = None
+    institution: Optional[str] = None
+    research_field: Optional[str] = None
+    preferred_voice: Optional[str] = None
+    tier: Optional[str] = None
+
+
+@app.get("/api/user/profile")
+async def get_user_profile(
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None,
+    db: Session = Depends(get_db)
+):
+    """Returns comprehensive scholar profile, tier, and research stats."""
+    if not current_user:
+        return {
+            "authenticated": False,
+            "user": None,
+            "stats": {"papers_synced": 0, "audio_minutes": 0.0, "watchlist_count": 0}
+        }
+
+    user_id = current_user.get("id")
+    email = current_user.get("email") or ""
+    meta = current_user.get("user_metadata") or {}
+    user_token = current_user.get("token") or SUPABASE_KEY
+    auth_header = f"Bearer {user_token}" if user_token else f"Bearer {SUPABASE_KEY}"
+
+    # Default fallback data from OAuth / metadata
+    full_name = meta.get("full_name") or meta.get("name") or email.split("@")[0].replace(".", " ").title()
+    academic_title = meta.get("academic_title") or "PhD Scholar"
+    avatar_url = meta.get("avatar_url") or meta.get("picture") or ""
+    institution = meta.get("institution") or ""
+    research_field = meta.get("research_field") or "Computational & Applied Science"
+    tier = meta.get("tier") or "scholar"
+    preferred_voice = meta.get("preferred_voice") or DEFAULT_TTS_VOICE
+    zotero_user_id = meta.get("zotero_user_id") or ""
+    has_zotero_key = bool(meta.get("zotero_api_key"))
+
+    # If Supabase is connected, query the persistent profiles table
+    if SUPABASE_URL and SUPABASE_KEY and user_id:
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(
+                    f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                    params={"id": f"eq.{user_id}", "select": "*"},
+                    headers={"apikey": SUPABASE_KEY, "Authorization": auth_header}
+                )
+                if resp.status_code == 200 and resp.json():
+                    prof = resp.json()[0]
+                    full_name = prof.get("full_name") or full_name
+                    academic_title = prof.get("academic_title") or academic_title
+                    institution = prof.get("institution") or institution
+                    research_field = prof.get("research_field") or research_field
+                    tier = prof.get("tier") or tier
+                    preferred_voice = prof.get("preferred_voice") or preferred_voice
+                    zotero_user_id = prof.get("zotero_user_id") or zotero_user_id
+                    has_zotero_key = bool(prof.get("zotero_api_key")) or has_zotero_key
+                elif resp.status_code == 200 and not resp.json():
+                    # Auto-initialize cloud profile on first login (e.g. Google OAuth)
+                    await client.post(
+                        f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                        json={
+                            "id": user_id,
+                            "email": email,
+                            "full_name": full_name,
+                            "tier": "scholar",
+                            "preferred_voice": preferred_voice
+                        },
+                        headers={"apikey": SUPABASE_KEY, "Authorization": auth_header, "Content-Type": "application/json", "Prefer": "return=minimal"}
+                    )
+        except Exception as e:
+            logger.warning(f"Error fetching/initializing cloud profile: {e}")
+
+    # Gather real usage metrics from DB
+    try:
+        paper_count = db.query(func.count(Paper.id)).scalar() or 0
+        total_audio_sec = db.query(func.sum(Paper.audio_duration)).scalar() or 0.0
+        audio_minutes = round(total_audio_sec / 60.0, 1)
+    except Exception:
+        paper_count = 0
+        audio_minutes = 0.0
+
+    return {
+        "authenticated": True,
+        "user": {
+            "id": user_id,
+            "email": email,
+            "full_name": full_name,
+            "academic_title": academic_title,
+            "avatar_url": avatar_url,
+            "institution": institution,
+            "research_field": research_field,
+            "tier": tier,
+            "preferred_voice": preferred_voice,
+            "zotero_user_id": zotero_user_id,
+            "has_zotero_key": has_zotero_key,
+            "created_at": current_user.get("created_at")
+        },
+        "stats": {
+            "papers_synced": paper_count,
+            "audio_minutes": audio_minutes,
+            "watchlist_count": 1
+        }
+    }
+
+
+@app.post("/api/user/profile")
+async def update_user_profile(
+    payload: ProfileUpdateRequest,
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None
+):
+    """Updates academic profile details in Supabase profiles table and user metadata."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required to update profile.")
+
+    user_id = current_user.get("id")
+    user_token = current_user.get("token") or SUPABASE_KEY
+    auth_header = f"Bearer {user_token}" if user_token else f"Bearer {SUPABASE_KEY}"
+
+    update_data = {"updated_at": "now()"}
+    meta_updates = {}
+    if payload.full_name is not None:
+        name = payload.full_name.strip()
+        update_data["full_name"] = name
+        meta_updates["full_name"] = name
+    if payload.academic_title is not None:
+        title = payload.academic_title.strip()
+        meta_updates["academic_title"] = title
+    if payload.institution is not None:
+        inst = payload.institution.strip()
+        update_data["institution"] = inst
+        meta_updates["institution"] = inst
+    if payload.research_field is not None:
+        rf = payload.research_field.strip()
+        update_data["research_field"] = rf
+        meta_updates["research_field"] = rf
+    if payload.preferred_voice is not None:
+        pv = payload.preferred_voice.strip()
+        update_data["preferred_voice"] = pv
+        meta_updates["preferred_voice"] = pv
+    if payload.tier is not None:
+        tr = payload.tier.strip()
+        update_data["tier"] = tr
+        meta_updates["tier"] = tr
+
+    saved_to_cloud = False
+    if SUPABASE_URL and SUPABASE_KEY and user_id:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                # 1. Update Supabase Auth user_metadata
+                if meta_updates and user_token and user_token != SUPABASE_KEY:
+                    try:
+                        await client.put(
+                            f"{SUPABASE_URL.rstrip('/')}/auth/v1/user",
+                            json={"data": meta_updates},
+                            headers={"apikey": SUPABASE_KEY, "Authorization": auth_header}
+                        )
+                    except Exception as err:
+                        logger.warning(f"Note updating Supabase auth metadata: {err}")
+
+                # 2. Patch public.profiles table
+                resp = await client.patch(
+                    f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                    params={"id": f"eq.{user_id}"},
+                    json=update_data,
+                    headers={
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": auth_header,
+                        "Content-Type": "application/json",
+                        "Prefer": "return=minimal"
+                    }
+                )
+                if resp.status_code in [200, 204]:
+                    saved_to_cloud = True
+                elif resp.status_code == 404:
+                    # Auto insert if row does not exist yet
+                    insert_payload = dict(update_data)
+                    insert_payload["id"] = user_id
+                    insert_payload["email"] = current_user.get("email") or ""
+                    await client.post(
+                        f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                        json=insert_payload,
+                        headers={
+                            "apikey": SUPABASE_KEY,
+                            "Authorization": auth_header,
+                            "Content-Type": "application/json",
+                            "Prefer": "return=minimal"
+                        }
+                    )
+                    saved_to_cloud = True
+        except Exception as e:
+            logger.warning(f"Error updating cloud profile: {e}")
+
+    return {
+        "success": True,
+        "message": "Academic profile updated successfully!",
+        "saved_to_cloud": saved_to_cloud,
+        "updated": update_data
     }
 
 

@@ -51,7 +51,8 @@ async def verify_supabase_token(token: str) -> Optional[Dict[str, Any]]:
                     "email": user_data.get("email"),
                     "role": user_data.get("role", "authenticated"),
                     "user_metadata": user_data.get("user_metadata", {}),
-                    "created_at": user_data.get("created_at")
+                    "created_at": user_data.get("created_at"),
+                    "token": token
                 }
                 _TOKEN_CACHE[token] = (user_info, now + CACHE_TTL_SECONDS)
                 return user_info
