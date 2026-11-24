@@ -17,6 +17,8 @@ backend/static/pdfs/*.pdf
 
 # Exclude test files, mock data, and development caches
 tests/
+data/notes/
+backend/data/notes/
 __pycache__/
 *.pyc
 *.pyo
@@ -29,8 +31,5 @@ temp*
 .github/
 .vscode/
 .idea/
-*.md
-!README.md
-.env*
 *.backup
 *.bak
