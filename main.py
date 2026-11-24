@@ -1139,15 +1139,41 @@ def chat_with_paper_endpoint(paper_id: int, payload: PaperChatRequest, db: Sessi
         history=payload.history or [],
         figures=figures
     )
+
+    # Persist chat history directly into database
+    try:
+        existing_chat = json.loads(paper.chat_history_json or "[]")
+    except Exception:
+        existing_chat = []
+    existing_chat.append({"role": "user", "content": payload.message, "timestamp": datetime.utcnow().isoformat()})
+    existing_chat.append({"role": "assistant", "content": reply, "timestamp": datetime.utcnow().isoformat()})
+    paper.chat_history_json = json.dumps(existing_chat[-60:])
+    db.commit()
+
     return {"reply": reply, "paper_title": paper.title, "figures_available": len(figures)}
+
+
+@app.get("/api/papers/{paper_id}/chat")
+def get_paper_chat_history(paper_id: int, db: Session = Depends(get_db)):
+    """Retrieve saved conversational AI mentor chat history directly from database."""
+    paper = db.query(Paper).filter(Paper.id == paper_id).first()
+    if not paper:
+        raise HTTPException(status_code=404, detail="Paper not found")
+    try:
+        history = json.loads(paper.chat_history_json or "[]")
+    except Exception:
+        history = []
+    return {"paper_id": paper_id, "history": history}
 
 
 @app.delete("/api/papers/{paper_id}/chat")
 def clear_paper_chat_endpoint(paper_id: int, db: Session = Depends(get_db)):
-    """Clears any server-side recorded chat session for a paper."""
+    """Clears server-side recorded chat session for a paper in database."""
     paper = db.query(Paper).filter(Paper.id == paper_id).first()
     if not paper:
         raise HTTPException(status_code=404, detail="Paper not found")
+    paper.chat_history_json = "[]"
+    db.commit()
     return {"status": "cleared", "paper_id": paper_id}
 
 
@@ -1164,7 +1190,16 @@ def _get_notes_file(paper_id: int) -> Path:
     return notes_dir / f"notes_{paper_id}.json"
 
 
-def _load_paper_notes(paper_id: int) -> List[Dict[str, Any]]:
+def _load_paper_notes(paper_id: int, db: Optional[Session] = None) -> List[Dict[str, Any]]:
+    if db:
+        try:
+            paper = db.query(Paper).filter(Paper.id == paper_id).first()
+            if paper and paper.notes_json:
+                db_notes = json.loads(paper.notes_json)
+                if db_notes:
+                    return db_notes
+        except Exception as e:
+            logger.warning(f"Could not load notes from database: {e}")
     f = _get_notes_file(paper_id)
     if f.exists():
         try:
@@ -1174,7 +1209,15 @@ def _load_paper_notes(paper_id: int) -> List[Dict[str, Any]]:
     return []
 
 
-def _save_paper_notes(paper_id: int, notes: List[Dict[str, Any]]):
+def _save_paper_notes(paper_id: int, notes: List[Dict[str, Any]], db: Optional[Session] = None):
+    if db:
+        try:
+            paper = db.query(Paper).filter(Paper.id == paper_id).first()
+            if paper:
+                paper.notes_json = json.dumps(notes)
+                db.commit()
+        except Exception as e:
+            logger.warning(f"Could not persist notes to database for paper {paper_id}: {e}")
     f = _get_notes_file(paper_id)
     try:
         f.write_text(json.dumps(notes, indent=2), encoding="utf-8")
@@ -1183,16 +1226,16 @@ def _save_paper_notes(paper_id: int, notes: List[Dict[str, Any]]):
 
 
 @app.get("/api/papers/{paper_id}/notes")
-def get_paper_notes(paper_id: int):
-    """Retrieve saved highlights and professional notes for a research paper."""
-    notes = _load_paper_notes(paper_id)
+def get_paper_notes(paper_id: int, db: Session = Depends(get_db)):
+    """Retrieve saved highlights and professional notes for a research paper from database."""
+    notes = _load_paper_notes(paper_id, db=db)
     return {"paper_id": paper_id, "notes": notes, "total": len(notes)}
 
 
 @app.post("/api/papers/{paper_id}/notes")
-def save_paper_note(paper_id: int, payload: PaperNoteRequest):
-    """Save or update a highlighted passage and professional note."""
-    notes = _load_paper_notes(paper_id)
+def save_paper_note(paper_id: int, payload: PaperNoteRequest, db: Session = Depends(get_db)):
+    """Save or update a highlighted passage and professional note directly into database."""
+    notes = _load_paper_notes(paper_id, db=db)
     note_id = payload.id or f"note_{int(datetime.utcnow().timestamp() * 1000)}"
     new_note = {
         "id": note_id,
@@ -1208,16 +1251,16 @@ def save_paper_note(paper_id: int, payload: PaperNoteRequest):
         notes[existing_idx] = new_note
     else:
         notes.insert(0, new_note)
-    _save_paper_notes(paper_id, notes)
+    _save_paper_notes(paper_id, notes, db=db)
     return {"success": True, "note": new_note, "total": len(notes)}
 
 
 @app.delete("/api/papers/{paper_id}/notes/{note_id}")
-def delete_paper_note(paper_id: int, note_id: str):
-    """Delete a professional research note."""
-    notes = _load_paper_notes(paper_id)
+def delete_paper_note(paper_id: int, note_id: str, db: Session = Depends(get_db)):
+    """Delete a professional research note from database."""
+    notes = _load_paper_notes(paper_id, db=db)
     notes = [n for n in notes if n.get("id") != note_id]
-    _save_paper_notes(paper_id, notes)
+    _save_paper_notes(paper_id, notes, db=db)
     return {"success": True, "deleted_id": note_id, "total": len(notes)}
 
 

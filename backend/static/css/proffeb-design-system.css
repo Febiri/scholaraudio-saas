@@ -298,7 +298,7 @@ code, pre, .font-mono {
 }
 
 .pf-nav-section-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -494,7 +494,7 @@ code, pre, .font-mono {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   padding: 0.25rem 0.625rem;
   border-radius: var(--pf-radius-full);

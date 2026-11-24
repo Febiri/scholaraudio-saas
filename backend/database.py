@@ -185,6 +185,10 @@ class Paper(Base):
     status = Column(String(32), default="Pending", index=True)
     error_message = Column(Text, nullable=True)
     
+    # Notes & Chat attributes (Permanently Persisted in Database)
+    notes_json = Column(Text, default="[]")
+    chat_history_json = Column(Text, default="[]")
+
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -232,6 +236,8 @@ class Paper(Base):
             "has_full_audio": bool(self.full_audio_path or (self.audio_path and self.audio_mode == "full_paper")),
             "voice_used": self.voice_used,
             "status": self.status,
+            "notes": json.loads(self.notes_json) if self.notes_json else [],
+            "chat_history": json.loads(self.chat_history_json) if self.chat_history_json else [],
             "error_message": self.error_message,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
@@ -256,6 +262,8 @@ def init_db():
                 existing_cols = [row[1] for row in cursor.fetchall()]
                 new_cols = [
                     ("user_id", "VARCHAR(64)"),
+                    ("notes_json", "TEXT DEFAULT '[]'"),
+                    ("chat_history_json", "TEXT DEFAULT '[]'"),
                     ("full_text", "TEXT"),
                     ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
                     ("summary_audio_path", "VARCHAR(512)"),
@@ -273,6 +281,8 @@ def init_db():
             with engine.begin() as conn:
                 pg_cols = [
                     ("user_id", "VARCHAR(64)"),
+                    ("notes_json", "TEXT DEFAULT '[]'"),
+                    ("chat_history_json", "TEXT DEFAULT '[]'"),
                     ("full_text", "TEXT"),
                     ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
                     ("summary_audio_path", "VARCHAR(512)"),
