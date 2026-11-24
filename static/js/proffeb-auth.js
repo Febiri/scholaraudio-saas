@@ -284,13 +284,13 @@
         }
       } else {
         container.innerHTML = `
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="ProfFebAuth.openModal('signin')" class="pf-btn pf-btn-ghost pf-btn-sm" style="font-weight:600;font-size:13px;padding:6px 12px;border:1px solid var(--pf-border-subtle);">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <button type="button" onclick="ProfFebAuth.openModal('signin')" class="hidden sm:inline-flex pf-btn pf-btn-ghost pf-btn-sm" style="font-weight:600;font-size:12px;padding:5px 9px;border:1px solid var(--pf-border-subtle);">
               Sign In
             </button>
-            <button type="button" onclick="ProfFebAuth.openModal('signup')" class="pf-btn pf-btn-primary pf-btn-sm shadow-xs" style="font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;padding:6px 14px;">
+            <button type="button" onclick="ProfFebAuth.openModal('signup')" class="pf-btn pf-btn-primary pf-btn-sm shadow-xs" style="font-weight:600;font-size:12px;display:flex;align-items:center;gap:4px;padding:5px 10px;">
               <span>Get Started</span>
-              <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+              <i data-lucide="arrow-right" style="width:12px;height:12px;"></i>
             </button>
           </div>
         `;

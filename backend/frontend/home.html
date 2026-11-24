@@ -370,8 +370,8 @@
             </div>
           </div>
 
-          <!-- Layer 1: Floating Audio Waveform Card (Top Left Overhang) -->
-          <div class="absolute -top-6 -left-6 bg-[var(--pf-bg-surface)] border border-[var(--pf-border-subtle)] rounded-2xl p-4 shadow-xl animate-float-slow max-w-[260px] z-20">
+          <!-- Layer 1: Floating Audio Waveform Card -->
+          <div class="absolute -top-3 sm:-top-6 left-2 sm:-left-6 bg-[var(--pf-bg-surface)] border border-[var(--pf-border-subtle)] rounded-2xl p-3 sm:p-4 shadow-xl animate-float-slow max-w-[210px] sm:max-w-[260px] z-20">
             <div class="flex items-center gap-2.5 mb-2.5">
               <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
                 <i data-lucide="play" class="w-4 h-4 fill-current ml-0.5"></i>
@@ -396,7 +396,7 @@
           </div>
 
           <!-- Layer 2: Floating KaTeX Formula Card (Properly Rendered via KaTeX) -->
-          <div class="absolute -bottom-6 -right-6 bg-[var(--pf-bg-surface)] border border-[var(--pf-border-subtle)] rounded-2xl p-4 shadow-xl animate-float-reverse max-w-[300px] z-20">
+          <div class="absolute -bottom-3 sm:-bottom-6 right-2 sm:-right-6 bg-[var(--pf-bg-surface)] border border-[var(--pf-border-subtle)] rounded-2xl p-3 sm:p-4 shadow-xl animate-float-reverse max-w-[240px] sm:max-w-[300px] z-20">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">KaTeX Deconstruction</span>
               <span class="text-xs font-mono text-[var(--pf-text-muted)]">Eq. 4</span>
@@ -412,7 +412,7 @@
           </div>
 
           <!-- Layer 3: Reviewer #2 Strong Accept Chip -->
-          <div class="absolute top-1/2 -right-8 -translate-y-1/2 bg-[var(--pf-bg-surface)] border border-emerald-200/80 rounded-2xl p-3 shadow-lg flex items-center gap-2.5 z-20">
+          <div class="absolute top-2 sm:top-1/2 right-2 sm:-right-8 sm:-translate-y-1/2 bg-[var(--pf-bg-surface)] border border-emerald-200/80 rounded-2xl p-2.5 sm:p-3 shadow-lg flex items-center gap-2 sm:gap-2.5 z-20">
             <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm shrink-0">8.5</div>
             <div>
               <div class="text-xs font-bold text-emerald-900">Reviewer #2 Pass</div>
@@ -425,9 +425,9 @@
 
     </div>
 
-    <!-- REAL STATS & OPERATIONAL STATUS STRIP (No developer jargon) -->
+    <!-- REAL STATS & OPERATIONAL STATUS STRIP (Responsive for all screens) -->
     <section class="w-full bg-[var(--pf-bg-surface)] border border-[var(--pf-border-default)] rounded-2xl p-6 shadow-xs">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-[var(--pf-border-subtle)]">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[var(--pf-border-subtle)]">
         
         <div>
           <div class="text-xs font-semibold uppercase tracking-wider text-[var(--pf-text-muted)] flex items-center gap-1.5">
@@ -440,7 +440,7 @@
           <div class="text-xs text-[var(--pf-text-muted)] mt-0.5" id="stat-service">ProfFeb Core v2.1</div>
         </div>
 
-        <div class="pt-3 md:pt-0 md:px-4">
+        <div class="pt-4 sm:pt-0 sm:px-4">
           <div class="text-xs font-semibold uppercase tracking-wider text-[var(--pf-text-muted)] flex items-center gap-1.5">
             <i data-lucide="book-open" class="w-3.5 h-3.5 text-indigo-600"></i>
             <span>Ingested Papers</span>
@@ -451,7 +451,7 @@
           <div class="text-xs text-[var(--pf-text-muted)] mt-0.5" id="stat-audio-time">Neural audio ready</div>
         </div>
 
-        <div class="pt-3 md:pt-0 md:px-4">
+        <div class="pt-4 sm:pt-0 sm:px-4">
           <div class="text-xs font-semibold uppercase tracking-wider text-[var(--pf-text-muted)] flex items-center gap-1.5">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-teal-600"></i>
             <span>Tracked Venues</span>
@@ -462,7 +462,7 @@
           <div class="text-xs text-[var(--pf-text-muted)] mt-0.5">Automated countdowns</div>
         </div>
 
-        <div class="pt-3 md:pt-0 md:px-4">
+        <div class="pt-4 sm:pt-0 sm:px-4">
           <div class="text-xs font-semibold uppercase tracking-wider text-[var(--pf-text-muted)] flex items-center gap-1.5">
             <i data-lucide="cloud-check" class="w-3.5 h-3.5 text-amber-600"></i>
             <span>Continuous Sync</span>
@@ -949,10 +949,10 @@
   <!-- ================= EDITORIAL SCHOLARLY FOOTER ================= -->
   <footer class="border-t border-[var(--pf-border-subtle)] bg-[var(--pf-bg-surface)] mt-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
         
         <!-- Brand Column -->
-        <div class="col-span-2 space-y-4">
+        <div class="col-span-1 sm:col-span-2 space-y-4">
           <a href="/" class="inline-flex items-center transition-opacity hover:opacity-90" aria-label="ProfFeb Home">
             <img src="/static/brand/proffeb-logo.svg" alt="ProfFeb" class="pf-logo-img pf-logo-light" style="height: 34px; width: auto;" />
             <img src="/static/brand/proffeb-logo-dark.svg" alt="ProfFeb" class="pf-logo-img pf-logo-dark" style="height: 34px; width: auto;" />

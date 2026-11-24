@@ -486,26 +486,64 @@
       }
     },
 
-    // 4. Collapsible Sidebar Controller
+    // 4. Collapsible Sidebar Controller (Desktop & Mobile Drawer)
     sidebar: {
       toggle: function () {
         const sidebar = document.querySelector('.pf-sidebar');
         if (!sidebar) return;
+
+        // Mobile drawer behavior (<= 1024px)
+        if (window.innerWidth <= 1024) {
+          const isOpen = sidebar.classList.toggle('mobile-open');
+          let backdrop = document.getElementById('pf-sidebar-backdrop');
+          if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.id = 'pf-sidebar-backdrop';
+            backdrop.className = 'pf-sidebar-backdrop';
+            backdrop.onclick = () => ProfFebUI.sidebar.closeMobile();
+            document.body.appendChild(backdrop);
+          }
+          if (isOpen) {
+            backdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          } else {
+            backdrop.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+          return;
+        }
+
+        // Desktop collapse behavior (> 1024px)
         const isCollapsed = sidebar.classList.toggle('collapsed');
         localStorage.setItem('proffeb_sidebar_collapsed', isCollapsed ? 'true' : 'false');
       },
-      toggleMobile: function () {
+      closeMobile: function () {
         const sidebar = document.querySelector('.pf-sidebar');
-        if (!sidebar) return;
-        sidebar.classList.toggle('mobile-open');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        const backdrop = document.getElementById('pf-sidebar-backdrop');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      },
+      toggleMobile: function () {
+        this.toggle();
       },
       init: function () {
         const sidebar = document.querySelector('.pf-sidebar');
         if (!sidebar) return;
-        const saved = localStorage.getItem('proffeb_sidebar_collapsed');
-        if (saved === 'true') {
-          sidebar.classList.add('collapsed');
+        if (window.innerWidth > 1024) {
+          const saved = localStorage.getItem('proffeb_sidebar_collapsed');
+          if (saved === 'true') {
+            sidebar.classList.add('collapsed');
+          }
         }
+        // Auto-close mobile drawer when user taps any nav link
+        sidebar.querySelectorAll('.pf-nav-item').forEach(item => {
+          item.addEventListener('click', () => {
+            if (window.innerWidth <= 1024) {
+              ProfFebUI.sidebar.closeMobile();
+            }
+          });
+        });
       }
     },
 
