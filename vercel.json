@@ -1,14 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "api/index.py": {
-      "excludeFiles": "{tests/**,data/notes/**,*.db*,*.sqlite*,*.md}"
+  "services": {
+    "web": {
+      "root": "backend",
+      "framework": "fastapi"
     }
   },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": {
+        "service": "web"
+      }
     }
   ]
 }
