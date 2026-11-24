@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,145 +7,174 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
-  <!-- Design System Typography -->
+  <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Line Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- ProfFeb Unified Design System -->
   <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
 
   <!-- Tailwind CSS CDN for utility layering -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
 
   <!-- Supabase Auth SDK & ProfFeb Session Manager -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/static/js/proffeb-auth.js" defer></script>
   <script src="/static/js/proffeb-ui.js" defer></script>
+
+  <style>
+    .grant-card {
+      background: var(--pf-bg-surface);
+      border: 1px solid var(--pf-border-subtle);
+      border-radius: var(--pf-radius-lg);
+      transition: var(--pf-transition);
+      box-shadow: var(--pf-shadow-xs);
+    }
+    .grant-card:hover {
+      border-color: var(--pf-engine-grants);
+      box-shadow: var(--pf-shadow-md);
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 
-<body class="min-h-screen antialiased selection:bg-teal-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+<body class="selection:bg-amber-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary); margin:0;">
 
-<div class="pf-app-container">
+<div class="pf-app-shell">
   
-  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <!-- ================= UNIFIED LEFT SIDEBAR ================= -->
   <aside id="pf-app-sidebar" class="pf-sidebar">
-    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
-      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0d9488, #14b8a6); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
-        <div class="pf-brand-text">
-          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
-          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">GRANTS • E05</div>
+    <div class="pf-sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(217,119,6,0.25);">P</div>
+        <div class="pf-brand-full">
+          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
+          <div style="font-size:10px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
         </div>
       </a>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
-        ◀
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
+        <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
       </button>
     </div>
 
     <!-- Navigation items (7 Engines + Overview) -->
-    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+    <nav class="pf-sidebar-nav">
+      <div class="pf-nav-section-title pf-sidebar-text">Workspace</div>
       <a href="/" class="pf-nav-item">
-        <span>⊞</span>
-        <span class="pf-nav-label">Overview</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-primary);"><i data-lucide="layout-grid"></i></div>
+        <span class="pf-sidebar-text">Overview</span>
       </a>
+
+      <div class="pf-nav-section-title pf-sidebar-text" style="margin-top:0.75rem;">7 Engines</div>
       <a href="/app" class="pf-nav-item">
-        <span style="color: var(--pf-engine-studio);">🎙️</span>
-        <span class="pf-nav-label">Research Studio</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-studio);background:var(--pf-engine-studio-bg);"><i data-lucide="headphones"></i></div>
+        <span class="pf-sidebar-text">Research Studio</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);">E01</span>
       </a>
       <a href="/conferences" class="pf-nav-item">
-        <span style="color: var(--pf-engine-scout);">🌐</span>
-        <span class="pf-nav-label">Conference Scout</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-scout);background:var(--pf-engine-scout-bg);"><i data-lucide="calendar"></i></div>
+        <span class="pf-sidebar-text">Conference Scout</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">E02</span>
       </a>
       <a href="/radar" class="pf-nav-item">
-        <span style="color: var(--pf-engine-radar);">🔬</span>
-        <span class="pf-nav-label">Novelty Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-radar);background:var(--pf-engine-radar-bg);"><i data-lucide="radar"></i></div>
+        <span class="pf-sidebar-text">Novelty Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">E03</span>
       </a>
       <a href="/reviewer" class="pf-nav-item">
-        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
-        <span class="pf-nav-label">Reviewer #2</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-reviewer);background:var(--pf-engine-reviewer-bg);"><i data-lucide="shield-alert"></i></div>
+        <span class="pf-sidebar-text">Reviewer #2</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">E04</span>
       </a>
-      <a href="/grants" class="pf-nav-item pf-nav-active">
-        <span style="color: var(--pf-engine-grants);">💰</span>
-        <span class="pf-nav-label">Funding Radar</span>
+      <a href="/grants" class="pf-nav-item active">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-grants);background:var(--pf-engine-grants-bg);"><i data-lucide="coins"></i></div>
+        <span class="pf-sidebar-text">Funding Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">E05</span>
       </a>
       <a href="/lab-connector" class="pf-nav-item">
-        <span style="color: var(--pf-engine-lab);">🏢</span>
-        <span class="pf-nav-label">Lab Connector</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-lab);background:var(--pf-engine-lab-bg);"><i data-lucide="building"></i></div>
+        <span class="pf-sidebar-text">Lab Connector</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);">E06</span>
       </a>
       <a href="/agent" class="pf-nav-item">
-        <span style="color: var(--pf-engine-copilot);">🧠</span>
-        <span class="pf-nav-label">Academic Co-Pilot</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-copilot);background:var(--pf-engine-copilot-bg);"><i data-lucide="sparkles"></i></div>
+        <span class="pf-sidebar-text">Academic Co-Pilot</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">E07</span>
       </a>
     </nav>
 
     <!-- Bottom utility items -->
-    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
-        <span class="pf-theme-toggle-icon">🌓</span>
-        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+    <div class="pf-sidebar-footer">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.theme.toggle()">
+        <i data-lucide="sun-moon"></i>
+        <span class="pf-sidebar-text pf-theme-toggle-label">Theme</span>
       </button>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
-        <span>⌘K</span>
-        <span class="pf-nav-label">Command Palette</span>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.commandPalette.open()">
+        <span style="font-family:var(--pf-font-mono);font-size:12px;font-weight:700;">⌘K</span>
+        <span class="pf-sidebar-text">Command Palette</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.settings.open()">
+        <i data-lucide="settings"></i>
+        <span class="pf-sidebar-text">Settings & Cache</span>
       </button>
     </div>
   </aside>
 
   <!-- ================= MAIN STAGE ================= -->
-  <div class="pf-main-stage">
+  <div class="pf-main-wrapper">
     
     <!-- TOP HEADER -->
-    <header class="pf-top-bar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
-        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
-          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
-          <span style="color: var(--pf-border-strong);">/</span>
-          <span style="font-weight: 600; color: var(--pf-engine-grants);">Funding & Grant Radar</span>
+    <header class="pf-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">
+          <i data-lucide="menu"></i>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <a href="/" style="color:var(--pf-text-muted);text-decoration:none;font-weight:500;">ProfFeb</a>
+          <span style="color:var(--pf-border-strong);">/</span>
+          <span style="font-weight:600;color:var(--pf-engine-grants);">Funding Radar</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div style="display:flex;align-items:center;gap:8px;">
         <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
-          🔄
+          <i data-lucide="refresh-cw"></i>
         </button>
         <div id="user-nav-container"></div>
       </div>
     </header>
 
-    <!-- WORKSPACE BODY -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
-      <!-- Hero Banner -->
-      <div class="text-center max-w-3xl mx-auto mb-8">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-grants-bg); border-color: rgba(20, 184, 166, 0.3);">
-          <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-          <span class="text-xs font-semibold" style="color: var(--pf-engine-grants);">Zero Out-of-Pocket Conference Travel • Prestigious PhD Fellowships</span>
+    <!-- COMPACT PAGE HEADER -->
+    <div class="pf-page-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-grants-border);flex-shrink:0;">
+          <i data-lucide="coins" style="width:22px;height:22px;"></i>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
-          Match Research & Destination to Active Grants
-        </h1>
-        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
-          Specify your research topic and destination country or continent. Our intelligent matcher surfaces travel grants, full doctoral stipends ($35k–$50k+), and diversity awards.
-        </p>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h1 style="font-family:var(--pf-font-display);font-size:20px;font-weight:700;margin:0;color:var(--pf-text-primary);">Funding Radar</h1>
+            <span class="pf-badge" style="font-size:10px;font-family:var(--pf-font-mono);background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">ENGINE 05</span>
+          </div>
+          <p style="font-size:13px;color:var(--pf-text-secondary);margin:2px 0 0;">Conference travel grants ($1.5k–$3k), doctoral fellowships ($35k–$50k+), and diversity awards</p>
+        </div>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-grants-bg);border:1px solid var(--pf-engine-grants-border);color:var(--pf-engine-grants);font-size:11px;font-weight:600;">
+          <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
+          <span>Zero Out-of-Pocket</span>
+        </div>
+      </div>
+    </div>
 
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      
       <!-- Matcher Panel -->
-      <div class="pf-card p-6 mb-8 space-y-4">
+      <div class="grant-card p-6 mb-8 space-y-4">
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Field 1: Research Work -->
@@ -158,7 +187,8 @@
               id="grant-work"
               placeholder="e.g. Distributed LLMs, Edge AI, Computer Vision, Graph Neural Networks..."
               oninput="filterGrants()"
-              class="pf-input text-sm py-2.5"
+              class="pf-input text-sm py-2.5 w-full"
+              style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
             >
           </div>
 
@@ -170,7 +200,8 @@
             <select 
               id="grant-dest" 
               onchange="filterGrants()"
-              class="pf-select text-sm py-2.5"
+              class="pf-select text-sm py-2.5 w-full"
+              style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
             >
               <option value="All">Global / Anywhere (All Destinations)</option>
               <option value="United States & Canada">United States & Canada</option>
@@ -184,20 +215,20 @@
         <!-- Quick Research Topic Chips -->
         <div class="flex items-center gap-1.5 flex-wrap pt-1">
           <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Quick Topics:</span>
-          <button type="button" onclick="setResearchWork('Generative AI & LLMs')" class="pf-btn pf-btn-secondary pf-btn-sm">Generative AI & LLMs</button>
-          <button type="button" onclick="setResearchWork('Computer Vision')" class="pf-btn pf-btn-secondary pf-btn-sm">Computer Vision</button>
-          <button type="button" onclick="setResearchWork('Systems & Edge Computing')" class="pf-btn pf-btn-secondary pf-btn-sm">Systems & Edge</button>
-          <button type="button" onclick="setResearchWork('Cybersecurity & Privacy')" class="pf-btn pf-btn-secondary pf-btn-sm">Cybersecurity</button>
-          <button type="button" onclick="setResearchWork('Robotics & Autonomous Systems')" class="pf-btn pf-btn-secondary pf-btn-sm">Robotics</button>
+          <button type="button" onclick="setResearchWork('Generative AI & LLMs')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="cpu" style="width:12px;height:12px;"></i> Generative AI & LLMs</button>
+          <button type="button" onclick="setResearchWork('Computer Vision')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="eye" style="width:12px;height:12px;"></i> Computer Vision</button>
+          <button type="button" onclick="setResearchWork('Systems & Edge Computing')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="server" style="width:12px;height:12px;"></i> Systems & Edge</button>
+          <button type="button" onclick="setResearchWork('Cybersecurity & Privacy')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="shield" style="width:12px;height:12px;"></i> Cybersecurity</button>
+          <button type="button" onclick="setResearchWork('Robotics & Autonomous Systems')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="bot" style="width:12px;height:12px;"></i> Robotics</button>
         </div>
 
         <!-- Category Filter Chips & Action Button -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--pf-border-subtle);">
           <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-chips">
-            <button onclick="setCategory('All')" class="cat-btn pf-btn pf-btn-primary pf-btn-sm" data-cat="All">All Funding Types</button>
-            <button onclick="setCategory('Conference Travel Grant')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Conference Travel Grant">✈️ Travel Grants ($1.5k-$3k)</button>
-            <button onclick="setCategory('Prestigious Fellowship')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Prestigious Fellowship">🎓 Full Fellowships ($35k-$50k+)</button>
-            <button onclick="setCategory('Diversity & Global Grant')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Diversity & Global Grant">🌍 Diversity & Global</button>
+            <button onclick="setCategory('All')" class="cat-btn pf-btn pf-btn-primary pf-btn-sm" data-cat="All" style="background:var(--pf-engine-grants);border-color:var(--pf-engine-grants);">All Funding Types</button>
+            <button onclick="setCategory('Conference Travel Grant')" class="cat-btn pf-btn pf-btn-secondary pf-btn-sm" data-cat="Conference Travel Grant"><i data-lucide="plane" style="width:12px;height:12px;"></i> Travel Grants ($1.5k-$3k)</button>
+            <button onclick="setCategory('Prestigious Fellowship')" class="cat-btn pf-btn-secondary pf-btn-sm" data-cat="Prestigious Fellowship"><i data-lucide="graduation-cap" style="width:12px;height:12px;"></i> Full Fellowships ($35k-$50k+)</button>
+            <button onclick="setCategory('Diversity & Global Grant')" class="cat-btn pf-btn-secondary pf-btn-sm" data-cat="Diversity & Global Grant"><i data-lucide="globe" style="width:12px;height:12px;"></i> Diversity & Global</button>
           </div>
 
           <button 
@@ -205,8 +236,10 @@
             id="match-btn"
             onclick="searchLiveGrants()"
             class="pf-btn pf-btn-primary pf-btn-sm shrink-0"
+            style="background:var(--pf-engine-grants);border-color:var(--pf-engine-grants);"
           >
-            <span>🎯 Match With Live AI Scout</span>
+            <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+            <span>Match With Live AI Scout</span>
           </button>
         </div>
 
@@ -214,8 +247,8 @@
 
       <!-- Live Grants Results Grid -->
       <div id="grants-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="pf-skeleton h-48"></div>
-        <div class="pf-skeleton h-48"></div>
+        <div class="pf-skeleton h-48 rounded-2xl"></div>
+        <div class="pf-skeleton h-48 rounded-2xl"></div>
       </div>
 
     </main>
@@ -251,9 +284,15 @@
       if (btn.dataset.cat === cat) {
         btn.classList.add('pf-btn-primary');
         btn.classList.remove('pf-btn-secondary');
+        btn.style.background = "var(--pf-engine-grants)";
+        btn.style.borderColor = "var(--pf-engine-grants)";
+        btn.style.color = "#fff";
       } else {
         btn.classList.remove('pf-btn-primary');
         btn.classList.add('pf-btn-secondary');
+        btn.style.background = "";
+        btn.style.borderColor = "";
+        btn.style.color = "";
       }
     });
     filterGrants();
@@ -295,29 +334,35 @@
     const grid = document.getElementById('grants-grid');
     if (!list.length) {
       grid.innerHTML = `
-        <div class="col-span-full pf-empty-state py-12">
-          <div class="pf-empty-icon">🔍</div>
-          <div class="pf-empty-title">No funding opportunities matched your criteria</div>
-          <div class="pf-empty-desc">Try clearing specific research keywords or choosing 'All Destinations'.</div>
-          <button onclick="document.getElementById('grant-work').value=''; document.getElementById('grant-dest').value='All'; setCategory('All');" class="pf-btn pf-btn-primary pf-btn-sm">Reset Filters</button>
+        <div class="col-span-full pf-empty-state py-12 text-center rounded-2xl border border-dashed p-8" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
+          <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+            <i data-lucide="search-x" style="width:24px;height:24px;"></i>
+          </div>
+          <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No funding opportunities matched your criteria</h4>
+          <p class="text-xs max-w-sm mx-auto mt-1 mb-4" style="color:var(--pf-text-muted);">Try clearing specific research keywords or choosing 'All Destinations'.</p>
+          <button onclick="document.getElementById('grant-work').value=''; document.getElementById('grant-dest').value='All'; setCategory('All');" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-grants);border-color:var(--pf-engine-grants);">
+            <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
+            <span>Reset Filters</span>
+          </button>
         </div>
       `;
+      if (window.lucide) lucide.createIcons();
       return;
     }
 
     grid.innerHTML = list.map(g => {
       const matchBadge = g.match_reason ? `
         <div class="pf-badge pf-badge-emerald mb-2" style="font-size: 10px;">
-          🎯 ${g.match_reason}
+          <i data-lucide="sparkles" style="width:10px;height:10px;margin-right:2px;"></i> ${g.match_reason}
         </div>
       ` : '';
 
       return `
-      <div class="pf-card pf-card-interactive p-5 flex flex-col justify-between">
+      <div class="grant-card p-5 flex flex-col justify-between">
         <div>
           ${matchBadge}
           <div class="flex items-start justify-between gap-3 mb-2">
-            <span class="pf-badge" style="font-size: 10px;">
+            <span class="pf-badge" style="font-size: 10px; background: var(--pf-engine-grants-bg); color: var(--pf-engine-grants); border: 1px solid var(--pf-engine-grants-border);">
               ${g.category}
             </span>
             <span class="pf-badge pf-badge-emerald font-mono font-bold shrink-0" style="font-size: 11px;">
@@ -325,7 +370,7 @@
             </span>
           </div>
 
-          <h3 class="text-base font-bold tracking-tight" style="color: var(--pf-text-primary);">
+          <h3 class="text-base font-bold tracking-tight" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">
             ${g.title}
           </h3>
           <span class="text-xs font-semibold block mt-0.5 mb-2" style="color: var(--pf-text-muted);">
@@ -336,13 +381,17 @@
             ${g.description}
           </p>
 
-          <div class="space-y-1.5 text-xs p-3 rounded-lg border mb-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+          <div class="space-y-1.5 text-xs p-3 rounded-xl border mb-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
             <div class="flex items-center gap-2">
-              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">⏳ Deadline:</span>
+              <span class="font-bold shrink-0 flex items-center gap-1" style="color: var(--pf-text-primary);">
+                <i data-lucide="clock" style="width:12px;height:12px;color:var(--pf-engine-grants);"></i> Deadline:
+              </span>
               <span style="color: var(--pf-text-secondary);">${g.deadline}</span>
             </div>
             <div class="flex items-start gap-2">
-              <span class="font-bold shrink-0" style="color: var(--pf-text-primary);">🎓 Eligibility:</span>
+              <span class="font-bold shrink-0 flex items-center gap-1" style="color: var(--pf-text-primary);">
+                <i data-lucide="graduation-cap" style="width:12px;height:12px;color:var(--pf-primary);"></i> Eligibility:
+              </span>
               <span style="color: var(--pf-text-secondary);">${g.eligibility}</span>
             </div>
           </div>
@@ -354,15 +403,19 @@
 
         <div class="pt-3 border-t flex items-center justify-between gap-2 flex-wrap" style="border-color: var(--pf-border-subtle);">
           <a href="${g.url}" target="_blank" class="pf-btn pf-btn-secondary pf-btn-sm">
-            Portal →
+            <span>Portal</span>
+            <i data-lucide="external-link" style="width:12px;height:12px;"></i>
           </a>
-          <a href="/agent?apply_mode=grant&title=${encodeURIComponent(g.title)}&org=${encodeURIComponent(g.organization)}&award=${encodeURIComponent(g.award || '')}&autogen=true" class="pf-btn pf-btn-primary pf-btn-sm">
-            🧠 Apply with Co-Pilot
+          <a href="/agent?apply_mode=grant&title=${encodeURIComponent(g.title)}&org=${encodeURIComponent(g.organization)}&award=${encodeURIComponent(g.award || '')}&autogen=true" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-grants);border-color:var(--pf-engine-grants);">
+            <i data-lucide="sparkles" style="width:12px;height:12px;"></i>
+            <span>Apply with Co-Pilot</span>
           </a>
         </div>
       </div>
       `;
     }).join('');
+
+    if (window.lucide) lucide.createIcons();
   }
 
   function generateDefaultGrants() {
@@ -406,7 +459,8 @@
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `<span>🎯 Match With Live AI Scout</span>`;
+        btn.innerHTML = `<i data-lucide="sparkles" style="width:14px;height:14px;"></i> <span>Match With Live AI Scout</span>`;
+        if (window.lucide) lucide.createIcons();
       }
     }
   }
@@ -415,7 +469,9 @@
     loadGrants();
   }
 
-  document.addEventListener('DOMContentLoaded', loadGrants);
+  document.addEventListener('DOMContentLoaded', () => {
+    loadGrants();
+  });
 </script>
 
 </body>

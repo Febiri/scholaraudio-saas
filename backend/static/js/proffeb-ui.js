@@ -1,19 +1,20 @@
 /**
- * ProfFeb UI Engine & Component Library
- * Powers Theme Switcher (Light/Dark), Command Palette (Cmd+K),
- * Toast Notifications, Sidebar Collapse, and Breadcrumbs.
+ * ProfFeb UI Controller & Component Library
+ * Default Light Mode, Lucide Icon Rendering, Command Palette,
+ * Unified Toast System, and Settings Modal with Audio Cache Cleaner.
  */
 
 (function () {
   'use strict';
 
   const ProfFebUI = {
-    // 1. Theme Management
+    // 1. Theme Controller (LIGHT by default)
     theme: {
       get: function () {
         const stored = localStorage.getItem('proffeb_theme');
         if (stored) return stored;
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark';
+        // Default to light theme per product design spec
+        return 'light';
       },
       set: function (theme) {
         localStorage.setItem('proffeb_theme', theme);
@@ -25,13 +26,17 @@
           root.classList.remove('dark');
           root.setAttribute('data-theme', 'light');
         }
-        // Update all theme toggle button icons if present
-        document.querySelectorAll('.pf-theme-toggle-icon').forEach(el => {
-          el.innerHTML = theme === 'dark' ? '☀️' : '🌙';
-        });
+        
+        // Update toggle buttons
         document.querySelectorAll('.pf-theme-toggle-label').forEach(el => {
           el.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
         });
+
+        // Re-render Lucide icons if available
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          setTimeout(() => window.lucide.createIcons(), 10);
+        }
+
         window.dispatchEvent(new CustomEvent('proffeb-theme-changed', { detail: { theme } }));
       },
       toggle: function () {
@@ -39,8 +44,8 @@
         const next = current === 'dark' ? 'light' : 'dark';
         this.set(next);
         ProfFebUI.toast({
-          title: `Theme Switched`,
-          message: `Switched to ${next === 'dark' ? 'Dark' : 'Light'} theme.`,
+          title: 'Theme Updated',
+          message: `Switched to ${next === 'dark' ? 'Dark' : 'Light (Warm Editorial)'} mode.`,
           type: 'info',
           duration: 2500
         });
@@ -51,7 +56,7 @@
     },
 
     // 2. Toast Notification Hub
-    toast: function ({ title = '', message = '', type = 'info', duration = 4000 } = {}) {
+    toast: function ({ title = '', message = '', type = 'info', duration = 3500 } = {}) {
       let container = document.getElementById('pf-toast-container');
       if (!container) {
         container = document.createElement('div');
@@ -59,39 +64,29 @@
         document.body.appendChild(container);
       }
 
-      const icons = {
-        success: '✓',
-        error: '✕',
-        warning: '⚠',
-        info: 'ℹ'
-      };
-
-      const iconColors = {
+      const colors = {
         success: 'var(--pf-success)',
         error: 'var(--pf-danger)',
         warning: 'var(--pf-warning)',
-        info: 'var(--pf-info)'
+        info: 'var(--pf-primary)'
       };
 
       const toastEl = document.createElement('div');
       toastEl.className = 'pf-toast';
       toastEl.setAttribute('role', 'status');
-      toastEl.setAttribute('aria-live', 'polite');
       toastEl.innerHTML = `
-        <div class="pf-toast-icon" style="color: ${iconColors[type] || iconColors.info}; font-weight: bold;">
-          ${icons[type] || icons.info}
+        <div style="color: ${colors[type] || colors.info}; font-size: 16px; margin-top: 1px;">
+          ${type === 'success' ? '✓' : type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ'}
         </div>
         <div style="flex: 1; min-width: 0;">
-          ${title ? `<div class="pf-toast-title">${title}</div>` : ''}
-          <div class="pf-toast-msg">${message}</div>
+          ${title ? `<div style="font-weight: 700; font-size: 13px; color: var(--pf-text-primary); margin-bottom: 2px;">${title}</div>` : ''}
+          <div style="font-size: 13px; color: var(--pf-text-secondary); line-height: 1.4;">${message}</div>
         </div>
-        <button type="button" class="pf-btn-ghost pf-btn-sm" style="padding: 2px 6px; font-size: 11px; opacity: 0.6;" onclick="this.parentElement.remove()">✕</button>
+        <button type="button" style="background: transparent; border: none; font-size: 14px; cursor: pointer; color: var(--pf-text-muted); padding: 0 4px;" onclick="this.parentElement.remove()">✕</button>
       `;
 
       container.appendChild(toastEl);
-      requestAnimationFrame(() => {
-        toastEl.classList.add('pf-toast-visible');
-      });
+      requestAnimationFrame(() => toastEl.classList.add('pf-toast-visible'));
 
       if (duration > 0) {
         setTimeout(() => {
@@ -101,151 +96,208 @@
       }
     },
 
-    // 3. Global Command Palette (Cmd+K / Ctrl+K)
-    commandPalette: {
-      items: [
-        { title: 'Overview & System Story', category: 'Navigation', url: '/', icon: '⊞', shortcut: '0' },
-        { title: 'Research Studio (Briefings & Audio)', category: 'Engines', url: '/app', icon: '🎙️', shortcut: '1' },
-        { title: 'Conference & Event Scout', category: 'Engines', url: '/conferences', icon: '🌐', shortcut: '2' },
-        { title: 'Novelty & Research Gap Radar', category: 'Engines', url: '/radar', icon: '🔬', shortcut: '3' },
-        { title: 'AI Reviewer #2 Simulator', category: 'Engines', url: '/reviewer', icon: '⚖️', shortcut: '4' },
-        { title: 'Funding & Travel Grants Radar', category: 'Engines', url: '/grants', icon: '💰', shortcut: '5' },
-        { title: 'Industry Lab Connector', category: 'Engines', url: '/lab-connector', icon: '🏢', shortcut: '6' },
-        { title: 'Academic Co-Pilot & Dossier', category: 'Engines', url: '/agent', icon: '🧠', shortcut: '7' },
-        { title: 'Toggle Light / Dark Theme', category: 'Actions', action: () => ProfFebUI.theme.toggle(), icon: '🌓', shortcut: 'T' },
-        { title: 'View API System Health', category: 'Actions', url: '/api/health', icon: '💚', shortcut: 'H' }
-      ],
+    // 3. Settings & Cache Clear Modal
+    settings: {
       open: function () {
-        const modal = document.getElementById('pf-command-modal');
-        if (modal) {
-          modal.classList.add('pf-modal-open');
-          const input = modal.querySelector('.pf-command-input');
-          if (input) {
-            input.value = '';
-            input.focus();
-            ProfFebUI.commandPalette.renderItems('');
-          }
-        }
-      },
-      close: function () {
-        const modal = document.getElementById('pf-command-modal');
-        if (modal) modal.classList.remove('pf-modal-open');
-      },
-      renderItems: function (query = '') {
-        const list = document.getElementById('pf-command-list');
-        if (!list) return;
-
-        const filtered = ProfFebUI.commandPalette.items.filter(item =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.category.toLowerCase().includes(query.toLowerCase())
-        );
-
-        if (filtered.length === 0) {
-          list.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--pf-text-muted); font-size: 13px;">No matching engines or commands found.</div>`;
-          return;
-        }
-
-        list.innerHTML = filtered.map((item, idx) => `
-          <div class="pf-command-item ${idx === 0 ? 'pf-command-active' : ''}" data-idx="${idx}" onclick="ProfFebUI.commandPalette.select(${idx})">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 16px;">${item.icon}</span>
-              <div>
-                <div style="font-weight: 600;">${item.title}</div>
-                <div style="font-size: 11px; color: var(--pf-text-muted);">${item.category}</div>
-              </div>
-            </div>
-            ${item.shortcut ? `<span class="pf-badge pf-badge-emerald" style="font-family: var(--pf-font-mono); font-size: 10px;">${item.shortcut}</span>` : ''}
-          </div>
-        `).join('');
-      },
-      select: function (idx) {
-        const item = ProfFebUI.commandPalette.items[idx];
-        if (!item) return;
-        this.close();
-        if (item.action) {
-          item.action();
-        } else if (item.url) {
-          window.location.href = item.url;
-        }
-      },
-      init: function () {
-        // Inject modal HTML if not already in document
-        if (!document.getElementById('pf-command-modal')) {
-          const modal = document.createElement('div');
-          modal.id = 'pf-command-modal';
+        let modal = document.getElementById('pf-settings-modal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'pf-settings-modal';
+          modal.className = 'pf-modal-overlay';
           modal.innerHTML = `
-            <div class="pf-command-box" onclick="event.stopPropagation()">
-              <div class="pf-command-input-row">
-                <span style="font-size: 16px; opacity: 0.6;">🔍</span>
-                <input type="text" class="pf-command-input" placeholder="Type a command or jump to engine... (Esc to close)" autocomplete="off" spellcheck="false">
-                <span class="pf-badge" style="font-family: var(--pf-font-mono); font-size: 10px; opacity: 0.6;">ESC</span>
+            <div class="pf-modal">
+              <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--pf-border-subtle); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.625rem;">
+                  <div style="width: 32px; height: 32px; border-radius: var(--pf-radius-sm); background: var(--pf-bg-surface-elevated); display: flex; align-items: center; justify-content: center; color: var(--pf-primary);">
+                    <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+                  </div>
+                  <div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--pf-text-primary);">Workstation Settings</h3>
+                    <p style="font-size: 12px; margin: 0; color: var(--pf-text-muted);">Cache controls, neural voice preferences & storage</p>
+                  </div>
+                </div>
+                <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" onclick="ProfFebUI.settings.close()">✕</button>
               </div>
-              <div id="pf-command-list" class="pf-command-list"></div>
+
+              <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+                <!-- Audio Cache Controls -->
+                <div class="p-3.5 rounded-xl border" style="background: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--pf-text-primary);">Audio & Manuscript Cache</div>
+                      <div style="font-size: 12px; color: var(--pf-text-muted); margin-top: 2px;">
+                        Zlib in-memory and local browser cache for synthesized audio briefings and KaTeX formulas.
+                      </div>
+                    </div>
+                    <button type="button" class="pf-btn pf-btn-secondary pf-btn-sm" style="color: var(--pf-danger); border-color: rgba(225,29,72,0.3);" onclick="ProfFebUI.settings.clearCache()">
+                      Clear Cache
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Appearance Preference -->
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div style="font-size: 14px; font-weight: 600; color: var(--pf-text-primary);">Theme Mode</div>
+                    <div style="font-size: 12px; color: var(--pf-text-muted);">Toggle between warm light editorial paper and dark midnight</div>
+                  </div>
+                  <button type="button" class="pf-btn pf-btn-secondary pf-btn-sm" onclick="ProfFebUI.theme.toggle()">
+                    <span class="pf-theme-toggle-label">${ProfFebUI.theme.get() === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
+                </div>
+
+                <!-- Engine Status Summary -->
+                <div style="font-size: 12px; color: var(--pf-text-muted); padding-top: 0.5rem; border-top: 1px solid var(--pf-border-subtle); display: flex; justify-content: space-between;">
+                  <span>ProfFeb Research OS v2.0.0</span>
+                  <span>7 Neural Engines Operational</span>
+                </div>
+              </div>
             </div>
           `;
-          modal.addEventListener('click', () => ProfFebUI.commandPalette.close());
           document.body.appendChild(modal);
-
-          const input = modal.querySelector('.pf-command-input');
-          input.addEventListener('input', (e) => {
-            ProfFebUI.commandPalette.renderItems(e.target.value);
-          });
-          input.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') ProfFebUI.commandPalette.close();
-            if (e.key === 'Enter') {
-              const active = modal.querySelector('.pf-command-item.pf-command-active');
-              if (active) {
-                const idx = parseInt(active.getAttribute('data-idx'), 10);
-                ProfFebUI.commandPalette.select(idx);
-              }
-            }
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) ProfFebUI.settings.close();
           });
         }
 
-        // Global hotkey listener
-        window.addEventListener('keydown', (e) => {
-          if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-            e.preventDefault();
-            ProfFebUI.commandPalette.open();
-          }
-        });
+        modal.classList.add('active');
+        if (window.lucide) window.lucide.createIcons();
+      },
+      close: function () {
+        const modal = document.getElementById('pf-settings-modal');
+        if (modal) modal.classList.remove('active');
+      },
+      clearCache: function () {
+        if (confirm("Reset and clear audio synthesis cache? Your saved papers and database entries remain safe.")) {
+          try {
+            localStorage.removeItem('proffeb_audio_cache');
+            localStorage.removeItem('proffeb_recent_papers');
+          } catch (e) {}
+
+          ProfFebUI.toast({
+            title: "Audio Cache Cleared",
+            message: "Temporary audio buffers reset. Ready for clean neural synthesis.",
+            type: "success"
+          });
+          ProfFebUI.settings.close();
+        }
       }
     },
 
-    // 4. Sidebar Controller
+    // 4. Collapsible Sidebar Controller
     sidebar: {
-      isCollapsed: function () {
-        return localStorage.getItem('proffeb_sidebar_collapsed') === 'true';
-      },
       toggle: function () {
-        const sidebar = document.getElementById('pf-app-sidebar');
+        const sidebar = document.querySelector('.pf-sidebar');
         if (!sidebar) return;
-        const collapsed = sidebar.classList.toggle('pf-sidebar-collapsed');
-        localStorage.setItem('proffeb_sidebar_collapsed', collapsed ? 'true' : 'false');
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        localStorage.setItem('proffeb_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+      },
+      toggleMobile: function () {
+        const sidebar = document.querySelector('.pf-sidebar');
+        if (!sidebar) return;
+        sidebar.classList.toggle('mobile-open');
       },
       init: function () {
-        const sidebar = document.getElementById('pf-app-sidebar');
-        if (sidebar && this.isCollapsed()) {
-          sidebar.classList.add('pf-sidebar-collapsed');
+        const sidebar = document.querySelector('.pf-sidebar');
+        if (!sidebar) return;
+        const saved = localStorage.getItem('proffeb_sidebar_collapsed');
+        if (saved === 'true') {
+          sidebar.classList.add('collapsed');
         }
       }
     },
 
-    // 5. Initialize full suite
+    // 5. Global Command Palette (Cmd/Ctrl + K)
+    palette: {
+      open: function () {
+        let palette = document.getElementById('pf-command-palette');
+        if (!palette) {
+          palette = document.createElement('div');
+          palette.id = 'pf-command-palette';
+          palette.className = 'pf-modal-overlay';
+          palette.innerHTML = `
+            <div class="pf-modal" style="max-width: 520px;">
+              <div style="padding: 0.875rem 1rem; border-bottom: 1px solid var(--pf-border-subtle); display: flex; align-items: center; gap: 0.75rem;">
+                <i data-lucide="search" style="color: var(--pf-text-muted); width: 18px; height: 18px;"></i>
+                <input id="pf-palette-search" type="text" placeholder="Jump to an engine or action... (Esc to close)" style="border: none; background: transparent; width: 100%; font-size: 14px; color: var(--pf-text-primary); outline: none;">
+                <kbd style="font-size: 10px; font-family: var(--pf-font-mono); padding: 2px 6px; border-radius: 4px; background: var(--pf-bg-surface-elevated); color: var(--pf-text-muted);">ESC</kbd>
+              </div>
+              <div id="pf-palette-results" style="max-height: 340px; overflow-y: auto; padding: 0.5rem;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--pf-text-muted); text-transform: uppercase; padding: 0.375rem 0.625rem;">Research Engines</div>
+                <a href="/app" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-studio-bg); color: var(--pf-engine-studio);"><i data-lucide="headphones" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">01. Research Studio</div><div style="font-size: 11px; color: var(--pf-text-muted);">Spoken audio & math deconstruction</div></div>
+                </a>
+                <a href="/conferences" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-scout-bg); color: var(--pf-engine-scout);"><i data-lucide="calendar" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">02. Conference Scout</div><div style="font-size: 11px; color: var(--pf-text-muted);">CORE A* rankings & travel grant deadlines</div></div>
+                </a>
+                <a href="/radar" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-radar-bg); color: var(--pf-engine-radar);"><i data-lucide="radar" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">03. Novelty Radar</div><div style="font-size: 11px; color: var(--pf-text-muted);">Literature gap analysis & competitor matrix</div></div>
+                </a>
+                <a href="/reviewer" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-reviewer-bg); color: var(--pf-engine-reviewer);"><i data-lucide="shield-alert" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">04. AI Reviewer #2</div><div style="font-size: 11px; color: var(--pf-text-muted);">Adversarial manuscript audit & rebuttal coach</div></div>
+                </a>
+                <a href="/grants" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-grants-bg); color: var(--pf-engine-grants);"><i data-lucide="badge-dollar-sign" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">05. Funding Radar</div><div style="font-size: 11px; color: var(--pf-text-muted);">Doctoral fellowships & travel stipends</div></div>
+                </a>
+                <a href="/lab-connector" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-lab-bg); color: var(--pf-engine-lab);"><i data-lucide="building-2" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">06. Lab Connector</div><div style="font-size: 11px; color: var(--pf-text-muted);">Postdoc & visiting researcher matching</div></div>
+                </a>
+                <a href="/agent" class="pf-nav-item" style="margin-bottom: 2px;">
+                  <span class="pf-nav-icon-wrap" style="background: var(--pf-engine-copilot-bg); color: var(--pf-engine-copilot);"><i data-lucide="bot" style="width: 15px; height: 15px;"></i></span>
+                  <div style="flex: 1;"><div style="font-weight: 600;">07. Academic Co-Pilot</div><div style="font-size: 11px; color: var(--pf-text-muted);">Autonomous application dispatch & GitHub twin</div></div>
+                </a>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(palette);
+          palette.addEventListener('click', (e) => {
+            if (e.target === palette) ProfFebUI.palette.close();
+          });
+        }
+
+        palette.classList.add('active');
+        const input = document.getElementById('pf-palette-search');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+        if (window.lucide) window.lucide.createIcons();
+      },
+      close: function () {
+        const palette = document.getElementById('pf-command-palette');
+        if (palette) palette.classList.remove('active');
+      }
+    },
+
+    // 6. Global Init
     init: function () {
       this.theme.init();
-      this.commandPalette.init();
       this.sidebar.init();
+
+      // Keyboard listener for Cmd+K and Esc
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          ProfFebUI.palette.open();
+        } else if (e.key === 'Escape') {
+          ProfFebUI.palette.close();
+          ProfFebUI.settings.close();
+        }
+      });
+
+      // Auto-render Lucide icons on load
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
     }
   };
 
-  // Expose globally
   window.ProfFebUI = ProfFebUI;
-
-  // Run on DOM loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => ProfFebUI.init());
-  } else {
-    ProfFebUI.init();
-  }
+  document.addEventListener('DOMContentLoaded', () => ProfFebUI.init());
 })();

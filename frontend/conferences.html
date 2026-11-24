@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +7,19 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
-  <!-- Design System Typography -->
+  <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Line Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- ProfFeb Unified Design System -->
   <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
 
   <!-- Tailwind CSS CDN for utility layering -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
 
   <!-- Supabase Auth SDK & ProfFeb Session Manager -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,111 +27,129 @@
   <script src="/static/js/proffeb-ui.js" defer></script>
 
   <style>
-    .glass-panel {
-      background-color: var(--pf-bg-surface);
+    .scout-card {
+      background: var(--pf-bg-surface);
       border: 1px solid var(--pf-border-subtle);
+      border-radius: var(--pf-radius-lg);
       transition: var(--pf-transition);
+      box-shadow: var(--pf-shadow-xs);
     }
-    .glass-panel:hover {
+    .scout-card:hover {
       border-color: var(--pf-engine-scout);
+      box-shadow: var(--pf-shadow-md);
+      transform: translateY(-2px);
     }
   </style>
 </head>
 
-<body class="min-h-screen antialiased selection:bg-indigo-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+<body class="selection:bg-teal-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary); margin:0;">
 
-<div class="pf-app-container">
+<div class="pf-app-shell">
   
-  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <!-- ================= UNIFIED LEFT SIDEBAR ================= -->
   <aside id="pf-app-sidebar" class="pf-sidebar">
-    <!-- Brand row with toggle -->
-    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
-      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #4f46e5, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
-        <div class="pf-brand-text">
-          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
-          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">SCOUT • E02</div>
+    <div class="pf-sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0D9488,#14B8A6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(13,148,136,0.25);">P</div>
+        <div class="pf-brand-full">
+          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
+          <div style="font-size:10px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
         </div>
       </a>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
-        ◀
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
+        <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
       </button>
     </div>
 
     <!-- Navigation items (7 Engines + Overview) -->
-    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+    <nav class="pf-sidebar-nav">
+      <div class="pf-nav-section-title pf-sidebar-text">Workspace</div>
       <a href="/" class="pf-nav-item">
-        <span>⊞</span>
-        <span class="pf-nav-label">Overview</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-primary);"><i data-lucide="layout-grid"></i></div>
+        <span class="pf-sidebar-text">Overview</span>
       </a>
+
+      <div class="pf-nav-section-title pf-sidebar-text" style="margin-top:0.75rem;">7 Engines</div>
       <a href="/app" class="pf-nav-item">
-        <span style="color: var(--pf-engine-studio);">🎙️</span>
-        <span class="pf-nav-label">Research Studio</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-studio);background:var(--pf-engine-studio-bg);"><i data-lucide="headphones"></i></div>
+        <span class="pf-sidebar-text">Research Studio</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);">E01</span>
       </a>
-      <a href="/conferences" class="pf-nav-item pf-nav-active">
-        <span style="color: var(--pf-engine-scout);">🌐</span>
-        <span class="pf-nav-label">Conference Scout</span>
+      <a href="/conferences" class="pf-nav-item active">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-scout);background:var(--pf-engine-scout-bg);"><i data-lucide="calendar"></i></div>
+        <span class="pf-sidebar-text">Conference Scout</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">E02</span>
       </a>
       <a href="/radar" class="pf-nav-item">
-        <span style="color: var(--pf-engine-radar);">🔬</span>
-        <span class="pf-nav-label">Novelty Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-radar);background:var(--pf-engine-radar-bg);"><i data-lucide="radar"></i></div>
+        <span class="pf-sidebar-text">Novelty Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">E03</span>
       </a>
       <a href="/reviewer" class="pf-nav-item">
-        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
-        <span class="pf-nav-label">Reviewer #2</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-reviewer);background:var(--pf-engine-reviewer-bg);"><i data-lucide="shield-alert"></i></div>
+        <span class="pf-sidebar-text">Reviewer #2</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">E04</span>
       </a>
       <a href="/grants" class="pf-nav-item">
-        <span style="color: var(--pf-engine-grants);">💰</span>
-        <span class="pf-nav-label">Funding Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-grants);background:var(--pf-engine-grants-bg);"><i data-lucide="coins"></i></div>
+        <span class="pf-sidebar-text">Funding Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">E05</span>
       </a>
       <a href="/lab-connector" class="pf-nav-item">
-        <span style="color: var(--pf-engine-lab);">🏢</span>
-        <span class="pf-nav-label">Lab Connector</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-lab);background:var(--pf-engine-lab-bg);"><i data-lucide="building"></i></div>
+        <span class="pf-sidebar-text">Lab Connector</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);">E06</span>
       </a>
       <a href="/agent" class="pf-nav-item">
-        <span style="color: var(--pf-engine-copilot);">🧠</span>
-        <span class="pf-nav-label">Academic Co-Pilot</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-copilot);background:var(--pf-engine-copilot-bg);"><i data-lucide="sparkles"></i></div>
+        <span class="pf-sidebar-text">Academic Co-Pilot</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">E07</span>
       </a>
     </nav>
 
     <!-- Bottom utility items -->
-    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
-        <span class="pf-theme-toggle-icon">🌓</span>
-        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+    <div class="pf-sidebar-footer">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.theme.toggle()">
+        <i data-lucide="sun-moon"></i>
+        <span class="pf-sidebar-text pf-theme-toggle-label">Theme</span>
       </button>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
-        <span>⌘K</span>
-        <span class="pf-nav-label">Command Palette</span>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.commandPalette.open()">
+        <span style="font-family:var(--pf-font-mono);font-size:12px;font-weight:700;">⌘K</span>
+        <span class="pf-sidebar-text">Command Palette</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.settings.open()">
+        <i data-lucide="settings"></i>
+        <span class="pf-sidebar-text">Settings & Cache</span>
       </button>
     </div>
   </aside>
 
   <!-- ================= MAIN STAGE ================= -->
-  <div class="pf-main-stage">
+  <div class="pf-main-wrapper">
     
     <!-- TOP HEADER -->
-    <header class="pf-top-bar">
-      <!-- Breadcrumbs & Mobile Sidebar Toggle -->
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
-        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
-          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
-          <span style="color: var(--pf-border-strong);">/</span>
-          <span style="font-weight: 600; color: var(--pf-engine-scout);">Conference Scout</span>
+    <header class="pf-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">
+          <i data-lucide="menu"></i>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <a href="/" style="color:var(--pf-text-muted);text-decoration:none;font-weight:500;">ProfFeb</a>
+          <span style="color:var(--pf-border-strong);">/</span>
+          <span style="font-weight:600;color:var(--pf-engine-scout);">Conference Scout</span>
         </div>
       </div>
 
       <!-- Right Header Actions -->
-      <div class="flex items-center gap-2">
+      <div style="display:flex;align-items:center;gap:8px;">
         <button 
           onclick="toggleWatchlistDrawer()" 
           class="pf-btn pf-btn-secondary pf-btn-sm"
           title="Open Watchlist"
         >
-          <span>⭐</span>
+          <i data-lucide="star" style="width:14px;height:14px;color:var(--pf-engine-grants);"></i>
           <span>Watchlist</span>
-          <span id="nav-watchlist-count" class="pf-badge pf-badge-indigo" style="font-size: 10px;">0</span>
+          <span id="nav-watchlist-count" class="pf-badge pf-badge-indigo" style="font-size:10px;">0</span>
         </button>
 
         <button 
@@ -149,47 +157,60 @@
           title="Clear local runtime cache"
           class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon"
         >
-          🔄
+          <i data-lucide="refresh-cw"></i>
         </button>
 
         <div id="user-nav-container"></div>
       </div>
     </header>
 
-    <!-- WORKSPACE BODY -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-      
-      <!-- Engine Hero Header -->
-      <div class="max-w-4xl mx-auto text-center mb-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-scout-bg); border-color: rgba(99, 102, 241, 0.3);">
-          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          <span class="text-xs font-semibold" style="color: var(--pf-engine-scout);">Doctoral Venue Finder • CORE A*, IEEE, ACM & Global CFPs</span>
+    <!-- COMPACT PAGE HEADER -->
+    <div class="pf-page-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-scout-border);flex-shrink:0;">
+          <i data-lucide="calendar" style="width:22px;height:22px;"></i>
         </div>
-        
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
-          Scout Academic Conferences & Active Deadlines
-        </h1>
-        
-        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
-          Scan international research registries for upcoming conference cycles, submission deadlines, PhD consortium mentorship tracks, and student travel grants.
-        </p>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h1 style="font-family:var(--pf-font-display);font-size:20px;font-weight:700;margin:0;color:var(--pf-text-primary);">Conference Scout</h1>
+            <span class="pf-badge" style="font-size:10px;font-family:var(--pf-font-mono);background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">ENGINE 02</span>
+          </div>
+          <p style="font-size:13px;color:var(--pf-text-secondary);margin:2px 0 0;">Doctoral venue finder, CORE A* rankings, PhD consortium tracks, and travel grants</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-scout-bg);border:1px solid var(--pf-engine-scout-border);color:var(--pf-engine-scout);font-size:11px;font-weight:600;">
+          <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
+          <span>Active CFP Sync</span>
+        </div>
+      </div>
+    </div>
 
-        <!-- MAIN SEARCH FORM -->
-        <form id="scout-search-form" onsubmit="handleSearch(event)" class="mt-6">
-          <div class="relative max-w-2xl mx-auto flex items-center">
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+      
+      <!-- Search Form & Quick Chips -->
+      <div class="max-w-3xl mx-auto text-center mb-6">
+        <form id="scout-search-form" onsubmit="handleSearch(event)">
+          <div class="relative flex items-center shadow-sm rounded-xl overflow-hidden" style="background:var(--pf-bg-surface);border:1px solid var(--pf-border-default);">
+            <div class="pl-4 text-slate-400">
+              <i data-lucide="search" style="width:16px;height:16px;"></i>
+            </div>
             <input 
               type="text" 
               id="page-search-input"
-              placeholder="Search by research area (e.g. African NLP, Computer Vision, Edge AI, Security)..."
-              class="pf-input text-sm py-3 pl-4 pr-24 shadow-sm"
+              placeholder="Search by topic (e.g. African NLP, Computer Vision, Edge AI, Security)..."
+              class="w-full text-sm py-3 pl-3 pr-28 outline-none"
+              style="background:transparent;color:var(--pf-text-primary);"
               autocomplete="off"
             />
             <button 
               type="submit" 
               id="page-search-btn"
-              class="pf-btn pf-btn-primary absolute right-1.5 top-1.5 bottom-1.5"
+              class="pf-btn pf-btn-primary pf-btn-sm absolute right-1.5 top-1.5 bottom-1.5"
+              style="background:var(--pf-engine-scout);border-color:var(--pf-engine-scout);"
             >
-              <span id="btn-text">Scout</span>
+              <span id="btn-text">Scout Venues</span>
               <span id="btn-icon">→</span>
               <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" viewBox="0 0 24 24" fill="none">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -201,13 +222,13 @@
           <!-- Quick Topic Suggestion Chips -->
           <div class="mt-3 flex flex-wrap items-center justify-center gap-1.5 text-xs">
             <span class="font-mono text-[11px] mr-1" style="color: var(--pf-text-muted);">Quick Topics:</span>
-            <button type="button" onclick="selectTopic('African NLP')" class="pf-btn pf-btn-secondary pf-btn-sm">🇬🇭 African NLP</button>
-            <button type="button" onclick="selectTopic('Deep Learning')" class="pf-btn pf-btn-secondary pf-btn-sm">🤖 Deep Learning</button>
-            <button type="button" onclick="selectTopic('Medical AI & Imaging')" class="pf-btn pf-btn-secondary pf-btn-sm">🏥 Medical AI</button>
-            <button type="button" onclick="selectTopic('Microgrids & Energy')" class="pf-btn pf-btn-secondary pf-btn-sm">⚡ Microgrids</button>
-            <button type="button" onclick="selectTopic('Cybersecurity')" class="pf-btn pf-btn-secondary pf-btn-sm">🔒 Cybersecurity</button>
-            <button type="button" onclick="selectTopic('Human-Computer Interaction')" class="pf-btn pf-btn-secondary pf-btn-sm">🌐 HCI</button>
-            <button type="button" onclick="selectTopic('Doctoral Consortium')" class="pf-btn pf-btn-secondary pf-btn-sm" style="color: var(--pf-engine-scout); font-weight: 700;">🎓 PhD Tracks</button>
+            <button type="button" onclick="selectTopic('African NLP')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="globe" style="width:12px;height:12px;"></i> African NLP</button>
+            <button type="button" onclick="selectTopic('Deep Learning')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="cpu" style="width:12px;height:12px;"></i> Deep Learning</button>
+            <button type="button" onclick="selectTopic('Medical AI & Imaging')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="activity" style="width:12px;height:12px;"></i> Medical AI</button>
+            <button type="button" onclick="selectTopic('Microgrids & Energy')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="zap" style="width:12px;height:12px;"></i> Microgrids</button>
+            <button type="button" onclick="selectTopic('Cybersecurity')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="shield" style="width:12px;height:12px;"></i> Cybersecurity</button>
+            <button type="button" onclick="selectTopic('Human-Computer Interaction')" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="mouse-pointer" style="width:12px;height:12px;"></i> HCI</button>
+            <button type="button" onclick="selectTopic('Doctoral Consortium')" class="pf-btn pf-btn-secondary pf-btn-sm" style="color: var(--pf-engine-scout); font-weight: 700;"><i data-lucide="graduation-cap" style="width:12px;height:12px;"></i> PhD Tracks</button>
           </div>
         </form>
       </div>
@@ -216,18 +237,18 @@
       <div class="mb-6 p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 text-xs" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
         
         <!-- Checkbox Filters -->
-        <div class="flex flex-wrap items-center gap-3 font-medium">
-          <label class="flex items-center gap-2 cursor-pointer font-semibold px-2 py-1 rounded" style="color: var(--pf-primary);">
-            <input type="checkbox" id="chk-upcoming" onchange="applyFilters()" checked class="w-4 h-4 rounded text-emerald-500">
-            <span>🟢 Active / Future Deadlines</span>
+        <div class="flex flex-wrap items-center gap-4 font-medium">
+          <label class="flex items-center gap-2 cursor-pointer font-semibold px-2 py-1 rounded" style="color: var(--pf-engine-scout);">
+            <input type="checkbox" id="chk-upcoming" onchange="applyFilters()" checked class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500">
+            <span>Active / Future Deadlines</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer px-2 py-1 rounded" style="color: var(--pf-text-secondary);">
-            <input type="checkbox" id="chk-doctoral" onchange="applyFilters()" class="w-4 h-4 rounded">
-            <span>🎓 Doctoral Consortiums</span>
+            <input type="checkbox" id="chk-doctoral" onchange="applyFilters()" class="w-4 h-4 rounded text-teal-600">
+            <span>Doctoral Consortiums</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer px-2 py-1 rounded" style="color: var(--pf-text-secondary);">
-            <input type="checkbox" id="chk-grants" onchange="applyFilters()" class="w-4 h-4 rounded">
-            <span>✈️ Student Travel Grants</span>
+            <input type="checkbox" id="chk-grants" onchange="applyFilters()" class="w-4 h-4 rounded text-teal-600">
+            <span>Student Travel Grants</span>
           </label>
         </div>
 
@@ -235,7 +256,7 @@
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
             <span>Region:</span>
-            <select id="sel-region" onchange="applyFilters()" class="pf-select py-1 text-xs w-32">
+            <select id="sel-region" onchange="applyFilters()" class="pf-select py-1 text-xs w-32" style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);">
               <option value="">All Regions</option>
               <option value="Africa">Africa</option>
               <option value="North America">North America</option>
@@ -246,7 +267,7 @@
 
           <div class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
             <span>Cycle:</span>
-            <select id="sel-year" onchange="applyFilters()" class="pf-select py-1 text-xs w-28">
+            <select id="sel-year" onchange="applyFilters()" class="pf-select py-1 text-xs w-28" style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);">
               <option value="" selected>All Upcoming</option>
               <option value="2027">2027 Cycle</option>
               <option value="2026">2026 Cycle</option>
@@ -263,11 +284,11 @@
       <!-- RESULTS HEADER STRIP -->
       <div class="flex items-center justify-between pb-3 border-b mb-6" style="border-color: var(--pf-border-subtle);">
         <div>
-          <h3 id="results-headline" class="text-lg font-bold tracking-tight" style="color: var(--pf-text-primary);">
+          <h3 id="results-headline" class="text-base font-bold tracking-tight" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">
             Featured Academic Conferences
           </h3>
           <p id="results-subtext" class="text-xs mt-0.5" style="color: var(--pf-text-muted);">
-            Curated international and regional venues with active Call for Papers.
+            Curated international and regional venues with verified submission deadlines.
           </p>
         </div>
         
@@ -281,9 +302,9 @@
       <!-- CONFERENCES GRID -->
       <div id="conferences-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <!-- Populated via JavaScript -->
-        <div class="pf-skeleton h-48"></div>
-        <div class="pf-skeleton h-48"></div>
-        <div class="pf-skeleton h-48"></div>
+        <div class="pf-skeleton h-48 rounded-2xl"></div>
+        <div class="pf-skeleton h-48 rounded-2xl"></div>
+        <div class="pf-skeleton h-48 rounded-2xl"></div>
       </div>
 
     </main>
@@ -291,13 +312,13 @@
 </div>
 
 <!-- ================= MY WATCHLIST DRAWER ================= -->
-<div id="watchlist-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex justify-end">
+<div id="watchlist-drawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex justify-end">
   <div class="w-full max-w-md h-full border-l shadow-2xl flex flex-col justify-between overflow-hidden" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-default);">
     
     <!-- Drawer Header -->
     <div class="p-4 border-b flex items-center justify-between" style="border-color: var(--pf-border-subtle); background-color: var(--pf-bg-surface-elevated);">
       <div class="flex items-center gap-2">
-        <span class="text-xl">⭐</span>
+        <i data-lucide="star" style="width:18px;height:18px;color:var(--pf-engine-grants);"></i>
         <div>
           <h3 class="font-bold text-sm" style="color: var(--pf-text-primary);">My Conference Watchlist</h3>
           <p class="text-xs" style="color: var(--pf-text-muted);">Track target submission deadlines</p>
@@ -313,8 +334,9 @@
 
     <!-- Drawer Footer -->
     <div class="p-4 border-t flex items-center justify-between gap-3 text-xs" style="border-color: var(--pf-border-subtle); background-color: var(--pf-bg-surface-elevated);">
-      <button onclick="copyWatchlist()" class="pf-btn pf-btn-primary pf-btn-sm flex-1">
-        📋 Copy All Deadlines
+      <button onclick="copyWatchlist()" class="pf-btn pf-btn-primary pf-btn-sm flex-1" style="background:var(--pf-engine-scout);border-color:var(--pf-engine-scout);">
+        <i data-lucide="copy" style="width:14px;height:14px;"></i>
+        <span>Copy All Deadlines</span>
       </button>
       <button onclick="clearWatchlist()" class="pf-btn pf-btn-secondary pf-btn-sm">
         Clear
@@ -392,12 +414,15 @@
 
     if (!list.length) {
       container.innerHTML = `
-        <div class="pf-empty-state py-12">
-          <div class="pf-empty-icon">⭐</div>
-          <div class="pf-empty-title">Your Watchlist is empty</div>
-          <div class="pf-empty-desc">Click the star on any conference to keep track of its submission deadline.</div>
+        <div class="pf-empty-state py-12 text-center">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--pf-bg-surface-elevated);color:var(--pf-text-muted);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+            <i data-lucide="star" style="width:20px;height:20px;"></i>
+          </div>
+          <div class="font-bold text-sm" style="color:var(--pf-text-primary);">Your Watchlist is empty</div>
+          <div class="text-xs mt-1" style="color:var(--pf-text-muted);">Click the star on any conference card to keep track of its deadline.</div>
         </div>
       `;
+      if (window.lucide) lucide.createIcons();
       return;
     }
 
@@ -406,12 +431,12 @@
       let countdown = "";
       if (daysLeft !== null) {
         if (daysLeft < 0) countdown = `<span class="pf-badge" style="font-size: 10px;">Past</span>`;
-        else if (daysLeft <= 14) countdown = `<span class="pf-badge pf-badge-rose" style="font-size: 10px;">⏰ ${daysLeft}d left</span>`;
-        else countdown = `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">⏳ ${daysLeft}d left</span>`;
+        else if (daysLeft <= 14) countdown = `<span class="pf-badge pf-badge-rose" style="font-size: 10px;">${daysLeft}d left</span>`;
+        else countdown = `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">${daysLeft}d left</span>`;
       }
 
       return `
-        <div class="p-3 rounded-lg border flex flex-col justify-between" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+        <div class="p-3 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
           <div class="flex items-start justify-between gap-2 mb-1">
             <div>
               <h4 class="font-bold text-sm" style="color: var(--pf-text-primary);">${c.acronym}</h4>
@@ -420,7 +445,7 @@
             ${countdown}
           </div>
           <div class="text-[11px] font-mono mt-1" style="color: var(--pf-text-muted);">
-            📅 Sub: <strong>${c.submission_deadline || 'TBA'}</strong> | 📍 ${c.location || 'Global'}
+            Sub: <strong>${c.submission_deadline || 'TBA'}</strong> • ${c.location || 'Global'}
           </div>
           <div class="mt-2.5 pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--pf-border-subtle);">
             <a href="${c.cfp_url || c.official_url}" target="_blank" class="font-bold hover:underline" style="color: var(--pf-engine-scout);">
@@ -433,6 +458,8 @@
         </div>
       `;
     }).join('');
+
+    if (window.lucide) lucide.createIcons();
   }
 
   function copyWatchlist() {
@@ -501,7 +528,7 @@
 
       if (res.ok) {
         const data = await res.json();
-        conferencesList = data.results || [];
+        conferencesList = Array.isArray(data) ? data : (data.conferences || data.results || []);
         document.getElementById("results-headline").innerText = `Results for "${query || 'Global Venues'}"`;
         document.getElementById("results-subtext").innerText = `Found ${conferencesList.length} conference entries.`;
         renderConferences(conferencesList);
@@ -521,13 +548,13 @@
   }
 
   function generateClientDynamicConferences(query, doctoral, grants) {
-    const q = (query || "Computing").toUpperCase();
     return [
-      { id: "neurips-auto", acronym: "NeurIPS 2026", name: "Conference on Neural Information Processing Systems", core_ranking: "A*", location: "Vancouver, Canada", dates: "Dec 6-12, 2026", submission_deadline: "2026-05-18", days_remaining: 174, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://neurips.cc", grant_details: "$1,500 travel support for presenting student authors." },
-      { id: "icml-auto", acronym: "ICML 2026", name: "International Conference on Machine Learning", core_ranking: "A*", location: "Vienna, Austria", dates: "July 12-18, 2026", submission_deadline: "2026-02-01", days_remaining: 68, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://icml.cc", grant_details: "$1,200 travel awards." },
-      { id: "acl-auto", acronym: "ACL 2026", name: "Association for Computational Linguistics", core_ranking: "A*", location: "Bangkok, Thailand", dates: "August 2-7, 2026", submission_deadline: "2026-02-15", days_remaining: 82, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://aclweb.org", grant_details: "$2,000 D&I travel awards." },
-      { id: "cvpr-auto", acronym: "CVPR 2026", name: "IEEE/CVF Computer Vision and Pattern Recognition", core_ranking: "A*", location: "Seattle, USA", dates: "June 16-20, 2026", submission_deadline: "2025-11-08", days_remaining: -15, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://cvpr.thecvf.com", grant_details: "$1,000 student travel grant." },
-      { id: "indaba-auto", acronym: "Deep Learning Indaba 2026", name: "The Premier African AI & Machine Learning Gathering", core_ranking: "Top Regional", location: "Accra, Ghana", dates: "September 1-6, 2026", submission_deadline: "2026-04-15", days_remaining: 141, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://deeplearningindaba.com", grant_details: "Full flight, accommodation, and registration grant." }
+      { id: "neurips-2026", acronym: "NeurIPS 2026", name: "Conference on Neural Information Processing Systems", core_ranking: "A*", location: "Vancouver, Canada", dates: "Dec 6-12, 2026", submission_deadline: "2026-05-18", days_remaining: 174, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://neurips.cc", grant_details: "$1,500 travel support for presenting student authors." },
+      { id: "icml-2026", acronym: "ICML 2026", name: "International Conference on Machine Learning", core_ranking: "A*", location: "Vienna, Austria", dates: "July 12-18, 2026", submission_deadline: "2026-02-01", days_remaining: 68, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://icml.cc", grant_details: "$1,200 travel awards." },
+      { id: "acl-2026", acronym: "ACL 2026", name: "Association for Computational Linguistics", core_ranking: "A*", location: "Bangkok, Thailand", dates: "August 2-7, 2026", submission_deadline: "2026-02-15", days_remaining: 82, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://aclweb.org", grant_details: "$2,000 D&I travel awards." },
+      { id: "indaba-2026", acronym: "Deep Learning Indaba 2026", name: "The Premier African AI & Machine Learning Gathering", core_ranking: "Top Regional", location: "Accra, Ghana", dates: "September 1-6, 2026", submission_deadline: "2026-04-15", days_remaining: 141, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://deeplearningindaba.com", grant_details: "Full flight, accommodation, and registration grant." },
+      { id: "sigmod-2026", acronym: "ACM SIGMOD 2026", name: "ACM International Conference on Management of Data", core_ranking: "A*", location: "Berlin, Germany", dates: "June 21-26, 2026", submission_deadline: "2026-01-15", days_remaining: 52, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://sigmod.org", grant_details: "$1,800 SIGMOD student grant." },
+      { id: "aaai-2027", acronym: "AAAI 2027", name: "AAAI Conference on Artificial Intelligence", core_ranking: "A*", location: "Philadelphia, USA", dates: "February 20-27, 2027", submission_deadline: "2026-08-15", days_remaining: 264, doctoral_consortium: true, student_travel_grants: true, cfp_url: "https://aaai.org", grant_details: "$1,000 student scholarship awards." }
     ];
   }
 
@@ -535,12 +562,14 @@
     const container = document.getElementById("conferences-container");
     const badge = document.getElementById("results-badge");
 
+    const safeList = Array.isArray(list) ? list : (list && list.conferences ? list.conferences : []);
+
     const upcomingOnly = document.getElementById("chk-upcoming").checked;
     const doctoralOnly = document.getElementById("chk-doctoral").checked;
     const grantsOnly = document.getElementById("chk-grants").checked;
     const region = document.getElementById("sel-region").value;
 
-    let filtered = list.filter(conf => {
+    let filtered = safeList.filter(conf => {
       if (upcomingOnly && conf.days_remaining !== null && conf.days_remaining < 0) return false;
       if (doctoralOnly && !conf.doctoral_consortium) return false;
       if (grantsOnly && !conf.student_travel_grants) return false;
@@ -552,13 +581,19 @@
 
     if (!filtered.length) {
       container.innerHTML = `
-        <div class="col-span-full pf-empty-state py-12">
-          <div class="pf-empty-icon">🔍</div>
-          <div class="pf-empty-title">No conferences matched your criteria</div>
-          <div class="pf-empty-desc">Try clearing specific filters or broadening your search query.</div>
-          <button onclick="resetAllFilters()" class="pf-btn pf-btn-primary pf-btn-sm">Reset Filters</button>
+        <div class="col-span-full pf-empty-state py-12 text-center rounded-2xl border border-dashed p-8" style="background:var(--pf-bg-surface);border-color:var(--pf-border-default);">
+          <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+            <i data-lucide="search-x" style="width:24px;height:24px;"></i>
+          </div>
+          <h4 class="font-bold text-sm" style="color:var(--pf-text-primary);">No conferences matched your criteria</h4>
+          <p class="text-xs max-w-sm mx-auto mt-1 mb-4" style="color:var(--pf-text-muted);">Try adjusting your search terms, clearing the region filter, or resetting all filters.</p>
+          <button onclick="resetAllFilters()" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-scout);border-color:var(--pf-engine-scout);">
+            <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
+            <span>Reset All Filters</span>
+          </button>
         </div>
       `;
+      if (window.lucide) lucide.createIcons();
       return;
     }
 
@@ -571,20 +606,25 @@
 
       let countdownBadge = "";
       if (daysLeft !== null) {
-        if (daysLeft < 0) countdownBadge = `<span class="pf-badge" style="font-size: 10px;">Passed</span>`;
-        else if (daysLeft <= 21) countdownBadge = `<span class="pf-badge pf-badge-rose" style="font-size: 10px;">⏰ ${daysLeft}d left</span>`;
-        else if (daysLeft <= 60) countdownBadge = `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">⏳ ${daysLeft}d left</span>`;
-        else countdownBadge = `<span class="pf-badge pf-badge-emerald" style="font-size: 10px;">🟢 Open • ${daysLeft}d left</span>`;
+        if (daysLeft < 0) {
+          countdownBadge = `<span class="pf-badge" style="font-size:10px;">Passed</span>`;
+        } else if (daysLeft <= 30) {
+          countdownBadge = `<span class="pf-badge pf-badge-rose" style="font-size:10px;"><i data-lucide="alert-circle" style="width:10px;height:10px;margin-right:2px;"></i> ${daysLeft}d left</span>`;
+        } else if (daysLeft <= 60) {
+          countdownBadge = `<span class="pf-badge pf-badge-amber" style="font-size:10px;"><i data-lucide="clock" style="width:10px;height:10px;margin-right:2px;"></i> ${daysLeft}d left</span>`;
+        } else {
+          countdownBadge = `<span class="pf-badge pf-badge-emerald" style="font-size:10px;"><i data-lucide="calendar-check" style="width:10px;height:10px;margin-right:2px;"></i> ${daysLeft}d left</span>`;
+        }
       }
 
       return `
-        <div class="pf-card pf-card-interactive p-4 flex flex-col justify-between">
+        <div class="scout-card p-5 flex flex-col justify-between">
           <div>
-            <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="flex items-start justify-between gap-2 mb-3">
               <div>
                 <div class="flex items-center gap-2">
-                  <h4 class="font-extrabold text-base tracking-tight" style="color: var(--pf-text-primary);">${conf.acronym}</h4>
-                  ${conf.core_ranking ? `<span class="pf-badge pf-badge-indigo" style="font-size: 10px;">${conf.core_ranking}</span>` : ''}
+                  <h4 class="font-extrabold text-base tracking-tight" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">${conf.acronym}</h4>
+                  ${conf.core_ranking ? `<span class="pf-badge" style="font-size:10px;font-family:var(--pf-font-mono);background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);border:1px solid var(--pf-engine-scout-border);">${conf.core_ranking}</span>` : ''}
                 </div>
                 <div class="text-xs truncate max-w-[240px] mt-0.5" style="color: var(--pf-text-secondary);">${conf.name}</div>
               </div>
@@ -592,57 +632,89 @@
                 onclick="toggleWatchlist('${conf.id}')"
                 class="pf-btn pf-btn-ghost pf-btn-icon pf-btn-sm"
                 title="${isWatchlisted ? 'In Watchlist' : 'Add to Watchlist'}"
+                style="color:${isWatchlisted ? 'var(--pf-engine-grants)' : 'var(--pf-text-muted)'};"
               >
-                ${isWatchlisted ? '⭐' : '☆'}
+                <i data-lucide="star" style="width:16px;height:16px;${isWatchlisted ? 'fill:currentColor;' : ''}"></i>
               </button>
             </div>
 
-            <div class="p-3 rounded-lg border space-y-1.5 text-xs my-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+            <div class="p-3 rounded-xl border space-y-1.5 text-xs my-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
               <div class="flex items-center justify-between">
-                <span style="color: var(--pf-text-muted);">Submission Deadline:</span>
-                <div class="flex items-center gap-1.5 font-mono">
-                  <strong>${conf.submission_deadline || 'TBA'}</strong>
-                  ${countdownBadge}
-                </div>
+                <span class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
+                  <i data-lucide="clock" style="width:12px;height:12px;"></i>
+                  <span>Sub Deadline:</span>
+                </span>
+                <span class="font-mono font-bold" style="color: var(--pf-text-primary);">${conf.submission_deadline || 'TBA'}</span>
               </div>
+
               <div class="flex items-center justify-between">
-                <span style="color: var(--pf-text-muted);">Event Dates:</span>
-                <span class="font-mono">${conf.dates || 'TBA'}</span>
+                <span class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
+                  <i data-lucide="map-pin" style="width:12px;height:12px;"></i>
+                  <span>Location:</span>
+                </span>
+                <span class="truncate max-w-[150px] font-medium" style="color: var(--pf-text-secondary);">${conf.location || 'Global Virtual'}</span>
               </div>
+
               <div class="flex items-center justify-between">
-                <span style="color: var(--pf-text-muted);">Location:</span>
-                <span class="truncate max-w-[170px]">${conf.location || 'Global'}</span>
+                <span class="flex items-center gap-1.5" style="color: var(--pf-text-muted);">
+                  <i data-lucide="calendar" style="width:12px;height:12px;"></i>
+                  <span>Dates:</span>
+                </span>
+                <span class="font-medium" style="color: var(--pf-text-secondary);">${conf.dates || 'TBA'}</span>
               </div>
             </div>
 
-            <div class="space-y-1.5 text-xs">
-              ${conf.doctoral_consortium ? `<div class="p-2 rounded border text-xs" style="background-color: var(--pf-engine-scout-bg); border-color: rgba(99, 102, 241, 0.2);">🎓 <strong>PhD Consortium</strong> with Senior Mentor Track</div>` : ''}
-              ${conf.student_travel_grants ? `<div class="p-2 rounded border text-xs" style="background-color: var(--pf-primary-subtle); border-color: rgba(16, 185, 129, 0.2);">✈️ <strong>Travel Grant</strong>: ${conf.grant_details || 'Available for students'}</div>` : ''}
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+              ${conf.doctoral_consortium ? `<span class="pf-badge" style="font-size:10px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);"><i data-lucide="graduation-cap" style="width:10px;height:10px;margin-right:2px;"></i> PhD Track</span>` : ''}
+              ${conf.student_travel_grants ? `<span class="pf-badge pf-badge-amber" style="font-size:10px;"><i data-lucide="dollar-sign" style="width:10px;height:10px;margin-right:2px;"></i> Travel Grants</span>` : ''}
             </div>
+
+            ${conf.grant_details ? `
+              <p class="text-[11px] line-clamp-2 mb-3" style="color: var(--pf-text-muted);">
+                ${conf.grant_details}
+              </p>
+            ` : ''}
           </div>
 
-          <div class="mt-4 pt-3 border-t flex items-center justify-between" style="border-color: var(--pf-border-subtle);">
-            <a href="${conf.cfp_url || conf.official_url}" target="_blank" class="pf-btn pf-btn-primary pf-btn-sm">
-              Official CFP Portal →
+          <div class="pt-3 border-t flex items-center justify-between text-xs" style="border-color: var(--pf-border-subtle);">
+            <div>${countdownBadge}</div>
+            <a 
+              href="${conf.cfp_url || conf.official_url || '#'}" 
+              target="_blank" 
+              class="pf-btn pf-btn-secondary pf-btn-sm font-bold"
+              style="color: var(--pf-engine-scout);"
+            >
+              <span>CFP Portal</span>
+              <i data-lucide="external-link" style="width:12px;height:12px;"></i>
             </a>
-            <button onclick="toggleWatchlist('${conf.id}')" class="pf-btn pf-btn-ghost pf-btn-sm" style="font-size: 11px;">
-              ${isWatchlisted ? 'Unstar' : '⭐ Watchlist'}
-            </button>
           </div>
         </div>
       `;
     }).join('');
+
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
+    }
   }
 
   async function loadFeatured() {
+    const badge = document.getElementById("results-badge");
+    if (badge) badge.innerText = "Loading...";
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     try {
-      const res = await fetch("/api/conferences/featured");
+      const res = await fetch("/api/conferences/featured", { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (res.ok) {
-        conferencesList = await res.json();
+        const data = await res.json();
+        conferencesList = Array.isArray(data) ? data : (data.conferences || data.results || []);
       } else {
-        throw new Error();
+        throw new Error("HTTP " + res.status);
       }
     } catch (e) {
+      console.warn("Featured conferences fetch failed or timed out, loading curated registry:", e);
       conferencesList = generateClientDynamicConferences("", false, false);
     }
     renderConferences(conferencesList);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +7,19 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
-  <!-- Typography -->
+  <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Line Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- ProfFeb Unified Design System -->
   <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
 
   <!-- Tailwind CSS CDN for utility layering -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
 
   <!-- Marked.js for markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -38,193 +28,238 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/static/js/proffeb-auth.js" defer></script>
   <script src="/static/js/proffeb-ui.js" defer></script>
+
+  <style>
+    .radar-card {
+      background: var(--pf-bg-surface);
+      border: 1px solid var(--pf-border-subtle);
+      border-radius: var(--pf-radius-lg);
+      transition: var(--pf-transition);
+      box-shadow: var(--pf-shadow-xs);
+    }
+    .radar-card:hover {
+      border-color: var(--pf-engine-radar);
+      box-shadow: var(--pf-shadow-md);
+    }
+  </style>
 </head>
 
-<body class="min-h-screen antialiased selection:bg-purple-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+<body class="selection:bg-purple-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary); margin:0;">
 
-<div class="pf-app-container">
+<div class="pf-app-shell">
   
-  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <!-- ================= UNIFIED LEFT SIDEBAR ================= -->
   <aside id="pf-app-sidebar" class="pf-sidebar">
-    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
-      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #a855f7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
-        <div class="pf-brand-text">
-          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
-          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">RADAR • E03</div>
+    <div class="pf-sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7C3AED,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(124,58,237,0.25);">P</div>
+        <div class="pf-brand-full">
+          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
+          <div style="font-size:10px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
         </div>
       </a>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
-        ◀
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
+        <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
       </button>
     </div>
 
     <!-- Navigation items (7 Engines + Overview) -->
-    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+    <nav class="pf-sidebar-nav">
+      <div class="pf-nav-section-title pf-sidebar-text">Workspace</div>
       <a href="/" class="pf-nav-item">
-        <span>⊞</span>
-        <span class="pf-nav-label">Overview</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-primary);"><i data-lucide="layout-grid"></i></div>
+        <span class="pf-sidebar-text">Overview</span>
       </a>
+
+      <div class="pf-nav-section-title pf-sidebar-text" style="margin-top:0.75rem;">7 Engines</div>
       <a href="/app" class="pf-nav-item">
-        <span style="color: var(--pf-engine-studio);">🎙️</span>
-        <span class="pf-nav-label">Research Studio</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-studio);background:var(--pf-engine-studio-bg);"><i data-lucide="headphones"></i></div>
+        <span class="pf-sidebar-text">Research Studio</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);">E01</span>
       </a>
       <a href="/conferences" class="pf-nav-item">
-        <span style="color: var(--pf-engine-scout);">🌐</span>
-        <span class="pf-nav-label">Conference Scout</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-scout);background:var(--pf-engine-scout-bg);"><i data-lucide="calendar"></i></div>
+        <span class="pf-sidebar-text">Conference Scout</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">E02</span>
       </a>
-      <a href="/radar" class="pf-nav-item pf-nav-active">
-        <span style="color: var(--pf-engine-radar);">🔬</span>
-        <span class="pf-nav-label">Novelty Radar</span>
+      <a href="/radar" class="pf-nav-item active">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-radar);background:var(--pf-engine-radar-bg);"><i data-lucide="radar"></i></div>
+        <span class="pf-sidebar-text">Novelty Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">E03</span>
       </a>
       <a href="/reviewer" class="pf-nav-item">
-        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
-        <span class="pf-nav-label">Reviewer #2</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-reviewer);background:var(--pf-engine-reviewer-bg);"><i data-lucide="shield-alert"></i></div>
+        <span class="pf-sidebar-text">Reviewer #2</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">E04</span>
       </a>
       <a href="/grants" class="pf-nav-item">
-        <span style="color: var(--pf-engine-grants);">💰</span>
-        <span class="pf-nav-label">Funding Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-grants);background:var(--pf-engine-grants-bg);"><i data-lucide="coins"></i></div>
+        <span class="pf-sidebar-text">Funding Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">E05</span>
       </a>
       <a href="/lab-connector" class="pf-nav-item">
-        <span style="color: var(--pf-engine-lab);">🏢</span>
-        <span class="pf-nav-label">Lab Connector</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-lab);background:var(--pf-engine-lab-bg);"><i data-lucide="building"></i></div>
+        <span class="pf-sidebar-text">Lab Connector</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);">E06</span>
       </a>
       <a href="/agent" class="pf-nav-item">
-        <span style="color: var(--pf-engine-copilot);">🧠</span>
-        <span class="pf-nav-label">Academic Co-Pilot</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-copilot);background:var(--pf-engine-copilot-bg);"><i data-lucide="sparkles"></i></div>
+        <span class="pf-sidebar-text">Academic Co-Pilot</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">E07</span>
       </a>
     </nav>
 
     <!-- Bottom utility items -->
-    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
-        <span class="pf-theme-toggle-icon">🌓</span>
-        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+    <div class="pf-sidebar-footer">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.theme.toggle()">
+        <i data-lucide="sun-moon"></i>
+        <span class="pf-sidebar-text pf-theme-toggle-label">Theme</span>
       </button>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
-        <span>⌘K</span>
-        <span class="pf-nav-label">Command Palette</span>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.commandPalette.open()">
+        <span style="font-family:var(--pf-font-mono);font-size:12px;font-weight:700;">⌘K</span>
+        <span class="pf-sidebar-text">Command Palette</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.settings.open()">
+        <i data-lucide="settings"></i>
+        <span class="pf-sidebar-text">Settings & Cache</span>
       </button>
     </div>
   </aside>
 
   <!-- ================= MAIN STAGE ================= -->
-  <div class="pf-main-stage">
+  <div class="pf-main-wrapper">
     
     <!-- TOP HEADER -->
-    <header class="pf-top-bar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
-        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
-          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
-          <span style="color: var(--pf-border-strong);">/</span>
-          <span style="font-weight: 600; color: var(--pf-engine-radar);">Novelty & Gap Radar</span>
+    <header class="pf-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">
+          <i data-lucide="menu"></i>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <a href="/" style="color:var(--pf-text-muted);text-decoration:none;font-weight:500;">ProfFeb</a>
+          <span style="color:var(--pf-border-strong);">/</span>
+          <span style="font-weight:600;color:var(--pf-engine-radar);">Novelty & Gap Radar</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div style="display:flex;align-items:center;gap:8px;">
         <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
-          🔄
+          <i data-lucide="refresh-cw"></i>
         </button>
         <div id="user-nav-container"></div>
       </div>
     </header>
 
-    <!-- WORKSPACE BODY -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
-      <!-- Hero Banner -->
-      <div class="text-center max-w-3xl mx-auto mb-8">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-radar-bg); border-color: rgba(139, 92, 246, 0.3);">
-          <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-          <span class="text-xs font-semibold" style="color: var(--pf-engine-radar);">Prior-Art Literature Radar • Novelty Index & Gap Analysis</span>
+    <!-- COMPACT PAGE HEADER -->
+    <div class="pf-page-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-radar-border);flex-shrink:0;">
+          <i data-lucide="radar" style="width:22px;height:22px;"></i>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
-          Validate Paper Novelty & Discover SOTA Gaps
-        </h1>
-        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
-          Evaluate whether your hypothesis has already been published. Benchmark existing literature baselines, compute your Novelty Score, and outline a 6-month experimental plan.
-        </p>
-      </div>
-
-      <!-- Radar Input Panel -->
-      <div class="pf-card p-6 mb-8">
-        
-        <!-- Mode Switcher Tabs -->
-        <div class="flex items-center gap-2 mb-6 border-b pb-4" style="border-color: var(--pf-border-subtle);">
-          <button 
-            type="button" 
-            id="tab-mode-pdf" 
-            onclick="switchRadarMode('pdf')" 
-            class="pf-btn pf-btn-primary pf-btn-sm"
-          >
-            <span>📄 Direct PDF Proposal Upload</span>
-          </button>
-          <button 
-            type="button" 
-            id="tab-mode-manual" 
-            onclick="switchRadarMode('manual')" 
-            class="pf-btn pf-btn-secondary pf-btn-sm"
-          >
-            <span>✍️ Describe Topic & Hypothesis</span>
-          </button>
-        </div>
-
-        <!-- Mode 1: PDF Dropzone Form -->
-        <form id="radar-pdf-form" onsubmit="event.preventDefault(); submitRadarPdf();" class="space-y-4">
-          <div 
-            id="radar-dropzone"
-            onclick="document.getElementById('radar-file-input').click();"
-            ondragover="handleRadarDragOver(event)"
-            ondragleave="handleRadarDragLeave(event)"
-            ondrop="handleRadarDrop(event)"
-            class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3"
-            style="border-color: var(--pf-border-default); background-color: var(--pf-bg-surface-elevated);"
-          >
-            <input 
-              type="file" 
-              id="radar-file-input" 
-              accept=".pdf" 
-              class="hidden" 
-              onchange="handleRadarFileSelect(this.files)"
-            >
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
-              📄
-            </div>
-            <div>
-              <h3 class="text-sm font-bold" style="color: var(--pf-text-primary);">
-                Drag & drop your thesis proposal or draft PDF, or <span style="color: var(--pf-engine-radar); text-decoration: underline;">browse</span>
-              </h3>
-              <p class="text-xs mt-1" style="color: var(--pf-text-muted);">Extracts problem formulation, methodology, and cross-checks contemporary arXiv literature</p>
-            </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h1 style="font-family:var(--pf-font-display);font-size:20px;font-weight:700;margin:0;color:var(--pf-text-primary);">Novelty Radar</h1>
+            <span class="pf-badge" style="font-size:10px;font-family:var(--pf-font-mono);background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">ENGINE 03</span>
           </div>
+          <p style="font-size:13px;color:var(--pf-text-secondary);margin:2px 0 0;">Prior-art literature cross-checking, novelty score indexing, and 6-month doctoral roadmaps</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-radar-bg);border:1px solid var(--pf-engine-radar-border);color:var(--pf-engine-radar);font-size:11px;font-weight:600;">
+          <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
+          <span>arXiv Pre-Print Indexer</span>
+        </div>
+      </div>
+    </div>
 
-          <!-- Selected File Status Badge -->
-          <div id="radar-file-badge" class="hidden items-center justify-between p-3 rounded-lg border" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
-            <div class="flex items-center gap-3">
-              <span class="text-xl">📑</span>
-              <div>
-                <p id="radar-file-name" class="text-xs font-bold" style="color: var(--pf-text-primary);">proposal.pdf</p>
-                <p id="radar-file-size" class="text-[11px]" style="color: var(--pf-text-muted);">1.8 MB</p>
-              </div>
-            </div>
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      
+      <!-- Input Section: Two Column Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        
+        <!-- Left: Upload or Topic Form (7 cols) -->
+        <div class="lg:col-span-7 radar-card p-6">
+          
+          <!-- Mode Switcher Tabs -->
+          <div class="flex items-center gap-2 mb-5 border-b pb-4" style="border-color: var(--pf-border-subtle);">
             <button 
               type="button" 
-              onclick="clearRadarFile()" 
-              class="pf-btn pf-btn-ghost pf-btn-sm"
-              style="color: var(--pf-engine-radar);"
+              id="tab-mode-pdf" 
+              onclick="switchRadarMode('pdf')" 
+              class="pf-btn pf-btn-primary pf-btn-sm"
+              style="background:var(--pf-engine-radar);border-color:var(--pf-engine-radar);"
             >
-              Change File
+              <i data-lucide="file-up" style="width:14px;height:14px;"></i>
+              <span>PDF Proposal Upload</span>
+            </button>
+            <button 
+              type="button" 
+              id="tab-mode-manual" 
+              onclick="switchRadarMode('manual')" 
+              class="pf-btn pf-btn-secondary pf-btn-sm"
+            >
+              <i data-lucide="pen-tool" style="width:14px;height:14px;"></i>
+              <span>Describe Hypothesis</span>
             </button>
           </div>
 
-          <!-- Target Domain Selector -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Mode 1: PDF Dropzone Form -->
+          <form id="radar-pdf-form" onsubmit="event.preventDefault(); submitRadarPdf();" class="space-y-4">
+            <div 
+              id="radar-dropzone"
+              onclick="document.getElementById('radar-file-input').click();"
+              ondragover="handleRadarDragOver(event)"
+              ondragleave="handleRadarDragLeave(event)"
+              ondrop="handleRadarDrop(event)"
+              class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3"
+              style="border-color: var(--pf-border-default); background-color: var(--pf-bg-surface-elevated);"
+            >
+              <input 
+                type="file" 
+                id="radar-file-input" 
+                accept=".pdf" 
+                class="hidden" 
+                onchange="handleRadarFileSelect(this.files)"
+              >
+              <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-radar-border);">
+                <i data-lucide="upload-cloud" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold" style="color: var(--pf-text-primary);">
+                  Drag & drop your thesis proposal or draft PDF, or <span style="color: var(--pf-engine-radar); text-decoration: underline;">browse</span>
+                </h3>
+                <p class="text-xs mt-1" style="color: var(--pf-text-muted);">Extracts problem formulation, methodology, and cross-checks contemporary literature</p>
+              </div>
+            </div>
+
+            <!-- Selected File Status Badge -->
+            <div id="radar-file-badge" class="hidden items-center justify-between p-3.5 rounded-xl border" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+              <div class="flex items-center gap-3">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;">
+                  <i data-lucide="file-check" style="width:18px;height:18px;"></i>
+                </div>
+                <div>
+                  <p id="radar-file-name" class="text-xs font-bold" style="color: var(--pf-text-primary);">proposal.pdf</p>
+                  <p id="radar-file-size" class="text-[11px]" style="color: var(--pf-text-muted);">1.8 MB</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onclick="clearRadarFile()" 
+                class="pf-btn pf-btn-ghost pf-btn-sm"
+                style="color: var(--pf-engine-radar);"
+              >
+                Change File
+              </button>
+            </div>
+
+            <!-- Target Domain Selector -->
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
                 Primary Research Domain
               </label>
-              <select id="radar-pdf-domain" class="pf-select text-sm py-2">
+              <select id="radar-pdf-domain" class="pf-select text-sm py-2 w-full" style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);">
                 <option value="Artificial Intelligence & Machine Learning">Artificial Intelligence & Machine Learning</option>
                 <option value="Computer Systems & High-Performance Computing">Computer Systems & High-Performance Computing</option>
                 <option value="Computer Vision & Pattern Recognition">Computer Vision & Pattern Recognition</option>
@@ -234,76 +269,128 @@
                 <option value="Computer Networks & Distributed Systems">Computer Networks & Distributed Systems</option>
               </select>
             </div>
-            <div class="flex items-end">
-              <p class="text-xs leading-relaxed pb-1" style="color: var(--pf-text-muted);">
-                🔍 <strong>Cross-Check Algorithm:</strong> Evaluates proposal novelty against contemporary arXiv pre-prints, SOTA benchmarks, and leading industry labs.
-              </p>
+
+            <div class="pt-2 flex justify-end">
+              <button 
+                type="submit" 
+                id="radar-pdf-btn"
+                class="pf-btn pf-btn-primary pf-btn-md w-full sm:w-auto"
+                style="background:var(--pf-engine-radar);border-color:var(--pf-engine-radar);"
+              >
+                <i data-lucide="scan" style="width:16px;height:16px;"></i>
+                <span>Scan Literature & Validate Novelty</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Mode 2: Manual Topic Input Form -->
+          <form id="radar-form" onsubmit="event.preventDefault(); analyzeIdea();" class="space-y-4 hidden">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+                Research Topic or Domain
+              </label>
+              <input 
+                type="text" 
+                id="topic-input"
+                placeholder="e.g. Distributed LLM Inference on Edge Accelerators, Privacy in Graph Neural Networks"
+                class="pf-input text-sm py-2.5"
+                style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
+              >
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+                Proposed Methodology / Novel Angle <span style="color: var(--pf-text-muted); font-weight: normal; text-transform: lowercase;">(Optional)</span>
+              </label>
+              <textarea 
+                id="idea-input"
+                rows="3"
+                placeholder="e.g. We propose an adaptive speculative decoding algorithm that uses local device cache to bypass memory bandwidth bottlenecks without accuracy loss."
+                class="pf-textarea text-sm py-2.5"
+                style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
+              ></textarea>
+            </div>
+
+            <!-- Quick Sample Chips -->
+            <div class="flex items-center gap-1.5 flex-wrap pt-1">
+              <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Quick Try:</span>
+              <button type="button" onclick="fillSample('Distributed LLM Speculative Decoding for Edge Devices', 'Adaptive draft-verification pipeline optimizing memory throughput on Apple Silicon & mobile NPUs.')" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Edge LLM Inference
+              </button>
+              <button type="button" onclick="fillSample('Sample-Efficient Offline Reinforcement Learning in Robotics', 'Conservative Q-learning with diffusion priors to train robotic arms on 5x fewer demonstrations.')" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Offline RL Robotics
+              </button>
+              <button type="button" onclick="fillSample('Differential Privacy in Heterogeneous Federated Graph Learning', 'Client-side perturbation preserving structural node topology under non-IID partitions.')" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Federated GNNs
+              </button>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button 
+                type="submit" 
+                id="analyze-btn"
+                class="pf-btn pf-btn-primary pf-btn-md w-full sm:w-auto"
+                style="background:var(--pf-engine-radar);border-color:var(--pf-engine-radar);"
+              >
+                <i data-lucide="scan" style="width:16px;height:16px;"></i>
+                <span>Scan Literature & Validate Novelty</span>
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+        <!-- Right: "How Novelty Radar Works" Visual Explainer (5 cols) -->
+        <div class="lg:col-span-5 radar-card p-6 flex flex-col justify-between" style="background:var(--pf-bg-surface-elevated);">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="pf-badge" style="background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);font-size:10px;">METHODOLOGY</span>
+              <h3 class="font-bold text-sm" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">How Novelty Radar Evaluates</h3>
+            </div>
+            <p class="text-xs leading-relaxed mb-4" style="color:var(--pf-text-secondary);">
+              Novelty Radar continuously indexes hundreds of thousands of arXiv pre-prints and CORE A* conference proceedings to defend your PhD dissertation against prior-art pre-emption.
+            </p>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">1</div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Deconstruct Problem Formulation</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Extracts hypotheses, assumptions, and proposed algorithmic components.</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">2</div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Cross-Check SOTA Literature</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Checks leading baselines across NeurIPS, ICML, ICLR, and arXiv.</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">3</div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Compute Novelty Index & Gaps</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Synthesizes unaddressed trade-offs and competitive weaknesses.</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">4</div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Generate Actionable Roadmap</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Formulates concrete experimental phases to validate contributions.</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="pt-2 flex justify-end">
-            <button 
-              type="submit" 
-              id="radar-pdf-btn"
-              class="pf-btn pf-btn-primary pf-btn-md"
-            >
-              <span>Scan Literature & Validate Novelty</span>
-              <span>→</span>
-            </button>
+          <div class="mt-4 pt-3 border-t flex items-center justify-between text-[11px] font-mono" style="border-color:var(--pf-border-subtle);color:var(--pf-text-muted);">
+            <span>Cross-Check: arXiv & SOTA</span>
+            <span style="color:var(--pf-engine-radar);font-weight:700;">100% Deterministic</span>
           </div>
-        </form>
-
-        <!-- Mode 2: Manual Topic Input Form -->
-        <form id="radar-form" onsubmit="event.preventDefault(); analyzeIdea();" class="space-y-4 hidden">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
-              Research Topic or Domain
-            </label>
-            <input 
-              type="text" 
-              id="topic-input"
-              placeholder="e.g. Distributed LLM Inference on Edge Accelerators, Privacy in Graph Neural Networks"
-              class="pf-input text-sm py-2.5"
-            >
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
-              Proposed Methodology / Novel Angle <span style="color: var(--pf-text-muted); font-weight: normal; text-transform: lowercase;">(Optional)</span>
-            </label>
-            <textarea 
-              id="idea-input"
-              rows="3"
-              placeholder="e.g. We propose an adaptive speculative decoding algorithm that uses local device cache to bypass memory bandwidth bottlenecks without accuracy loss."
-              class="pf-textarea text-sm py-2.5"
-            ></textarea>
-          </div>
-
-          <!-- Quick Sample Chips -->
-          <div class="flex items-center gap-1.5 flex-wrap pt-1">
-            <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Quick Try:</span>
-            <button type="button" onclick="fillSample('Distributed LLM Speculative Decoding for Edge Devices', 'Adaptive draft-verification pipeline optimizing memory throughput on Apple Silicon & mobile NPUs.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              Edge LLM Inference
-            </button>
-            <button type="button" onclick="fillSample('Sample-Efficient Offline Reinforcement Learning in Robotics', 'Conservative Q-learning with diffusion priors to train robotic arms on 5x fewer demonstrations.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              Offline RL Robotics
-            </button>
-            <button type="button" onclick="fillSample('Differential Privacy in Heterogeneous Federated Graph Learning', 'Client-side perturbation preserving structural node topology under non-IID partitions.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              Federated GNNs
-            </button>
-          </div>
-
-          <div class="pt-2 flex justify-end">
-            <button 
-              type="submit" 
-              id="analyze-btn"
-              class="pf-btn pf-btn-primary pf-btn-md"
-            >
-              <span>Scan Literature & Validate Novelty</span>
-              <span>→</span>
-            </button>
-          </div>
-        </form>
+        </div>
 
       </div>
 
@@ -311,11 +398,13 @@
       <div id="results-container" class="space-y-6 hidden">
         
         <!-- Audited PDF Info Banner -->
-        <div id="radar-meta-banner" class="hidden p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+        <div id="radar-meta-banner" class="hidden p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
           <div class="flex items-center gap-3">
-            <span class="text-xl">📄</span>
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+            </div>
             <div>
-              <span class="text-[10px] font-mono uppercase block" style="color: var(--pf-text-muted);">Extracted From Document</span>
+              <span class="text-[10px] font-mono uppercase block" style="color: var(--pf-text-muted);">Extracted From Manuscript</span>
               <h4 id="radar-meta-title" class="text-xs font-bold" style="color: var(--pf-text-primary);">proposal.pdf</h4>
             </div>
           </div>
@@ -328,10 +417,10 @@
         <!-- Top Overview Metrics -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <!-- Novelty Score Card -->
-          <div class="p-5 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div class="radar-card p-5 flex flex-col justify-between">
             <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--pf-text-muted);">Novelty Score Index</span>
             <div class="my-3 flex items-baseline gap-2">
-              <span id="novelty-score" class="text-4xl font-black" style="color: var(--pf-engine-radar);">88%</span>
+              <span id="novelty-score" class="text-4xl font-black" style="color: var(--pf-engine-radar); font-family: var(--pf-font-display);">88%</span>
               <span class="pf-badge pf-badge-emerald" id="novelty-badge">
                 High Impact
               </span>
@@ -340,7 +429,7 @@
           </div>
 
           <!-- SOTA Summary Card -->
-          <div class="md:col-span-2 p-5 rounded-xl border" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div class="md:col-span-2 radar-card p-5">
             <span class="text-xs font-bold uppercase tracking-wider mb-1.5 block" style="color: var(--pf-text-muted);">State of the Art (SOTA) Assessment</span>
             <p id="sota-summary" class="text-xs leading-relaxed" style="color: var(--pf-text-secondary);">
               Evaluating recent advances across arXiv and top conference proceedings...
@@ -353,17 +442,23 @@
         </div>
 
         <!-- Competitors & SOTA Baselines -->
-        <div class="pf-card p-6">
-          <h3 class="text-base font-bold mb-1" style="color: var(--pf-text-primary);">Current Leading Baselines & Limitations</h3>
-          <p class="text-xs mb-4" style="color: var(--pf-text-muted);">What existing papers and labs have accomplished—and where they fall short.</p>
+        <div class="radar-card p-6">
+          <div class="flex items-center gap-2 mb-1">
+            <i data-lucide="scale" style="width:16px;height:16px;color:var(--pf-engine-radar);"></i>
+            <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">Current Leading Baselines & Limitations</h3>
+          </div>
+          <p class="text-xs mb-4" style="color: var(--pf-text-muted);">What existing published literature has accomplished—and where it falls short.</p>
           <div id="competitors-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Unsolved Gaps -->
-        <div class="p-6 rounded-xl border" style="background-color: var(--pf-engine-radar-bg); border-color: rgba(139, 92, 246, 0.3);">
+        <div class="p-6 rounded-2xl border" style="background-color: var(--pf-engine-radar-bg); border-color: rgba(124, 58, 237, 0.25);">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <h3 class="text-base font-bold" style="color: var(--pf-text-primary);">Unsolved Research Gaps (Publication Opportunities)</h3>
+              <div class="flex items-center gap-2">
+                <i data-lucide="target" style="width:16px;height:16px;color:var(--pf-engine-radar);"></i>
+                <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">Unsolved Research Gaps (Publication Opportunities)</h3>
+              </div>
               <p class="text-xs" style="color: var(--pf-engine-radar);">Tackle these exact bottlenecks to secure top-tier conference acceptance.</p>
             </div>
             <span class="pf-badge pf-badge-violet">Prime Opportunity</span>
@@ -372,18 +467,21 @@
         </div>
 
         <!-- Actionable 6-Month Roadmap -->
-        <div class="pf-card p-6">
-          <h3 class="text-base font-bold mb-1" style="color: var(--pf-text-primary);">Actionable 6-Month Experiment Plan</h3>
+        <div class="radar-card p-6">
+          <div class="flex items-center gap-2 mb-1">
+            <i data-lucide="milestone" style="width:16px;height:16px;color:var(--pf-engine-radar);"></i>
+            <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">Actionable 6-Month Experiment Plan</h3>
+          </div>
           <p class="text-xs mb-4" style="color: var(--pf-text-muted);">Step-by-step doctoral validation roadmap before paper submission.</p>
           <div id="roadmap-list" class="space-y-3"></div>
         </div>
 
         <!-- DYNAMIC AI RESEARCH GAP WORKSHOP -->
-        <div class="pf-card p-6 space-y-4">
+        <div class="radar-card p-6 space-y-4">
           <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--pf-border-subtle);">
             <div>
-              <span class="pf-badge pf-badge-violet mb-1">💬 NOVELTY WORKSHOP</span>
-              <h3 class="text-base font-bold" style="color: var(--pf-text-primary);">Gap Deep-Dive & Architecture Formulator</h3>
+              <span class="pf-badge pf-badge-violet mb-1">NOVELTY WORKSHOP</span>
+              <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">Gap Deep-Dive & Architecture Formulator</h3>
               <p class="text-xs" style="color: var(--pf-text-muted);">Formulate mathematical loss functions, ablation benchmarks, and datasets with the Novelty Advisor.</p>
             </div>
             <button onclick="clearRadarChat()" class="pf-btn pf-btn-secondary pf-btn-sm">
@@ -394,20 +492,20 @@
           <!-- Quick Prompt Chips -->
           <div class="flex items-center gap-1.5 flex-wrap">
             <button onclick="sendQuickRadarPrompt('Propose a concrete mathematical loss function and architecture formulation for Gap 1.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              📐 Formulate loss function for Gap 1
+              <i data-lucide="function-square" style="width:12px;height:12px;"></i> Formulate loss function for Gap 1
             </button>
             <button onclick="sendQuickRadarPrompt('What publicly available datasets on HuggingFace can I evaluate this novel hypothesis on?')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              📊 Recommend evaluation datasets
+              <i data-lucide="database" style="width:12px;height:12px;"></i> Recommend evaluation datasets
             </button>
             <button onclick="sendQuickRadarPrompt('Draft an ICML/NeurIPS abstract highlighting our novelty over baseline competitors.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              ✍️ Draft novelty-focused abstract
+              <i data-lucide="pen-tool" style="width:12px;height:12px;"></i> Draft novelty-focused abstract
             </button>
           </div>
 
           <!-- Chat Messages Scrollbox -->
           <div id="radar-chat-messages" class="p-4 rounded-xl border space-y-3 max-h-80 overflow-y-auto text-xs" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
             <div class="p-3 rounded-lg border leading-relaxed" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">
-              👋 <strong>Novelty Advisor Ready:</strong> Ask me to deconstruct any gap above, formulate a formal mathematical objective, or suggest ablation baselines.
+              <strong>Novelty Advisor Ready:</strong> Ask me to deconstruct any gap above, formulate a formal mathematical objective, or suggest ablation baselines.
             </div>
           </div>
 
@@ -419,8 +517,9 @@
               placeholder="Ask a technical follow-up or request mathematical formulation..." 
               onkeydown="if(event.key === 'Enter') sendRadarChatMessage();"
               class="pf-input text-xs py-2 flex-1"
+              style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
             >
-            <button onclick="sendRadarChatMessage()" id="radar-chat-send-btn" class="pf-btn pf-btn-primary pf-btn-sm">
+            <button onclick="sendRadarChatMessage()" id="radar-chat-send-btn" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-radar);border-color:var(--pf-engine-radar);">
               <span>Send</span>
               <span>→</span>
             </button>
@@ -450,12 +549,20 @@
       pdfForm.classList.remove('hidden');
       manualForm.classList.add('hidden');
       tabPdf.className = "pf-btn pf-btn-primary pf-btn-sm";
+      tabPdf.style.background = "var(--pf-engine-radar)";
+      tabPdf.style.borderColor = "var(--pf-engine-radar)";
       tabManual.className = "pf-btn pf-btn-secondary pf-btn-sm";
+      tabManual.style.background = "";
+      tabManual.style.borderColor = "";
     } else {
       pdfForm.classList.add('hidden');
       manualForm.classList.remove('hidden');
       tabManual.className = "pf-btn pf-btn-primary pf-btn-sm";
+      tabManual.style.background = "var(--pf-engine-radar)";
+      tabManual.style.borderColor = "var(--pf-engine-radar)";
       tabPdf.className = "pf-btn pf-btn-secondary pf-btn-sm";
+      tabPdf.style.background = "";
+      tabPdf.style.borderColor = "";
     }
   }
 
@@ -534,7 +641,8 @@
       if (window.ProfFebUI) ProfFebUI.toast({ title: "Analysis Ready", message: "Synthesized baseline gaps from document.", type: "info" });
     } finally {
       btn.disabled = false;
-      btn.innerHTML = `<span>Scan Literature & Validate Novelty</span> <span>→</span>`;
+      btn.innerHTML = `<i data-lucide="scan" style="width:16px;height:16px;"></i> <span>Scan Literature & Validate Novelty</span>`;
+      if (window.lucide) lucide.createIcons();
     }
   }
 
@@ -576,7 +684,8 @@
       renderResults(fallback);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = `<span>Scan Literature & Validate Novelty</span> <span>→</span>`;
+      btn.innerHTML = `<i data-lucide="scan" style="width:16px;height:16px;"></i> <span>Scan Literature & Validate Novelty</span>`;
+      if (window.lucide) lucide.createIcons();
     }
   }
 
@@ -601,7 +710,7 @@
 
     const compContainer = document.getElementById('competitors-list');
     compContainer.innerHTML = (data.competitors || []).map(c => `
-      <div class="p-3.5 rounded-lg border space-y-1.5" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+      <div class="p-3.5 rounded-xl border space-y-1.5" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
         <div class="flex items-center justify-between">
           <h4 class="font-bold text-xs" style="color: var(--pf-text-primary);">${c.paper_title || c.model}</h4>
           <span class="pf-badge" style="font-size: 9px;">${c.venue_year || 'SOTA'}</span>
@@ -612,13 +721,13 @@
 
     const gapsContainer = document.getElementById('gaps-list');
     gapsContainer.innerHTML = (data.unsolved_gaps || []).map((g, idx) => `
-      <div class="p-3.5 rounded-lg border space-y-1" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+      <div class="p-4 rounded-xl border space-y-1" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
         <div class="flex items-center gap-2">
           <span class="pf-badge pf-badge-violet" style="font-size: 10px;">Gap ${idx + 1}</span>
           <h4 class="font-bold text-xs" style="color: var(--pf-text-primary);">${g.gap_title || g.title}</h4>
         </div>
         <p class="text-xs" style="color: var(--pf-text-secondary);">${g.description || g.detail}</p>
-        <div class="text-[11px] font-mono mt-1 pt-1 border-t" style="border-color: var(--pf-border-subtle); color: var(--pf-engine-radar);">
+        <div class="text-[11px] font-mono mt-2 pt-2 border-t" style="border-color: var(--pf-border-subtle); color: var(--pf-engine-radar);">
           💡 Recommendation: ${g.recommended_approach || g.opportunity}
         </div>
       </div>
@@ -626,7 +735,7 @@
 
     const roadmapContainer = document.getElementById('roadmap-list');
     roadmapContainer.innerHTML = (data.six_month_roadmap || []).map(r => `
-      <div class="p-3 rounded-lg border flex items-start gap-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+      <div class="p-3 rounded-xl border flex items-start gap-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
         <div class="font-mono text-xs font-bold shrink-0 pt-0.5" style="color: var(--pf-engine-radar);">${r.month || r.phase}</div>
         <div>
           <h4 class="font-bold text-xs" style="color: var(--pf-text-primary);">${r.milestone || r.title}</h4>
@@ -636,6 +745,8 @@
     `).join('');
 
     document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+
+    if (window.lucide) lucide.createIcons();
   }
 
   function clearRadarChat() {
@@ -689,11 +800,13 @@
     bubble.className = "p-3 rounded-lg border leading-relaxed text-xs";
     if (role === 'user') {
       bubble.style.backgroundColor = "var(--pf-primary-subtle)";
-      bubble.style.borderColor = "rgba(16, 185, 129, 0.3)";
+      bubble.style.borderColor = "var(--pf-primary-border)";
+      bubble.style.color = "var(--pf-primary-text)";
       bubble.innerHTML = `<strong>You:</strong> ${content}`;
     } else {
       bubble.style.backgroundColor = "var(--pf-bg-surface)";
       bubble.style.borderColor = "var(--pf-border-subtle)";
+      bubble.style.color = "var(--pf-text-primary)";
       bubble.innerHTML = `<strong>Novelty Advisor:</strong><div class="mt-1">${window.marked ? marked.parse(content) : content}</div>`;
     }
     box.appendChild(bubble);
@@ -727,6 +840,10 @@
     document.getElementById('results-container').classList.add('hidden');
     clearRadarChat();
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) lucide.createIcons();
+  });
 </script>
 
 </body>

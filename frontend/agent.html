@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,13 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
+  <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Line Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- ProfFeb Unified Design System -->
   <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
@@ -18,7 +22,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/static/js/proffeb-auth.js" defer></script>
   <script src="/static/js/proffeb-ui.js" defer></script>
-  <script src="/static/js/proffeb-auth.js" defer></script>
 
   <!-- KaTeX for Scientific Formula Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -34,72 +37,30 @@
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
-            },
-            cyan: {
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0891b2',
-              700: '#0e7490',
-            },
-            purple: {
-              400: '#c084fc',
-              500: '#a855f7',
-              600: '#9333ea',
-              700: '#7e22ce',
-            },
-            dark: {
-              950: '#070a13',
-              900: '#0d1322',
-              850: '#11192d',
-              800: '#17223c',
-              750: '#1d2c4e',
-              700: '#253761',
-            }
-          },
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            serif: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
-            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+            sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            serif: ['Fraunces', 'Georgia', 'serif'],
+            mono: ['JetBrains Mono', 'monospace']
           }
         }
       }
     }
   </script>
   <style>
-    /* Premium scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #070a13; }
-    ::-webkit-scrollbar-thumb { background: #1d2c4e; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
-
-    /* Subtle grid background */
-    .bg-saas-grid {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 36px 36px;
-    }
-
     /* Glass card styling */
     .glass-panel {
-      background: rgba(13, 19, 34, 0.75);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: var(--pf-bg-surface);
+      border: 1px solid var(--pf-border-subtle);
+      border-radius: var(--pf-radius-lg);
+      box-shadow: var(--pf-shadow-xs);
+      transition: var(--pf-transition);
     }
     .glass-panel:hover {
-      border-color: rgba(6, 182, 212, 0.35);
+      border-color: var(--pf-engine-copilot);
+      box-shadow: var(--pf-shadow-md);
     }
 
-    /* Twin prose formatting for tables, headers, and code */
+    /* Twin prose formatting */
     .twin-prose {
       line-height: 1.65;
     }
@@ -110,181 +71,152 @@
       font-size: 0.75rem;
       border-radius: 0.5rem;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--pf-border-subtle);
     }
     .twin-prose th, .twin-prose td {
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--pf-border-subtle);
       padding: 0.45rem 0.65rem;
       text-align: left;
     }
     .twin-prose th {
-      background: rgba(6, 182, 212, 0.12);
+      background: var(--pf-engine-copilot-bg);
       font-weight: 700;
-      color: #22d3ee;
+      color: var(--pf-engine-copilot);
     }
     .twin-prose tr:nth-child(even) {
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .twin-prose h3 {
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-top: 0.85rem;
-      margin-bottom: 0.35rem;
-      color: #ffffff;
-    }
-    .twin-prose h4 {
-      font-weight: 600;
-      font-size: 0.82rem;
-      margin-top: 0.65rem;
-      margin-bottom: 0.25rem;
-      color: #cbd5e1;
-    }
-    .twin-prose ul {
-      list-style-type: disc;
-      margin-left: 1.25rem;
-      margin-top: 0.35rem;
-      margin-bottom: 0.35rem;
-    }
-    .twin-prose ol {
-      list-style-type: decimal;
-      margin-left: 1.25rem;
-      margin-top: 0.35rem;
-      margin-bottom: 0.35rem;
-    }
-    .twin-prose li {
-      margin-bottom: 0.2rem;
-    }
-    .twin-prose blockquote {
-      border-left: 3px solid #06b6d4;
-      padding-left: 0.75rem;
-      margin: 0.5rem 0;
-      color: #94a3b8;
-      background: rgba(6, 182, 212, 0.05);
-      border-radius: 0 0.4rem 0.4rem 0;
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
-    }
-    .twin-prose code {
-      font-family: 'JetBrains Mono', monospace;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 0.1rem 0.3rem;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
-      color: #38bdf8;
-    }
-    .twin-prose pre {
-      margin: 0.65rem 0;
-      background: #070a13;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-      overflow-x: auto;
-    }
-    .twin-prose pre code {
-      background: transparent;
-      padding: 0;
-      color: #e2e8f0;
-      display: block;
-    }
-    .twin-prose .katex-display {
-      margin: 0.65rem 0;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 0.25rem 0;
+      background: var(--pf-bg-surface-elevated);
     }
   </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-cyan-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+<body class="selection:bg-emerald-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary); margin:0;">
 
-<div class="pf-app-container">
+<div class="pf-app-shell">
   
   <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
   <aside id="pf-app-sidebar" class="pf-sidebar">
-    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
-      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0891b2, #22d3ee); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
-        <div class="pf-brand-text">
-          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
-          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">COPILOT • E07</div>
+    <div class="pf-sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#059669,#10B981);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(5,150,105,0.25);">P</div>
+        <div class="pf-brand-full">
+          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
+          <div style="font-size:10px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
         </div>
       </a>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
-        ◀
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
+        <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
       </button>
     </div>
 
     <!-- Navigation items (7 Engines + Overview) -->
-    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+    <nav class="pf-sidebar-nav">
+      <div class="pf-nav-section-title pf-sidebar-text">Workspace</div>
       <a href="/" class="pf-nav-item">
-        <span>⊞</span>
-        <span class="pf-nav-label">Overview</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-primary);"><i data-lucide="layout-grid"></i></div>
+        <span class="pf-sidebar-text">Overview</span>
       </a>
+
+      <div class="pf-nav-section-title pf-sidebar-text" style="margin-top:0.75rem;">7 Engines</div>
       <a href="/app" class="pf-nav-item">
-        <span style="color: var(--pf-engine-studio);">🎙️</span>
-        <span class="pf-nav-label">Research Studio</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-studio);background:var(--pf-engine-studio-bg);"><i data-lucide="headphones"></i></div>
+        <span class="pf-sidebar-text">Research Studio</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);">E01</span>
       </a>
       <a href="/conferences" class="pf-nav-item">
-        <span style="color: var(--pf-engine-scout);">🌐</span>
-        <span class="pf-nav-label">Conference Scout</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-scout);background:var(--pf-engine-scout-bg);"><i data-lucide="calendar"></i></div>
+        <span class="pf-sidebar-text">Conference Scout</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">E02</span>
       </a>
       <a href="/radar" class="pf-nav-item">
-        <span style="color: var(--pf-engine-radar);">🔬</span>
-        <span class="pf-nav-label">Novelty Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-radar);background:var(--pf-engine-radar-bg);"><i data-lucide="radar"></i></div>
+        <span class="pf-sidebar-text">Novelty Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">E03</span>
       </a>
       <a href="/reviewer" class="pf-nav-item">
-        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
-        <span class="pf-nav-label">Reviewer #2</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-reviewer);background:var(--pf-engine-reviewer-bg);"><i data-lucide="shield-alert"></i></div>
+        <span class="pf-sidebar-text">Reviewer #2</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">E04</span>
       </a>
       <a href="/grants" class="pf-nav-item">
-        <span style="color: var(--pf-engine-grants);">💰</span>
-        <span class="pf-nav-label">Funding Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-grants);background:var(--pf-engine-grants-bg);"><i data-lucide="coins"></i></div>
+        <span class="pf-sidebar-text">Funding Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">E05</span>
       </a>
       <a href="/lab-connector" class="pf-nav-item">
-        <span style="color: var(--pf-engine-lab);">🏢</span>
-        <span class="pf-nav-label">Lab Connector</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-lab);background:var(--pf-engine-lab-bg);"><i data-lucide="building"></i></div>
+        <span class="pf-sidebar-text">Lab Connector</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);">E06</span>
       </a>
-      <a href="/agent" class="pf-nav-item pf-nav-active">
-        <span style="color: var(--pf-engine-copilot);">🧠</span>
-        <span class="pf-nav-label">Academic Co-Pilot</span>
+      <a href="/agent" class="pf-nav-item active">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-copilot);background:var(--pf-engine-copilot-bg);"><i data-lucide="sparkles"></i></div>
+        <span class="pf-sidebar-text">Academic Co-Pilot</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">E07</span>
       </a>
     </nav>
 
     <!-- Bottom utility items -->
-    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
-        <span class="pf-theme-toggle-icon">🌓</span>
-        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+    <div class="pf-sidebar-footer">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.theme.toggle()">
+        <i data-lucide="sun-moon"></i>
+        <span class="pf-sidebar-text pf-theme-toggle-label">Theme</span>
       </button>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
-        <span>⌘K</span>
-        <span class="pf-nav-label">Command Palette</span>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.commandPalette.open()">
+        <span style="font-family:var(--pf-font-mono);font-size:12px;font-weight:700;">⌘K</span>
+        <span class="pf-sidebar-text">Command Palette</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.settings.open()">
+        <i data-lucide="settings"></i>
+        <span class="pf-sidebar-text">Settings & Cache</span>
       </button>
     </div>
   </aside>
 
   <!-- ================= MAIN STAGE ================= -->
-  <div class="pf-main-stage">
+  <div class="pf-main-wrapper">
     
     <!-- TOP HEADER -->
-    <header class="pf-top-bar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
-        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
-          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
-          <span style="color: var(--pf-border-strong);">/</span>
-          <span style="font-weight: 600; color: var(--pf-engine-copilot);">Academic Co-Pilot</span>
+    <header class="pf-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">
+          <i data-lucide="menu"></i>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <a href="/" style="color:var(--pf-text-muted);text-decoration:none;font-weight:500;">ProfFeb</a>
+          <span style="color:var(--pf-border-strong);">/</span>
+          <span style="font-weight:600;color:var(--pf-engine-copilot);">Academic Co-Pilot</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div style="display:flex;align-items:center;gap:8px;">
         <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
-          🔄
+          <i data-lucide="refresh-cw"></i>
         </button>
         <div id="user-nav-container"></div>
       </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- COMPACT PAGE HEADER -->
+    <div class="pf-page-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-copilot-border);flex-shrink:0;">
+          <i data-lucide="sparkles" style="width:22px;height:22px;"></i>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h1 style="font-family:var(--pf-font-display);font-size:20px;font-weight:700;margin:0;color:var(--pf-text-primary);">Academic Co-Pilot</h1>
+            <span class="pf-badge" style="font-size:10px;font-family:var(--pf-font-mono);background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">ENGINE 07</span>
+          </div>
+          <p style="font-size:13px;color:var(--pf-text-secondary);margin:2px 0 0;">Autonomous human-in-the-loop application pre-filling, GitHub audit logging, and twin mentorship</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-copilot-bg);border:1px solid var(--pf-engine-copilot-border);color:var(--pf-engine-copilot);font-size:11px;font-weight:600;">
+          <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
+          <span>Autonomous Co-Pilot Active</span>
+        </div>
+      </div>
+    </div>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
     
     <!-- Hero Persona Header -->
     <div class="p-6 sm:p-8 rounded-3xl glass-panel shadow-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -325,38 +257,45 @@
             type="button" 
             id="sync-btn"
             onclick="syncPortfolio()"
-            class="px-2.5 py-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-white font-bold text-[11px] border border-white/[0.08] transition flex items-center justify-center gap-1"
+            class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-dark-800 hover:bg-slate-200 dark:hover:bg-dark-750 text-slate-700 dark:text-white font-bold text-[11px] border border-slate-300 dark:border-white/[0.08] transition flex items-center justify-center gap-1.5"
           >
-            <span>🔄 Re-Sync</span>
+            <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i>
+            <span>Re-Sync</span>
           </button>
           <button 
             type="button" 
             id="open-gh-modal-btn"
             onclick="openGitHubModal()"
-            class="px-2.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-[11px] shadow-sm transition flex items-center justify-center gap-1"
+            class="px-2.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] shadow-sm transition flex items-center justify-center gap-1.5"
           >
-            <span>🔑 GitHub PAT</span>
+            <i data-lucide="key" style="width:12px;height:12px;"></i>
+            <span>GitHub PAT</span>
           </button>
         </div>
       </div>
     </div>
 
     <!-- Main Navigation Studio Tabs -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/[0.08] mb-8" id="studio-tabs">
-      <button onclick="switchTab('apply')" id="tab-btn-apply" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/25" data-tab="apply">
-        <span>📝 Apply On My Behalf</span>
+    <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b mb-8" style="border-color:var(--pf-border-subtle);" id="studio-tabs">
+      <button onclick="switchTab('apply')" id="tab-btn-apply" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-emerald-600 text-white shadow-lg shadow-emerald-600/25" data-tab="apply">
+        <i data-lucide="send" style="width:14px;height:14px;"></i>
+        <span>Apply on My Behalf</span>
       </button>
-      <button onclick="switchTab('history')" id="tab-btn-history" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="history">
-        <span>📜 Dispatch Audit Log</span>
+      <button onclick="switchTab('history')" id="tab-btn-history" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white" data-tab="history">
+        <i data-lucide="history" style="width:14px;height:14px;"></i>
+        <span>Dispatch Audit Log</span>
       </button>
-      <button onclick="switchTab('suggestions')" id="tab-btn-suggestions" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="suggestions">
-        <span>🎯 Strategic Advisory</span>
+      <button onclick="switchTab('suggestions')" id="tab-btn-suggestions" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white" data-tab="suggestions">
+        <i data-lucide="compass" style="width:14px;height:14px;"></i>
+        <span>Strategic Advisory</span>
       </button>
-      <button onclick="switchTab('brain')" id="tab-btn-brain" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="brain">
-        <span>🧠 Knowledge Brain & Repos</span>
+      <button onclick="switchTab('brain')" id="tab-btn-brain" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white" data-tab="brain">
+        <i data-lucide="brain" style="width:14px;height:14px;"></i>
+        <span>Knowledge Brain</span>
       </button>
-      <button onclick="switchTab('chat')" id="tab-btn-chat" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-400 hover:text-white hover:bg-dark-850" data-tab="chat">
-        <span>💬 Talk to Your Co-Pilot</span>
+      <button onclick="switchTab('chat')" id="tab-btn-chat" class="studio-tab-btn px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white" data-tab="chat">
+        <i data-lucide="message-square" style="width:14px;height:14px;"></i>
+        <span>Talk to Co-Pilot</span>
       </button>
     </div>
 
@@ -1755,6 +1694,10 @@
         if (autogen === 'true') {
           setTimeout(() => prepareAndReviewApplication(), 300);
         }
+      }
+
+      if (window.lucide) {
+        lucide.createIcons();
       }
     });
   </script>

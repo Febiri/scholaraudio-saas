@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +7,13 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
-  <!-- Google Fonts: Inter (UI), Newsreader (Academic Serif), JetBrains Mono (Formulas/Code) -->
+  <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Line Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- ProfFeb Unified Design System -->
   <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
@@ -228,187 +231,250 @@
 
     /* Glass card borders */
     .glass-card {
-      background: rgba(14, 19, 31, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      backdrop-filter: blur(12px);
+      background: var(--pf-bg-surface);
+      border: 1px solid var(--pf-border-subtle);
+      border-radius: var(--pf-radius-lg);
+      box-shadow: var(--pf-shadow-xs);
+      transition: var(--pf-transition);
     }
     .glass-card:hover {
-      border-color: rgba(16, 185, 129, 0.35);
-      box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.1);
+      border-color: var(--pf-engine-studio);
+      box-shadow: var(--pf-shadow-md);
     }
   </style>
 </head>
-<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+<body class="selection:bg-indigo-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary); margin:0;">
 
-  <!-- Ambient top glow aura -->
-  <div class="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-64 bg-gradient-to-b from-brand-500/10 via-scholar-500/5 to-transparent blur-3xl -z-10"></div>
+<div class="pf-app-shell">
 
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="border-b border-dark-800/80 bg-dark-900/90 backdrop-blur-xl sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      
-      <!-- Back to Home Page & Brand Logo -->
-      <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        <a href="/" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Return to PhD Corner">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          <span class="hidden sm:inline">PhD Corner</span>
-        </a>
-        <a href="/conferences" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-indigo-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="Open Conference & Event Scout">
-          <span>🌐</span>
-          <span class="hidden md:inline">Event Scout</span>
-        </a>
-        <a href="/agent" class="px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-purple-300 hover:text-white border border-dark-700/80 transition flex items-center gap-1.5 text-xs font-semibold" title="PhD Digital Twin & Co-Pilot">
-          <span>🧠</span>
-          <span class="hidden md:inline">Digital Twin</span>
-        </a>
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-teal-400 p-0.5 shadow-lg shadow-brand-500/20 flex items-center justify-center">
-          <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center">
-            <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
-            </svg>
-          </div>
+  <!-- ================= UNIFIED LEFT SIDEBAR ================= -->
+  <aside id="pf-app-sidebar" class="pf-sidebar">
+    <div class="pf-sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4F46E5,#6366F1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(79,70,229,0.25);">P</div>
+        <div class="pf-brand-full">
+          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
+          <div style="font-size:10px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-base sm:text-lg tracking-tight text-white">Zotero Audio Mentor</span>
-            <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-semibold hidden sm:inline">Research Studio</span>
-          </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Conversational AI Research Briefings & Spoken Mentorship</p>
+      </a>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
+        <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
+      </button>
+    </div>
+
+    <nav class="pf-sidebar-nav">
+      <div class="pf-nav-section-title pf-sidebar-text">Workspace</div>
+      <a href="/" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-primary);"><i data-lucide="layout-grid"></i></div>
+        <span class="pf-sidebar-text">Overview</span>
+      </a>
+
+      <div class="pf-nav-section-title pf-sidebar-text" style="margin-top:0.75rem;">7 Engines</div>
+      <a href="/app" class="pf-nav-item active">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-studio);background:var(--pf-engine-studio-bg);"><i data-lucide="headphones"></i></div>
+        <span class="pf-sidebar-text">Research Studio</span>
+        <span class="pf-badge pf-badge-indigo pf-sidebar-badge" style="margin-left:auto;font-size:9px;">E01</span>
+      </a>
+      <a href="/conferences" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-scout);background:var(--pf-engine-scout-bg);"><i data-lucide="calendar"></i></div>
+        <span class="pf-sidebar-text">Conference Scout</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">E02</span>
+      </a>
+      <a href="/radar" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-radar);background:var(--pf-engine-radar-bg);"><i data-lucide="radar"></i></div>
+        <span class="pf-sidebar-text">Novelty Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">E03</span>
+      </a>
+      <a href="/reviewer" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-reviewer);background:var(--pf-engine-reviewer-bg);"><i data-lucide="shield-alert"></i></div>
+        <span class="pf-sidebar-text">Reviewer #2</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">E04</span>
+      </a>
+      <a href="/grants" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-grants);background:var(--pf-engine-grants-bg);"><i data-lucide="coins"></i></div>
+        <span class="pf-sidebar-text">Funding Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">E05</span>
+      </a>
+      <a href="/lab-connector" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-lab);background:var(--pf-engine-lab-bg);"><i data-lucide="building"></i></div>
+        <span class="pf-sidebar-text">Lab Connector</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);">E06</span>
+      </a>
+      <a href="/agent" class="pf-nav-item">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-copilot);background:var(--pf-engine-copilot-bg);"><i data-lucide="sparkles"></i></div>
+        <span class="pf-sidebar-text">Academic Co-Pilot</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">E07</span>
+      </a>
+    </nav>
+
+    <div class="pf-sidebar-footer">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.theme.toggle()">
+        <i data-lucide="sun-moon"></i>
+        <span class="pf-sidebar-text pf-theme-toggle-label">Theme</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.commandPalette.open()">
+        <span style="font-family:var(--pf-font-mono);font-size:12px;font-weight:700;">⌘K</span>
+        <span class="pf-sidebar-text">Command Palette</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.settings.open()">
+        <i data-lucide="settings"></i>
+        <span class="pf-sidebar-text">Settings & Cache</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN STAGE WRAPPER ================= -->
+  <div class="pf-main-wrapper">
+    
+    <!-- SLIM STICKY TOPBAR -->
+    <header class="pf-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">
+          <i data-lucide="menu"></i>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <a href="/" style="color:var(--pf-text-muted);text-decoration:none;font-weight:500;">ProfFeb</a>
+          <span style="color:var(--pf-border-strong);">/</span>
+          <span style="font-weight:600;color:var(--pf-engine-studio);">Research Studio</span>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-2 sm:gap-2.5">
-        <!-- Speaking Voice Pill (Ghana / West Africa prominent) -->
-        <div class="flex items-center gap-1.5 bg-dark-850 hover:bg-dark-800 border border-dark-700/80 rounded-xl px-2.5 py-1.5 text-xs transition shadow-sm" title="Choose Speaking Voice Accent">
-          <span class="text-sm">🇬🇭</span>
-          <select id="quick-voice-select" onchange="handleQuickVoiceChange(this.value)" class="bg-transparent text-xs font-semibold text-slate-200 focus:outline-none cursor-pointer pr-1">
-            <optgroup label="🇬🇭 West African (Ghanaian & Nigerian Accent)">
-              <option value="en-NG-AbeoNeural" selected>🇬🇭 Abeo (West Africa - Male)</option>
-              <option value="en-NG-EzinneNeural">🇬🇭 Ezinne (West Africa - Female)</option>
+      <!-- Action items in Topbar -->
+      <div style="display:flex;align-items:center;gap:8px;">
+        <!-- Ghana Abeo / Voice accent pill -->
+        <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--pf-radius-md);background:var(--pf-bg-surface);border:1px solid var(--pf-border-default);" title="Neural Voice Accent">
+          <i data-lucide="volume-2" style="width:14px;height:14px;color:var(--pf-engine-studio);"></i>
+          <select id="quick-voice-select" onchange="handleQuickVoiceChange(this.value)" style="background:transparent;border:none;font-size:12px;font-weight:600;color:var(--pf-text-primary);cursor:pointer;outline:none;">
+            <optgroup label="West African Accents">
+              <option value="en-NG-AbeoNeural" selected>Abeo (Ghana/Nigeria - Warm Male)</option>
+              <option value="en-NG-EzinneNeural">Ezinne (West Africa - Natural Female)</option>
             </optgroup>
-            <optgroup label="🌍 Other African Accents">
-              <option value="en-KE-ChilembaNeural">🇰🇪 Chilemba (East Africa - Male)</option>
-              <option value="en-KE-AsiliaNeural">🇰🇪 Asilia (East Africa - Female)</option>
-              <option value="en-ZA-LukeNeural">🇿🇦 Luke (South Africa - Male)</option>
-              <option value="en-ZA-LeahNeural">🇿🇦 Leah (South Africa - Female)</option>
-              <option value="en-TZ-ElimuNeural">🇹🇿 Elimu (Tanzania - Male)</option>
+            <optgroup label="Other African Voices">
+              <option value="en-KE-ChilembaNeural">Chilemba (East Africa - Male)</option>
+              <option value="en-KE-AsiliaNeural">Asilia (East Africa - Female)</option>
+              <option value="en-ZA-LukeNeural">Luke (South Africa - Male)</option>
+              <option value="en-ZA-LeahNeural">Leah (South Africa - Female)</option>
+              <option value="en-TZ-ElimuNeural">Elimu (Tanzania - Male)</option>
             </optgroup>
             <optgroup label="International Scholarly Voices">
-              <option value="en-US-ChristopherNeural">🇺🇸 Christopher (US Male)</option>
-              <option value="en-US-JennyNeural">🇺🇸 Jenny (US Female)</option>
-              <option value="en-GB-RyanNeural">🇬🇧 Ryan (UK Male)</option>
+              <option value="en-US-ChristopherNeural">Christopher (US Male)</option>
+              <option value="en-US-JennyNeural">Jenny (US Female)</option>
+              <option value="en-GB-RyanNeural">Ryan (UK Male)</option>
             </optgroup>
           </select>
         </div>
 
-        <!-- Load Sample Papers Button -->
-        <button id="btn-load-samples" onclick="loadSamplePapers()" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 transition">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-          <span>Demo Papers</span>
+        <button id="btn-load-samples" onclick="loadSamplePapers()" class="pf-btn pf-btn-secondary pf-btn-sm hidden md:inline-flex" title="Load Benchmark Papers">
+          <i data-lucide="folder-down"></i>
+          <span>Sample Papers</span>
         </button>
 
-        <!-- Direct PDF Upload Button (Hero Accent) -->
-        <button onclick="openUploadModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white shadow-lg shadow-brand-500/20 transition active:scale-95">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-          </svg>
+        <button onclick="openUploadModal()" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-studio);border-color:var(--pf-engine-studio);">
+          <i data-lucide="upload-cloud"></i>
           <span>Upload PDF</span>
         </button>
 
-        <!-- Sync Zotero Button -->
-        <button id="btn-sync-zotero" onclick="triggerZoteroSync()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-200 border border-dark-700/80 transition active:scale-95">
-          <svg id="sync-spinner" class="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
+        <button id="btn-sync-zotero" onclick="triggerZoteroSync()" class="pf-btn pf-btn-secondary pf-btn-sm">
+          <i data-lucide="refresh-cw" id="sync-spinner"></i>
           <span id="sync-btn-text" class="hidden sm:inline">Sync Zotero</span>
         </button>
 
-        <!-- Command Palette Trigger -->
-        <button onclick="ProfFebUI.commandPalette.open()" title="Command Palette (Cmd+K)" class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 text-xs font-mono transition">
-          <span>⌘K</span>
+        <button onclick="toggleShortcutsModal()" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon hidden lg:inline-flex" title="Keyboard Shortcuts (?)">
+          <i data-lucide="command"></i>
         </button>
 
-        <!-- Theme Switcher -->
-        <button onclick="ProfFebUI.theme.toggle()" title="Toggle Light / Dark Mode" class="p-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white border border-dark-700/80 transition">
-          <span class="pf-theme-toggle-icon">🌓</span>
-        </button>
-
-        <!-- Shortcuts Guide Button -->
-        <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts (?)" class="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-300 hover:text-white border border-dark-700/80 text-xs transition">
-          <span class="text-xs">⌨️</span>
-          <span class="text-[11px] font-mono">Shortcuts</span>
-        </button>
-
-        <!-- Settings Button -->
-        <button onclick="openSettingsModal()" title="API & Voice Settings" class="p-2 rounded-xl bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white border border-dark-700/80 transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
+        <div id="user-nav-container"></div>
       </div>
+    </header>
 
-    </div>
-  </header>
-
-  <!-- ================= MAIN CONTAINER ================= -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full flex flex-col gap-5">
-
-    <!-- Executive Research HUD & Continue Banner -->
-    <section class="flex flex-col gap-3">
-      
-      <!-- Top Metrics Strip -->
-      <div class="glass-card rounded-2xl p-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
-        
-        <div class="flex items-center gap-6 sm:gap-8 divide-x divide-dark-800">
-          
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs">📚</div>
-            <div>
-              <div class="flex items-baseline gap-1.5">
-                <span id="stat-total-papers" class="text-base font-bold text-white">0</span>
-                <span class="text-[11px] text-slate-400 font-medium">Papers</span>
-              </div>
-              <span class="text-[10px] text-slate-500 font-mono">In Library</span>
-            </div>
-          </div>
-
-          <div class="pl-6 sm:pl-8 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs">🎧</div>
-            <div>
-              <div class="flex items-baseline gap-1.5">
-                <span id="stat-ready-briefings" class="text-base font-bold text-brand-400">0</span>
-                <span class="text-[11px] text-slate-400 font-medium">Audio Briefings</span>
-              </div>
-              <span class="text-[10px] text-slate-500 font-mono">Ready to Listen</span>
-            </div>
-          </div>
-
-          <div class="pl-6 sm:pl-8 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs">⏱️</div>
-            <div>
-              <div class="flex items-baseline gap-1.5">
-                <span id="stat-audio-time" class="text-base font-bold text-white">0.0 min</span>
-              </div>
-              <span class="text-[10px] text-slate-500 font-mono">Listening Archive</span>
-            </div>
-          </div>
-
+    <!-- COMPACT PAGE HEADER -->
+    <div class="pf-page-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-studio-border);flex-shrink:0;">
+          <i data-lucide="headphones" style="width:22px;height:22px;"></i>
         </div>
-
-        <!-- Right System Badges -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h1 style="font-family:var(--pf-font-display);font-size:20px;font-weight:700;margin:0;color:var(--pf-text-primary);">Research Studio</h1>
+            <span class="pf-badge pf-badge-indigo" style="font-size:10px;font-family:var(--pf-font-mono);">ENGINE 01</span>
+          </div>
+          <p style="font-size:13px;color:var(--pf-text-secondary);margin:2px 0 0;">Spoken neural audio briefings, KaTeX mathematical derivations, and Zotero sync</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
         <div class="flex items-center gap-2 text-xs font-mono">
-          <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-950/60 border border-dark-800 text-slate-300">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-copilot-bg);border:1px solid var(--pf-engine-copilot-border);color:var(--pf-engine-copilot);font-size:11px;font-weight:600;">
+            <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
             <span>Edge-TTS Free</span>
           </div>
-          <div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-950/60 border border-dark-800 text-slate-300">
-            <span>⚡ Gemini Flash</span>
+          <div class="hidden lg:flex" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-primary-subtle);border:1px solid var(--pf-primary-border);color:var(--pf-primary);font-size:11px;font-weight:600;">
+            <span>⚡ Gemini 2.5 Flash</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ================= MAIN CONTAINER ================= -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full flex flex-col gap-5">
+
+      <!-- Executive Research HUD & Continue Banner -->
+      <section class="flex flex-col gap-3">
+        
+        <!-- Top Metrics Strip -->
+        <div class="glass-card rounded-2xl p-4 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-4">
+          
+          <div class="flex items-center gap-6 sm:gap-8 divide-x" style="border-color:var(--pf-border-subtle);">
+            
+            <div class="flex items-center gap-3">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-studio-border);">
+                <i data-lucide="book-open" style="width:18px;height:18px;"></i>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span id="stat-total-papers" class="text-lg font-bold" style="color:var(--pf-text-primary);">0</span>
+                  <span class="text-xs font-medium" style="color:var(--pf-text-secondary);">Papers</span>
+                </div>
+                <span class="text-[11px] font-mono" style="color:var(--pf-text-muted);">In Library</span>
+              </div>
+            </div>
+
+            <div class="pl-6 sm:pl-8 flex items-center gap-3">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-copilot-border);">
+                <i data-lucide="headphones" style="width:18px;height:18px;"></i>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span id="stat-ready-briefings" class="text-lg font-bold" style="color:var(--pf-engine-copilot);">0</span>
+                  <span class="text-xs font-medium" style="color:var(--pf-text-secondary);">Audio Briefings</span>
+                </div>
+                <span class="text-[11px] font-mono" style="color:var(--pf-text-muted);">Ready to Listen</span>
+              </div>
+            </div>
+
+            <div class="pl-6 sm:pl-8 flex items-center gap-3">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-radar-border);">
+                <i data-lucide="clock" style="width:18px;height:18px;"></i>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span id="stat-audio-time" class="text-lg font-bold" style="color:var(--pf-text-primary);">0.0 min</span>
+                </div>
+                <span class="text-[11px] font-mono" style="color:var(--pf-text-muted);">Listening Archive</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right System Badges -->
+          <div class="flex items-center gap-2 text-xs font-mono">
+            <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-copilot-bg);border:1px solid var(--pf-engine-copilot-border);color:var(--pf-engine-copilot);font-size:11px;font-weight:600;">
+              <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
+              <span>Edge-TTS Free</span>
+            </div>
+            <div class="hidden lg:flex" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-primary-subtle);border:1px solid var(--pf-primary-border);color:var(--pf-primary);font-size:11px;font-weight:600;">
+              <span>⚡ Gemini 2.5 Flash</span>
+            </div>
+          </div>
 
       </div>
 
@@ -557,6 +623,8 @@
     </section>
 
   </main>
+  </div> <!-- /pf-main-wrapper -->
+</div> <!-- /pf-app-shell -->
 
   <!-- ================= PERSISTENT AUDIO PLAYER BAR (FLOATING FOOTER) ================= -->
   <div id="persistent-player" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-dark-900/98 border-t border-dark-800 backdrop-blur-2xl px-4 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.7)]">
@@ -2259,16 +2327,16 @@
               <span class="text-[11px] font-mono text-slate-500 font-medium">${paper.publication_year || 'Recent'}</span>
             </div>
 
-            <h3 class="text-sm font-bold text-white group-hover:text-brand-400 transition line-clamp-2 cursor-pointer mb-1.5" onclick="openBriefingModal(${paper.id})">
+            <h3 class="text-sm font-bold transition line-clamp-2 cursor-pointer mb-1.5 hover:opacity-80" style="color:var(--pf-text-primary);" onclick="openBriefingModal(${paper.id})">
               ${escapeHtml(paper.title)}
             </h3>
 
-            <p class="text-xs text-slate-400 line-clamp-1 mb-2.5 font-medium flex items-center gap-1.5">
-              <span class="text-slate-500">✍️</span>
+            <p class="text-xs line-clamp-1 mb-2.5 font-medium flex items-center gap-1.5" style="color:var(--pf-text-secondary);">
+              <i data-lucide="feather" style="width:12px;height:12px;color:var(--pf-text-muted);"></i>
               <span>${escapeHtml(paper.authors || 'Unknown Authors')}</span>
             </p>
 
-            <p class="text-xs text-slate-400 line-clamp-3 mb-3 leading-relaxed">
+            <p class="text-xs line-clamp-3 mb-3 leading-relaxed" style="color:var(--pf-text-secondary);">
               ${escapeHtml(paper.abstract || 'No abstract preview available for this document.')}
             </p>
 
@@ -2277,15 +2345,15 @@
               if (savedPos && savedPos.time > 5 && (savedPos.duration - savedPos.time > 10)) {
                 const pct = Math.round((savedPos.time / savedPos.duration) * 100);
                 return `
-                  <div onclick="resumeSavedPaperPosition(${paper.id})" class="mb-3 p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 cursor-pointer transition text-amber-300 text-[11px] font-mono group/res" title="Resume audio playback">
+                  <div onclick="resumeSavedPaperPosition(${paper.id})" class="mb-3 p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 cursor-pointer transition text-amber-600 dark:text-amber-300 text-[11px] font-mono group/res" title="Resume audio playback">
                     <div class="flex items-center justify-between mb-1">
                       <span class="flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                         <span>Stopped at <strong>${formatSeconds(savedPos.time)}</strong></span>
                       </span>
-                      <span class="font-bold text-amber-400 group-hover/res:translate-x-0.5 transition-transform">▶ Resume (${pct}%)</span>
+                      <span class="font-bold text-amber-600 dark:text-amber-400 group-hover/res:translate-x-0.5 transition-transform">▶ Resume (${pct}%)</span>
                     </div>
-                    <div class="w-full bg-dark-800 rounded-full h-1 overflow-hidden">
+                    <div class="w-full bg-slate-200 dark:bg-dark-800 rounded-full h-1 overflow-hidden">
                       <div class="bg-amber-400 h-full rounded-full" style="width: ${pct}%"></div>
                     </div>
                   </div>
@@ -2295,13 +2363,13 @@
             })()}
           </div>
 
-          <div class="pt-3 border-t border-dark-800/80 flex flex-col gap-2.5">
+          <div class="pt-3 flex flex-col gap-2.5" style="border-top:1px solid var(--pf-border-subtle);">
             <!-- Dual Action Audio Buttons -->
             <div class="grid grid-cols-2 gap-2">
               <button onclick="handlePaperAction(${paper.id}, 'summary')" class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition active:scale-95 ${
                 hasSummary
-                  ? (isPlayingSummary ? 'bg-brand-500 text-dark-950 font-bold' : 'bg-dark-800 hover:bg-dark-750 text-brand-400 border border-brand-500/30')
-                  : 'bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700'
+                  ? (isPlayingSummary ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-100 hover:bg-slate-200 dark:bg-dark-800 dark:hover:bg-dark-750 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30')
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-dark-850 dark:hover:bg-dark-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-dark-700'
               }">
                 ${hasSummary
                   ? (isPlayingSummary ? '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause' : '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> ' + (paper.summary_audio_duration ? formatSeconds(paper.summary_audio_duration) : 'Summary'))
@@ -2310,8 +2378,8 @@
 
               <button onclick="handlePaperAction(${paper.id}, 'full_paper')" class="flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition active:scale-95 ${
                 hasFull
-                  ? (isPlayingFull ? 'bg-blue-500 text-dark-950 font-bold' : 'bg-dark-800 hover:bg-dark-750 text-blue-400 border border-blue-500/30')
-                  : 'bg-dark-850 hover:bg-dark-800 text-slate-300 border border-dark-700'
+                  ? (isPlayingFull ? 'bg-blue-600 text-white font-bold' : 'bg-slate-100 hover:bg-slate-200 dark:bg-dark-800 dark:hover:bg-dark-750 text-blue-600 dark:text-blue-400 border border-blue-500/30')
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-dark-850 dark:hover:bg-dark-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-dark-700'
               }">
                 ${hasFull
                   ? (isPlayingFull ? '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause' : '<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> ' + (paper.full_audio_duration ? formatSeconds(paper.full_audio_duration) : 'Full Paper'))
@@ -2319,12 +2387,12 @@
               </button>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-slate-400 pt-0.5">
-              <button onclick="openBriefingModal(${paper.id})" class="text-xs text-slate-300 hover:text-white transition flex items-center gap-1 font-medium">
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-0.5">
+              <button onclick="openBriefingModal(${paper.id})" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline transition flex items-center gap-1 font-semibold">
                 <span>View Details & Reader</span> &rarr;
               </button>
-              <button onclick="deletePaper(${paper.id})" class="text-slate-600 hover:text-rose-400 p-1 rounded-lg transition" title="Delete paper">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              <button onclick="deletePaper(${paper.id})" class="text-slate-400 hover:text-rose-500 p-1 rounded-lg transition" title="Delete paper">
+                <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
               </button>
             </div>
           </div>
@@ -2333,29 +2401,33 @@
 
         // 2. Render Table Row for List View
         const row = document.createElement('tr');
-        row.className = 'hover:bg-dark-800/50 transition cursor-pointer';
+        row.className = 'hover:bg-slate-50 dark:hover:bg-dark-800/50 transition cursor-pointer';
         row.innerHTML = `
           <td class="py-3 px-4">${statusBadge}</td>
           <td class="py-3 px-4 max-w-sm truncate" onclick="openBriefingModal(${paper.id})">
-            <div class="font-bold text-white hover:text-brand-400 truncate">${escapeHtml(paper.title)}</div>
-            <div class="text-[11px] text-slate-400 truncate">${escapeHtml(paper.authors || 'Unknown')}</div>
+            <div class="font-bold truncate" style="color:var(--pf-text-primary);">${escapeHtml(paper.title)}</div>
+            <div class="text-[11px] truncate" style="color:var(--pf-text-muted);">${escapeHtml(paper.authors || 'Unknown')}</div>
           </td>
-          <td class="py-3 px-4 font-mono text-slate-400 text-[11px]">${paper.publication_year || '-'}</td>
-          <td class="py-3 px-4 font-mono text-[11px]">${paper.has_pdf ? '<span class="text-blue-400 font-bold">PDF</span>' : '<span class="text-slate-600">None</span>'}</td>
-          <td class="py-3 px-4 font-mono text-[11px] text-slate-300">
+          <td class="py-3 px-4 font-mono text-[11px]" style="color:var(--pf-text-muted);">${paper.publication_year || '-'}</td>
+          <td class="py-3 px-4 font-mono text-[11px]">${paper.has_pdf ? '<span class="text-blue-500 font-bold">PDF</span>' : '<span style="color:var(--pf-text-muted);">None</span>'}</td>
+          <td class="py-3 px-4 font-mono text-[11px]" style="color:var(--pf-text-secondary);">
             ${paper.full_audio_duration ? formatSeconds(paper.full_audio_duration) : (paper.summary_audio_duration ? formatSeconds(paper.summary_audio_duration) : 'Pending')}
           </td>
           <td class="py-3 px-4 text-right">
             <div class="flex items-center justify-end gap-1.5">
-              <button onclick="handlePaperAction(${paper.id}, 'summary')" class="px-2 py-1 text-[11px] font-semibold rounded-lg bg-dark-800 text-brand-400 border border-brand-500/20">Summary</button>
-              <button onclick="handlePaperAction(${paper.id}, 'full_paper')" class="px-2 py-1 text-[11px] font-semibold rounded-lg bg-dark-800 text-blue-400 border border-blue-500/20">Full</button>
-              <button onclick="openBriefingModal(${paper.id})" class="p-1 rounded text-slate-400 hover:text-white">📖</button>
-              <button onclick="deletePaper(${paper.id})" class="p-1 rounded text-slate-600 hover:text-rose-400">🗑</button>
+              <button onclick="handlePaperAction(${paper.id}, 'summary')" class="px-2 py-1 text-[11px] font-semibold rounded-lg bg-slate-100 dark:bg-dark-800 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">Summary</button>
+              <button onclick="handlePaperAction(${paper.id}, 'full_paper')" class="px-2 py-1 text-[11px] font-semibold rounded-lg bg-slate-100 dark:bg-dark-800 text-blue-600 dark:text-blue-400 border border-blue-500/20">Full</button>
+              <button onclick="openBriefingModal(${paper.id})" class="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white" title="Read paper"><i data-lucide="book-open" style="width:14px;height:14px;"></i></button>
+              <button onclick="deletePaper(${paper.id})" class="p-1 rounded text-slate-400 hover:text-rose-500" title="Delete paper"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
             </div>
           </td>
         `;
         tableBody.appendChild(row);
       });
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
     }
 
     // Handles user clicking Summary or Full Paper button on card or modal

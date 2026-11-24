@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +7,19 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
-  <!-- Typography -->
+  <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Line Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- ProfFeb Unified Design System -->
   <link rel="stylesheet" href="/static/css/proffeb-design-system.css">
 
   <!-- Tailwind CSS CDN for utility layering -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
 
   <!-- Marked.js for markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -38,281 +28,385 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/static/js/proffeb-auth.js" defer></script>
   <script src="/static/js/proffeb-ui.js" defer></script>
+
+  <style>
+    .reviewer-card {
+      background: var(--pf-bg-surface);
+      border: 1px solid var(--pf-border-subtle);
+      border-radius: var(--pf-radius-lg);
+      transition: var(--pf-transition);
+      box-shadow: var(--pf-shadow-xs);
+    }
+    .reviewer-card:hover {
+      border-color: var(--pf-engine-reviewer);
+      box-shadow: var(--pf-shadow-md);
+    }
+  </style>
 </head>
 
-<body class="min-h-screen antialiased selection:bg-rose-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary);">
+<body class="selection:bg-rose-500 selection:text-white" style="background-color: var(--pf-bg-canvas); color: var(--pf-text-primary); margin:0;">
 
-<div class="pf-app-container">
+<div class="pf-app-shell">
   
-  <!-- ================= PERSISTENT COLLAPSIBLE SIDEBAR ================= -->
+  <!-- ================= UNIFIED LEFT SIDEBAR ================= -->
   <aside id="pf-app-sidebar" class="pf-sidebar">
-    <div style="padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
-      <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #e11d48, #f43f5e); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px;">P</div>
-        <div class="pf-brand-text">
-          <div style="font-weight: 700; font-size: 14px; color: var(--pf-text-primary);">ProfFeb</div>
-          <div style="font-size: 10px; color: var(--pf-text-muted); font-family: var(--pf-font-mono);">REVIEWER • E04</div>
+    <div class="pf-sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#E11D48,#F43F5E);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(225,29,72,0.25);">P</div>
+        <div class="pf-brand-full">
+          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
+          <div style="font-size:10px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
         </div>
       </a>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon pf-hide-collapsed" onclick="ProfFebUI.sidebar.toggle()" title="Collapse Sidebar">
-        ◀
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
+        <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
       </button>
     </div>
 
     <!-- Navigation items (7 Engines + Overview) -->
-    <nav style="flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto;">
+    <nav class="pf-sidebar-nav">
+      <div class="pf-nav-section-title pf-sidebar-text">Workspace</div>
       <a href="/" class="pf-nav-item">
-        <span>⊞</span>
-        <span class="pf-nav-label">Overview</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-primary);"><i data-lucide="layout-grid"></i></div>
+        <span class="pf-sidebar-text">Overview</span>
       </a>
+
+      <div class="pf-nav-section-title pf-sidebar-text" style="margin-top:0.75rem;">7 Engines</div>
       <a href="/app" class="pf-nav-item">
-        <span style="color: var(--pf-engine-studio);">🎙️</span>
-        <span class="pf-nav-label">Research Studio</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-studio);background:var(--pf-engine-studio-bg);"><i data-lucide="headphones"></i></div>
+        <span class="pf-sidebar-text">Research Studio</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-studio-bg);color:var(--pf-engine-studio);">E01</span>
       </a>
       <a href="/conferences" class="pf-nav-item">
-        <span style="color: var(--pf-engine-scout);">🌐</span>
-        <span class="pf-nav-label">Conference Scout</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-scout);background:var(--pf-engine-scout-bg);"><i data-lucide="calendar"></i></div>
+        <span class="pf-sidebar-text">Conference Scout</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-scout-bg);color:var(--pf-engine-scout);">E02</span>
       </a>
       <a href="/radar" class="pf-nav-item">
-        <span style="color: var(--pf-engine-radar);">🔬</span>
-        <span class="pf-nav-label">Novelty Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-radar);background:var(--pf-engine-radar-bg);"><i data-lucide="radar"></i></div>
+        <span class="pf-sidebar-text">Novelty Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-radar-bg);color:var(--pf-engine-radar);">E03</span>
       </a>
-      <a href="/reviewer" class="pf-nav-item pf-nav-active">
-        <span style="color: var(--pf-engine-reviewer);">⚖️</span>
-        <span class="pf-nav-label">Reviewer #2</span>
+      <a href="/reviewer" class="pf-nav-item active">
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-reviewer);background:var(--pf-engine-reviewer-bg);"><i data-lucide="shield-alert"></i></div>
+        <span class="pf-sidebar-text">Reviewer #2</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">E04</span>
       </a>
       <a href="/grants" class="pf-nav-item">
-        <span style="color: var(--pf-engine-grants);">💰</span>
-        <span class="pf-nav-label">Funding Radar</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-grants);background:var(--pf-engine-grants-bg);"><i data-lucide="coins"></i></div>
+        <span class="pf-sidebar-text">Funding Radar</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-grants-bg);color:var(--pf-engine-grants);">E05</span>
       </a>
       <a href="/lab-connector" class="pf-nav-item">
-        <span style="color: var(--pf-engine-lab);">🏢</span>
-        <span class="pf-nav-label">Lab Connector</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-lab);background:var(--pf-engine-lab-bg);"><i data-lucide="building"></i></div>
+        <span class="pf-sidebar-text">Lab Connector</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-lab-bg);color:var(--pf-engine-lab);">E06</span>
       </a>
       <a href="/agent" class="pf-nav-item">
-        <span style="color: var(--pf-engine-copilot);">🧠</span>
-        <span class="pf-nav-label">Academic Co-Pilot</span>
+        <div class="pf-nav-icon-wrap" style="color:var(--pf-engine-copilot);background:var(--pf-engine-copilot-bg);"><i data-lucide="sparkles"></i></div>
+        <span class="pf-sidebar-text">Academic Co-Pilot</span>
+        <span class="pf-badge pf-sidebar-badge" style="margin-left:auto;font-size:9px;background:var(--pf-engine-copilot-bg);color:var(--pf-engine-copilot);">E07</span>
       </a>
     </nav>
 
     <!-- Bottom utility items -->
-    <div style="padding: 12px; border-top: 1px solid var(--pf-border-subtle); display: flex; flex-direction: column; gap: 6px;">
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.theme.toggle()">
-        <span class="pf-theme-toggle-icon">🌓</span>
-        <span class="pf-nav-label pf-theme-toggle-label">Theme</span>
+    <div class="pf-sidebar-footer">
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.theme.toggle()">
+        <i data-lucide="sun-moon"></i>
+        <span class="pf-sidebar-text pf-theme-toggle-label">Theme</span>
       </button>
-      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content: flex-start;" onclick="ProfFebUI.commandPalette.open()">
-        <span>⌘K</span>
-        <span class="pf-nav-label">Command Palette</span>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.commandPalette.open()">
+        <span style="font-family:var(--pf-font-mono);font-size:12px;font-weight:700;">⌘K</span>
+        <span class="pf-sidebar-text">Command Palette</span>
+      </button>
+      <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" style="justify-content:flex-start;width:100%;" onclick="ProfFebUI.settings.open()">
+        <i data-lucide="settings"></i>
+        <span class="pf-sidebar-text">Settings & Cache</span>
       </button>
     </div>
   </aside>
 
   <!-- ================= MAIN STAGE ================= -->
-  <div class="pf-main-stage">
+  <div class="pf-main-wrapper">
     
     <!-- TOP HEADER -->
-    <header class="pf-top-bar">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">☰</button>
-        <div class="pf-breadcrumbs" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
-          <a href="/" style="color: var(--pf-text-muted); text-decoration: none;">ProfFeb</a>
-          <span style="color: var(--pf-border-strong);">/</span>
-          <span style="font-weight: 600; color: var(--pf-engine-reviewer);">Reviewer #2 Simulator</span>
+    <header class="pf-topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm md:hidden" onclick="ProfFebUI.sidebar.toggle()">
+          <i data-lucide="menu"></i>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <a href="/" style="color:var(--pf-text-muted);text-decoration:none;font-weight:500;">ProfFeb</a>
+          <span style="color:var(--pf-border-strong);">/</span>
+          <span style="font-weight:600;color:var(--pf-engine-reviewer);">Reviewer #2 Simulator</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div style="display:flex;align-items:center;gap:8px;">
         <button onclick="clearProfFebCache()" title="Clear cache" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon">
-          🔄
+          <i data-lucide="refresh-cw"></i>
         </button>
         <div id="user-nav-container"></div>
       </div>
     </header>
 
-    <!-- WORKSPACE BODY -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
-      <!-- Hero Banner -->
-      <div class="text-center max-w-3xl mx-auto mb-8">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3 border" style="background-color: var(--pf-engine-reviewer-bg); border-color: rgba(244, 63, 94, 0.3);">
-          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-          <span class="text-xs font-semibold" style="color: var(--pf-engine-reviewer);">Senior Program Committee (PC) Adversarial Stress-Test</span>
+    <!-- COMPACT PAGE HEADER -->
+    <div class="pf-page-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-reviewer-border);flex-shrink:0;">
+          <i data-lucide="shield-alert" style="width:22px;height:22px;"></i>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: var(--pf-text-primary);">
-          Stress-Test Your Draft Before Reviewer #2 Does
-        </h1>
-        <p class="mt-2 text-sm max-w-2xl mx-auto leading-relaxed" style="color: var(--pf-text-secondary);">
-          Simulate a rigorous, hyper-critical peer review. Uncover baseline gaps, formulate rebuttal defenses, and export a revised camera-ready manuscript.
-        </p>
-      </div>
-
-      <!-- Reviewer Input Panel -->
-      <div class="pf-card p-6 mb-8">
-        
-        <!-- Mode Switcher Tabs -->
-        <div class="flex items-center gap-2 mb-6 border-b pb-4" style="border-color: var(--pf-border-subtle);">
-          <button 
-            type="button" 
-            id="tab-pdf" 
-            onclick="switchInputMode('pdf')" 
-            class="pf-btn pf-btn-primary pf-btn-sm"
-          >
-            <span>📄 Direct PDF Manuscript Upload</span>
-          </button>
-          <button 
-            type="button" 
-            id="tab-manual" 
-            onclick="switchInputMode('manual')" 
-            class="pf-btn pf-btn-secondary pf-btn-sm"
-          >
-            <span>✍️ Paste Abstract Manually</span>
-          </button>
-        </div>
-
-        <!-- Mode 1: PDF Upload Form -->
-        <form id="form-pdf" onsubmit="event.preventDefault(); submitPdfReview();" class="space-y-4">
-          <div 
-            id="dropzone"
-            onclick="document.getElementById('pdf-file-input').click();"
-            ondragover="handleDragOver(event)"
-            ondragleave="handleDragLeave(event)"
-            ondrop="handleDrop(event)"
-            class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3"
-            style="border-color: var(--pf-border-default); background-color: var(--pf-bg-surface-elevated);"
-          >
-            <input 
-              type="file" 
-              id="pdf-file-input" 
-              accept=".pdf" 
-              class="hidden" 
-              onchange="handleFileSelect(this.files)"
-            >
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
-              📄
-            </div>
-            <div>
-              <h3 class="text-sm font-bold" style="color: var(--pf-text-primary);">
-                Drag & drop your draft paper PDF here, or <span style="color: var(--pf-engine-reviewer); text-decoration: underline;">browse</span>
-              </h3>
-              <p class="text-xs mt-1" style="color: var(--pf-text-muted);">Supports full research papers, thesis proposals, and manuscripts up to 50MB</p>
-            </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h1 style="font-family:var(--pf-font-display);font-size:20px;font-weight:700;margin:0;color:var(--pf-text-primary);">Reviewer #2 Simulator</h1>
+            <span class="pf-badge" style="font-size:10px;font-family:var(--pf-font-mono);background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);">ENGINE 04</span>
           </div>
+          <p style="font-size:13px;color:var(--pf-text-secondary);margin:2px 0 0;">Adversarial program committee review, attack vector detection, and rebuttal defenses</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-engine-reviewer-bg);border:1px solid var(--pf-engine-reviewer-border);color:var(--pf-engine-reviewer);font-size:11px;font-weight:600;">
+          <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
+          <span>PC Rubric Active</span>
+        </div>
+      </div>
+    </div>
 
-          <!-- Selected File Status Badge -->
-          <div id="file-status-badge" class="hidden items-center justify-between p-3 rounded-lg border" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
-            <div class="flex items-center gap-3">
-              <span class="text-xl">📑</span>
-              <div>
-                <p id="file-name-label" class="text-xs font-bold" style="color: var(--pf-text-primary);">manuscript.pdf</p>
-                <p id="file-size-label" class="text-[11px]" style="color: var(--pf-text-muted);">2.4 MB</p>
-              </div>
-            </div>
+    <!-- WORKSPACE BODY -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      
+      <!-- Input Section: Two Column Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        
+        <!-- Left: Upload or Abstract Form (7 cols) -->
+        <div class="lg:col-span-7 reviewer-card p-6">
+          
+          <!-- Mode Switcher Tabs -->
+          <div class="flex items-center gap-2 mb-5 border-b pb-4" style="border-color: var(--pf-border-subtle);">
             <button 
               type="button" 
-              onclick="clearSelectedFile()" 
-              class="pf-btn pf-btn-ghost pf-btn-sm"
-              style="color: var(--pf-engine-reviewer);"
+              id="tab-pdf" 
+              onclick="switchInputMode('pdf')" 
+              class="pf-btn pf-btn-primary pf-btn-sm"
+              style="background:var(--pf-engine-reviewer);border-color:var(--pf-engine-reviewer);"
             >
-              Change File
+              <i data-lucide="file-up" style="width:14px;height:14px;"></i>
+              <span>PDF Manuscript Upload</span>
             </button>
-          </div>
-
-          <!-- Target Venue Selector -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
-                Target Publication Venue
-              </label>
-              <select id="pdf-venue" class="pf-select text-sm py-2">
-                <option value="NeurIPS / ICML (Top ML)">NeurIPS / ICML (Top ML)</option>
-                <option value="CVPR / ICCV (Computer Vision)">CVPR / ICCV (Computer Vision)</option>
-                <option value="ACL / EMNLP (NLP)">ACL / EMNLP (NLP)</option>
-                <option value="IEEE / ACM Transactions">IEEE / ACM Transactions</option>
-                <option value="ACM SIGCOMM / INFOCOM (Systems)">ACM SIGCOMM / INFOCOM (Systems)</option>
-              </select>
-            </div>
-            <div class="flex items-end">
-              <p class="text-xs leading-relaxed pb-1" style="color: var(--pf-text-muted);">
-                💡 <strong>Full Manuscript Engine:</strong> PyMuPDF extracts full text, isolates methodology and baselines, and generates ready-to-copy improvements.
-              </p>
-            </div>
-          </div>
-
-          <div class="pt-2 flex justify-end">
             <button 
-              type="submit" 
-              id="pdf-submit-btn"
-              class="pf-btn pf-btn-primary pf-btn-md"
+              type="button" 
+              id="tab-manual" 
+              onclick="switchInputMode('manual')" 
+              class="pf-btn pf-btn-secondary pf-btn-sm"
             >
-              <span>Audit Full Manuscript PDF</span>
-              <span>→</span>
+              <i data-lucide="pen-tool" style="width:14px;height:14px;"></i>
+              <span>Paste Abstract</span>
             </button>
           </div>
-        </form>
 
-        <!-- Mode 2: Manual Text Input Form -->
-        <form id="form-manual" onsubmit="event.preventDefault(); simulateManualReview();" class="space-y-4 hidden">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
-                Draft Paper Title
-              </label>
+          <!-- Mode 1: PDF Upload Form -->
+          <form id="form-pdf" onsubmit="event.preventDefault(); submitPdfReview();" class="space-y-4">
+            <div 
+              id="dropzone"
+              onclick="document.getElementById('pdf-file-input').click();"
+              ondragover="handleDragOver(event)"
+              ondragleave="handleDragLeave(event)"
+              ondrop="handleDrop(event)"
+              class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3"
+              style="border-color: var(--pf-border-default); background-color: var(--pf-bg-surface-elevated);"
+            >
               <input 
-                type="text" 
-                id="rev-title"
-                placeholder="e.g. Hardware-Aware Fast Attention with Subquadratic Memory"
-                class="pf-input text-sm py-2.5"
+                type="file" 
+                id="pdf-file-input" 
+                accept=".pdf" 
+                class="hidden" 
+                onchange="handleFileSelect(this.files)"
               >
+              <div style="width:48px;height:48px;border-radius:14px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;border:1px solid var(--pf-engine-reviewer-border);">
+                <i data-lucide="upload-cloud" style="width:24px;height:24px;"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold" style="color: var(--pf-text-primary);">
+                  Drag & drop your draft paper PDF here, or <span style="color: var(--pf-engine-reviewer); text-decoration: underline;">browse</span>
+                </h3>
+                <p class="text-xs mt-1" style="color: var(--pf-text-muted);">Supports full research papers, thesis proposals, and manuscripts up to 50MB</p>
+              </div>
             </div>
+
+            <!-- Selected File Status Badge -->
+            <div id="file-status-badge" class="hidden items-center justify-between p-3.5 rounded-xl border" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+              <div class="flex items-center gap-3">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;">
+                  <i data-lucide="file-check" style="width:18px;height:18px;"></i>
+                </div>
+                <div>
+                  <p id="file-name-label" class="text-xs font-bold" style="color: var(--pf-text-primary);">manuscript.pdf</p>
+                  <p id="file-size-label" class="text-[11px]" style="color: var(--pf-text-muted);">2.4 MB</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onclick="clearSelectedFile()" 
+                class="pf-btn pf-btn-ghost pf-btn-sm"
+                style="color: var(--pf-engine-reviewer);"
+              >
+                Change File
+              </button>
+            </div>
+
+            <!-- Target Venue Selector -->
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
                 Target Publication Venue
               </label>
-              <select id="rev-venue" class="pf-select text-sm py-2.5">
-                <option value="NeurIPS / ICML (Top ML)">NeurIPS / ICML (Top ML)</option>
+              <select id="pdf-venue" class="pf-select text-sm py-2 w-full" style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);">
+                <option value="NeurIPS / ICML (Top ML)">NeurIPS / ICML (Top Machine Learning)</option>
                 <option value="CVPR / ICCV (Computer Vision)">CVPR / ICCV (Computer Vision)</option>
-                <option value="ACL / EMNLP (NLP)">ACL / EMNLP (NLP)</option>
-                <option value="IEEE / ACM Transactions">IEEE / ACM Transactions</option>
-                <option value="ACM SIGCOMM / INFOCOM (Systems)">ACM SIGCOMM / INFOCOM (Systems)</option>
+                <option value="ACL / EMNLP (NLP)">ACL / EMNLP (Natural Language Processing)</option>
+                <option value="IEEE / ACM Transactions">IEEE / ACM Transactions (Journals)</option>
+                <option value="ACM SIGCOMM / INFOCOM (Systems)">ACM SIGCOMM / INFOCOM (Computer Systems)</option>
               </select>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button 
+                type="submit" 
+                id="pdf-submit-btn"
+                class="pf-btn pf-btn-primary pf-btn-md w-full sm:w-auto"
+                style="background:var(--pf-engine-reviewer);border-color:var(--pf-engine-reviewer);"
+              >
+                <i data-lucide="shield-alert" style="width:16px;height:16px;"></i>
+                <span>Audit Full Manuscript PDF</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Mode 2: Manual Text Input Form -->
+          <form id="form-manual" onsubmit="event.preventDefault(); simulateManualReview();" class="space-y-4 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+                  Draft Paper Title
+                </label>
+                <input 
+                  type="text" 
+                  id="rev-title"
+                  placeholder="e.g. Hardware-Aware Fast Attention with Subquadratic Memory"
+                  class="pf-input text-sm py-2.5"
+                  style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+                  Target Venue
+                </label>
+                <select id="rev-venue" class="pf-select text-sm py-2.5 w-full" style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);">
+                  <option value="NeurIPS / ICML (Top ML)">NeurIPS / ICML</option>
+                  <option value="CVPR / ICCV (Computer Vision)">CVPR / ICCV</option>
+                  <option value="ACL / EMNLP (NLP)">ACL / EMNLP</option>
+                  <option value="IEEE / ACM Transactions">IEEE / ACM</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
+                Paper Abstract
+              </label>
+              <textarea 
+                id="rev-abstract"
+                rows="4"
+                placeholder="Paste your draft abstract here..."
+                class="pf-textarea text-sm py-2.5"
+                style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
+              ></textarea>
+            </div>
+
+            <!-- Samples -->
+            <div class="flex items-center gap-1.5 flex-wrap pt-1">
+              <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Sample Drafts:</span>
+              <button type="button" onclick="fillRevSample('UltraEdge: Speculative KV-Cache Eviction for On-Device Transformers', 'We propose UltraEdge, a memory-efficient KV-cache eviction policy that reduces RAM footprint by 65% on mobile GPUs. However, our evaluation is conducted primarily on synthetic prompt benchmarks.')" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Edge KV-Cache Paper
+              </button>
+              <button type="button" onclick="fillRevSample('Provably Robust Multi-Agent Reinforcement Learning Under Adversarial Noise', 'We establish theoretical bounds for convergence in zero-sum Markov games under stochastic channel perturbation and demonstrate 14% improvement over standard PPO.')" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Robust RL Theory
+              </button>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button 
+                type="submit" 
+                id="review-btn"
+                class="pf-btn pf-btn-primary pf-btn-md w-full sm:w-auto"
+                style="background:var(--pf-engine-reviewer);border-color:var(--pf-engine-reviewer);"
+              >
+                <i data-lucide="shield-alert" style="width:16px;height:16px;"></i>
+                <span>Simulate Peer Review #2</span>
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+        <!-- Right: "What Reviewer #2 Tests" Explainer Card (5 cols) -->
+        <div class="lg:col-span-5 reviewer-card p-6 flex flex-col justify-between" style="background:var(--pf-bg-surface-elevated);">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="pf-badge" style="background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);font-size:10px;">RUBRIC AUDIT</span>
+              <h3 class="font-bold text-sm" style="color:var(--pf-text-primary);font-family:var(--pf-font-display);">Reviewer #2 Attack Profile</h3>
+            </div>
+            <p class="text-xs leading-relaxed mb-4" style="color:var(--pf-text-secondary);">
+              Simulates the most hostile reviewer on your Program Committee. Tests for common rejection vectors before you submit.
+            </p>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">
+                  <i data-lucide="git-pull-request" style="width:12px;height:12px;"></i>
+                </div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Missing Recent Baselines</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Detects if you compare only against weak or outdated benchmarks.</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">
+                  <i data-lucide="layers" style="width:12px;height:12px;"></i>
+                </div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Inadequate Ablation Studies</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Catches claims that lack modular component-level ablation tables.</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">
+                  <i data-lucide="bar-chart-2" style="width:12px;height:12px;"></i>
+                </div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Statistical Significance Gaps</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Flags results without multiple random seeds or error bars.</div>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-2.5 rounded-lg border" style="background:var(--pf-bg-surface);border-color:var(--pf-border-subtle);">
+                <div style="width:24px;height:24px;border-radius:6px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">
+                  <i data-lucide="shield-check" style="width:12px;height:12px;"></i>
+                </div>
+                <div>
+                  <div class="font-semibold" style="color:var(--pf-text-primary);">Preemptive Rebuttal Ready</div>
+                  <div class="text-[11px]" style="color:var(--pf-text-muted);">Generates camera-ready prose fixes before formal review cycles.</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider mb-1.5" style="color: var(--pf-text-secondary);">
-              Paper Abstract
-            </label>
-            <textarea 
-              id="rev-abstract"
-              rows="4"
-              placeholder="Paste your draft abstract here..."
-              class="pf-textarea text-sm py-2.5"
-            ></textarea>
+          <div class="mt-4 pt-3 border-t flex items-center justify-between text-[11px] font-mono" style="border-color:var(--pf-border-subtle);color:var(--pf-text-muted);">
+            <span>Review Standard: CORE A*</span>
+            <span style="color:var(--pf-engine-reviewer);font-weight:700;">Zero Leniency</span>
           </div>
-
-          <!-- Samples -->
-          <div class="flex items-center gap-1.5 flex-wrap pt-1">
-            <span class="text-xs font-semibold mr-1" style="color: var(--pf-text-muted);">Sample Drafts:</span>
-            <button type="button" onclick="fillRevSample('UltraEdge: Speculative KV-Cache Eviction for On-Device Transformers', 'We propose UltraEdge, a memory-efficient KV-cache eviction policy that reduces RAM footprint by 65% on mobile GPUs. However, our evaluation is conducted primarily on synthetic prompt benchmarks.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              Edge KV-Cache Paper
-            </button>
-            <button type="button" onclick="fillRevSample('Provably Robust Multi-Agent Reinforcement Learning Under Adversarial Noise', 'We establish theoretical bounds for convergence in zero-sum Markov games under stochastic channel perturbation and demonstrate 14% improvement over standard PPO.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              Robust RL Theory
-            </button>
-          </div>
-
-          <div class="pt-2 flex justify-end">
-            <button 
-              type="submit" 
-              id="review-btn"
-              class="pf-btn pf-btn-primary pf-btn-md"
-            >
-              <span>Simulate Peer Review #2</span>
-              <span>→</span>
-            </button>
-          </div>
-        </form>
+        </div>
 
       </div>
 
@@ -320,9 +414,11 @@
       <div id="review-results" class="space-y-6 hidden">
         
         <!-- Audited PDF Info Banner -->
-        <div id="doc-meta-banner" class="hidden p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+        <div id="doc-meta-banner" class="hidden p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
           <div class="flex items-center gap-3">
-            <span class="text-xl">📄</span>
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--pf-engine-reviewer-bg);color:var(--pf-engine-reviewer);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+            </div>
             <div>
               <span class="text-[10px] font-mono uppercase block" style="color: var(--pf-text-muted);">Audited Manuscript</span>
               <h4 id="meta-doc-title" class="text-xs font-bold" style="color: var(--pf-text-primary);">manuscript.pdf</h4>
@@ -337,17 +433,17 @@
         <!-- Scorecard Overview -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <!-- Verdict Card -->
-          <div class="p-5 rounded-xl border flex flex-col justify-between" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div class="reviewer-card p-5 flex flex-col justify-between">
             <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--pf-text-muted);">Simulated Verdict</span>
             <div class="my-3">
-              <div id="rev-verdict" class="text-2xl font-black" style="color: var(--pf-engine-reviewer);">Borderline / Weak Reject</div>
+              <div id="rev-verdict" class="text-2xl font-black" style="color: var(--pf-engine-reviewer); font-family: var(--pf-font-display);">Borderline / Weak Reject</div>
               <div id="rev-scale" class="text-xs font-mono mt-1" style="color: var(--pf-text-secondary);">Score: 5.5 / 10</div>
             </div>
             <p id="rev-summary" class="text-xs leading-relaxed" style="color: var(--pf-text-muted);">Review critique rendered.</p>
           </div>
 
           <!-- Program Committee Rubric Bars -->
-          <div class="md:col-span-2 p-5 rounded-xl border space-y-3" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+          <div class="md:col-span-2 reviewer-card p-5 space-y-3">
             <span class="text-xs font-bold uppercase tracking-wider block" style="color: var(--pf-text-muted);">Program Committee (PC) Score Breakdown</span>
             <div id="rubric-bars" class="space-y-2.5">
               <!-- Rendered via JS -->
@@ -356,10 +452,13 @@
         </div>
 
         <!-- Critical Attacks by Reviewer #2 -->
-        <div class="p-6 rounded-xl border" style="background-color: var(--pf-engine-reviewer-bg); border-color: rgba(244, 63, 94, 0.3);">
+        <div class="p-6 rounded-2xl border" style="background-color: var(--pf-engine-reviewer-bg); border-color: rgba(225, 29, 72, 0.25);">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <h3 class="text-base font-bold" style="color: var(--pf-text-primary);">What Reviewer #2 Will Attack (Critical Weaknesses)</h3>
+              <div class="flex items-center gap-2">
+                <i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--pf-engine-reviewer);"></i>
+                <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">What Reviewer #2 Will Attack (Critical Weaknesses)</h3>
+              </div>
               <p class="text-xs" style="color: var(--pf-engine-reviewer);">These are the exact methodological holes that cause desk rejects and weak reviews.</p>
             </div>
             <span class="pf-badge pf-badge-rose">High Risk</span>
@@ -368,15 +467,16 @@
         </div>
 
         <!-- Copy-Paste Improvements -->
-        <div class="pf-card p-6 space-y-4">
+        <div class="reviewer-card p-6 space-y-4">
           <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--pf-border-subtle);">
             <div>
               <span class="pf-badge pf-badge-emerald mb-1">REVISION ASSETS</span>
-              <h3 class="text-base font-bold" style="color: var(--pf-text-primary);">Copy-Paste Manuscript Fixes</h3>
+              <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">Copy-Paste Manuscript Fixes</h3>
               <p class="text-xs" style="color: var(--pf-text-muted);">Ready-to-use prose updates designed to preemptively satisfy reviewer concerns.</p>
             </div>
-            <button onclick="downloadRevisedManuscript()" class="pf-btn pf-btn-primary pf-btn-sm">
-              📥 Download Revised Draft (.md)
+            <button onclick="downloadRevisedManuscript()" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-reviewer);border-color:var(--pf-engine-reviewer);">
+              <i data-lucide="download" style="width:14px;height:14px;"></i>
+              <span>Download Revised Draft (.md)</span>
             </button>
           </div>
 
@@ -386,11 +486,11 @@
         </div>
 
         <!-- DYNAMIC REBUTTAL COACH -->
-        <div class="pf-card p-6 space-y-4">
+        <div class="reviewer-card p-6 space-y-4">
           <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--pf-border-subtle);">
             <div>
-              <span class="pf-badge pf-badge-rose mb-1">⚖️ REBUTTAL COACH</span>
-              <h3 class="text-base font-bold" style="color: var(--pf-text-primary);">Rebuttal Argumentation Coach</h3>
+              <span class="pf-badge pf-badge-rose mb-1">REBUTTAL COACH</span>
+              <h3 class="text-base font-bold" style="color: var(--pf-text-primary); font-family: var(--pf-font-display);">Rebuttal Argumentation Coach</h3>
               <p class="text-xs" style="color: var(--pf-text-muted);">Draft formal, non-defensive rebuttal responses to simulated reviewer attacks.</p>
             </div>
             <button onclick="clearRebuttalChat()" class="pf-btn pf-btn-secondary pf-btn-sm">
@@ -401,17 +501,17 @@
           <!-- Quick Rebuttal Prompt Chips -->
           <div class="flex items-center gap-1.5 flex-wrap">
             <button onclick="sendQuickRebuttalPrompt('Draft a polite, authoritative response to Attack 1 defending our baseline selection.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              🛡️ Defend Baseline Selection
+              <i data-lucide="shield" style="width:12px;height:12px;"></i> Defend Baseline Selection
             </button>
             <button onclick="sendQuickRebuttalPrompt('Write a rebuttal explaining why synthetic datasets were used initially, with a commitment to add ablation tables in the camera-ready version.')" class="pf-btn pf-btn-secondary pf-btn-sm">
-              📊 Address Benchmark Scope
+              <i data-lucide="bar-chart" style="width:12px;height:12px;"></i> Address Benchmark Scope
             </button>
           </div>
 
           <!-- Rebuttal Messages Box -->
           <div id="rebuttal-chat-messages" class="p-4 rounded-xl border space-y-3 max-h-80 overflow-y-auto text-xs" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
             <div class="p-3 rounded-lg border leading-relaxed" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">
-              👋 <strong>Rebuttal Coach Active:</strong> Ask me to generate a persuasive, polite author response to any critique point above.
+              <strong>Rebuttal Coach Active:</strong> Ask me to generate a persuasive, polite author response to any critique point above.
             </div>
           </div>
 
@@ -423,8 +523,9 @@
               placeholder="Ask for specific rebuttal wording or counter-argument..." 
               onkeydown="if(event.key === 'Enter') sendRebuttalChatMessage();"
               class="pf-input text-xs py-2 flex-1"
+              style="background:var(--pf-bg-canvas);color:var(--pf-text-primary);border-color:var(--pf-border-default);"
             >
-            <button onclick="sendRebuttalChatMessage()" id="rebuttal-chat-send-btn" class="pf-btn pf-btn-primary pf-btn-sm">
+            <button onclick="sendRebuttalChatMessage()" id="rebuttal-chat-send-btn" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-reviewer);border-color:var(--pf-engine-reviewer);">
               <span>Send</span>
               <span>→</span>
             </button>
@@ -453,12 +554,20 @@
       pdfForm.classList.remove('hidden');
       manualForm.classList.add('hidden');
       tabPdf.className = "pf-btn pf-btn-primary pf-btn-sm";
+      tabPdf.style.background = "var(--pf-engine-reviewer)";
+      tabPdf.style.borderColor = "var(--pf-engine-reviewer)";
       tabManual.className = "pf-btn pf-btn-secondary pf-btn-sm";
+      tabManual.style.background = "";
+      tabManual.style.borderColor = "";
     } else {
       pdfForm.classList.add('hidden');
       manualForm.classList.remove('hidden');
       tabManual.className = "pf-btn pf-btn-primary pf-btn-sm";
+      tabManual.style.background = "var(--pf-engine-reviewer)";
+      tabManual.style.borderColor = "var(--pf-engine-reviewer)";
       tabPdf.className = "pf-btn pf-btn-secondary pf-btn-sm";
+      tabPdf.style.background = "";
+      tabPdf.style.borderColor = "";
     }
   }
 
@@ -543,7 +652,8 @@
       if (window.ProfFebUI) ProfFebUI.toast({ title: "Review Ready", message: "Generated simulated review from document.", type: "info" });
     } finally {
       btn.disabled = false;
-      btn.innerHTML = `<span>Audit Full Manuscript PDF</span> <span>→</span>`;
+      btn.innerHTML = `<i data-lucide="shield-alert" style="width:16px;height:16px;"></i> <span>Audit Full Manuscript PDF</span>`;
+      if (window.lucide) lucide.createIcons();
     }
   }
 
@@ -579,7 +689,8 @@
       renderReview(generateClientReviewFallback(title, abstract, venue));
     } finally {
       btn.disabled = false;
-      btn.innerHTML = `<span>Simulate Peer Review #2</span> <span>→</span>`;
+      btn.innerHTML = `<i data-lucide="shield-alert" style="width:16px;height:16px;"></i> <span>Simulate Peer Review #2</span>`;
+      if (window.lucide) lucide.createIcons();
     }
   }
 
@@ -634,13 +745,13 @@
     // Attacks List
     const attacksContainer = document.getElementById('attacks-list');
     attacksContainer.innerHTML = (data.critical_attacks || []).map((atk, idx) => `
-      <div class="p-3.5 rounded-lg border space-y-1" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
+      <div class="p-4 rounded-xl border space-y-1" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle);">
         <div class="flex items-center gap-2">
           <span class="pf-badge pf-badge-rose" style="font-size: 10px;">Attack ${idx + 1}</span>
           <h4 class="font-bold text-xs" style="color: var(--pf-text-primary);">${atk.flaw_title || atk.title}</h4>
         </div>
         <p class="text-xs" style="color: var(--pf-text-secondary);">${atk.critique}</p>
-        <div class="text-[11px] font-mono mt-1 pt-1 border-t" style="border-color: var(--pf-border-subtle); color: var(--pf-primary);">
+        <div class="text-[11px] font-mono mt-2 pt-2 border-t" style="border-color: var(--pf-border-subtle); color: var(--pf-engine-reviewer);">
           🛡️ Rebuttal Counter-Measure: ${atk.rebuttal_strategy || atk.counter_measure}
         </div>
       </div>
@@ -650,24 +761,26 @@
     const fixesContainer = document.getElementById('fixes-container');
     const fixes = data.copy_paste_fixes || generateDefaultSuggestions(latestPaperTitle);
     fixesContainer.innerHTML = `
-      <div class="p-4 rounded-lg border space-y-2" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+      <div class="p-4 rounded-xl border space-y-2" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
         <div class="flex items-center justify-between">
-          <span class="font-bold text-xs" style="color: var(--pf-text-primary);">📝 Preemptive Abstract Rewrite</span>
-          <button onclick="copyTextFromElement('fix-abstract', this)" class="pf-btn pf-btn-secondary pf-btn-sm">Copy Abstract</button>
+          <span class="font-bold text-xs" style="color: var(--pf-text-primary);"><i data-lucide="edit-3" style="width:12px;height:12px;display:inline;"></i> Preemptive Abstract Rewrite</span>
+          <button onclick="copyTextFromElement('fix-abstract', this)" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="copy" style="width:12px;height:12px;"></i> Copy</button>
         </div>
-        <div id="fix-abstract" class="text-xs leading-relaxed p-3 rounded border font-mono whitespace-pre-wrap" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">${fixes.revised_abstract}</div>
+        <div id="fix-abstract" class="text-xs leading-relaxed p-3 rounded-lg border font-mono whitespace-pre-wrap" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">${fixes.revised_abstract}</div>
       </div>
 
-      <div class="p-4 rounded-lg border space-y-2" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
+      <div class="p-4 rounded-xl border space-y-2" style="background-color: var(--pf-bg-surface-elevated); border-color: var(--pf-border-subtle);">
         <div class="flex items-center justify-between">
-          <span class="font-bold text-xs" style="color: var(--pf-text-primary);">📐 Methodological Defense Paragraph</span>
-          <button onclick="copyTextFromElement('fix-method', this)" class="pf-btn pf-btn-secondary pf-btn-sm">Copy Paragraph</button>
+          <span class="font-bold text-xs" style="color: var(--pf-text-primary);"><i data-lucide="shield" style="width:12px;height:12px;display:inline;"></i> Methodological Defense Paragraph</span>
+          <button onclick="copyTextFromElement('fix-method', this)" class="pf-btn pf-btn-secondary pf-btn-sm"><i data-lucide="copy" style="width:12px;height:12px;"></i> Copy</button>
         </div>
-        <div id="fix-method" class="text-xs leading-relaxed p-3 rounded border font-mono whitespace-pre-wrap" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">${fixes.methodology_defense}</div>
+        <div id="fix-method" class="text-xs leading-relaxed p-3 rounded-lg border font-mono whitespace-pre-wrap" style="background-color: var(--pf-bg-surface); border-color: var(--pf-border-subtle); color: var(--pf-text-secondary);">${fixes.methodology_defense}</div>
       </div>
     `;
 
     document.getElementById('review-results').scrollIntoView({ behavior: 'smooth' });
+
+    if (window.lucide) lucide.createIcons();
   }
 
   function copyTextFromElement(elemId, btn) {
@@ -741,55 +854,47 @@
     bubble.className = "p-3 rounded-lg border leading-relaxed text-xs";
     if (role === 'user') {
       bubble.style.backgroundColor = "var(--pf-primary-subtle)";
-      bubble.style.borderColor = "rgba(16, 185, 129, 0.3)";
+      bubble.style.borderColor = "var(--pf-primary-border)";
+      bubble.style.color = "var(--pf-primary-text)";
       bubble.innerHTML = `<strong>Author:</strong> ${content}`;
     } else {
       bubble.style.backgroundColor = "var(--pf-bg-surface)";
       bubble.style.borderColor = "var(--pf-border-subtle)";
+      bubble.style.color = "var(--pf-text-primary)";
       bubble.innerHTML = `<strong>Rebuttal Coach:</strong><div class="mt-1">${window.marked ? marked.parse(content) : content}</div>`;
     }
     box.appendChild(bubble);
     box.scrollTop = box.scrollHeight;
   }
 
-  function generateDefaultSuggestions(title) {
-    return {
-      revised_abstract: `State-of-the-art architectures in ${title} often suffer from prohibitive computational overhead and memory bandwidth throttling during real-world deployment. In this work, we propose a formally verified objective function and an adaptive scheduling pipeline that optimizes throughput while maintaining strict theoretical guarantees. Extensive experiments across multiple standard benchmarks demonstrate a 2.3x speedup over current SOTA baselines without degradation in target metric accuracy.`,
-      methodology_defense: `To address potential concerns regarding baseline selection and experimental fairness, all evaluations in this study were benchmarked under strictly identical compute budgets, hyperparameter sweeps, and randomized seed trials (N=5). Unlike prior heuristics, our proposed objective function satisfies Lipschitz continuity under standard boundedness assumptions, guaranteeing monotonic error reduction without destabilizing optimization dynamics.`
-    };
-  }
-
-  function generateDefaultDraft(title, sugs) {
-    return `# ${title}\n\n## Abstract\n${sugs.revised_abstract}\n\n## 1. Introduction\nRecent advancements have demonstrated notable progress, yet critical efficiency bottlenecks persist.\n\n## 2. Methodology & Theoretical Guarantees\n${sugs.methodology_defense}\n\n## 3. Experimental Evaluation\nBenchmark evaluations conducted across 5 random seeds confirming statistically significant improvements over existing literature baselines.`;
-  }
-
   function generateClientReviewFallback(title, abstract, venue) {
     return {
-      extracted_title: title,
-      target_venue: venue,
       overall_score: 5.5,
       verdict: "Borderline / Weak Reject",
-      executive_summary: "The manuscript introduces an interesting premise, but lacks sufficient comparative baseline benchmarking against top 2024–2025 SOTA systems.",
+      executive_summary: `The paper tackles an important efficiency problem in ${title}. However, the empirical evaluation relies on restricted benchmarks and omits vital statistical error intervals compared against contemporary 2025 SOTA baselines.`,
       rubric: {
-        novelty: { score: 6, comment: "Incremental refinement over standard architectures." },
-        technical_depth: { score: 5, comment: "Theoretical proofs require formal error bound derivation." },
-        empirical_rigor: { score: 5, comment: "Evaluations should report standard deviation across N=5 seeds." },
-        clarity: { score: 7, comment: "Well-structured narrative and legible tables." }
+        novelty: { score: 6, comment: "Idea is sound, but incremental relative to recent published literature." },
+        technical_depth: { score: 5, comment: "Missing ablation studies for hyperparameter sensitivity." },
+        empirical_rigor: { score: 5, comment: "Evaluation conducted on small-scale benchmarks without N=5 seed variance." },
+        clarity: { score: 7, comment: "Writing is generally clear, though Figure 2 and Section 4 notation are ambiguous." }
       },
       critical_attacks: [
-        {
-          flaw_title: "Limited SOTA Baseline Selection",
-          critique: "The authors compare primarily against 2022-2023 baselines while omitting recent 2025 accepted papers on this topic.",
-          rebuttal_strategy: "Explicitly add a comparative ablation table detailing why recent 2025 methods address an orthogonal latency regime."
-        },
-        {
-          flaw_title: "Synthetic Benchmark Evaluation",
-          critique: "Experiments are reported predominantly on synthetic prompt datasets, raising questions regarding real-world generalization.",
-          rebuttal_strategy: "Report real-world deployment metrics on production hardware to prove practical efficacy."
-        }
+        { flaw_title: "Attack 1: Under-Specified Baseline Comparisons", critique: "The authors do not benchmark against the current competitive SOTA baseline published at NeurIPS 2024, leading to potentially inflated claims.", rebuttal_strategy: "Present side-by-side FLOPS vs Accuracy plots including the missing baseline with fixed compute budgets." },
+        { flaw_title: "Attack 2: Unrealistic Hardware Assumptions", critique: "The claimed latency improvements assume unconstrained memory bandwidth, which fails on consumer-grade mobile devices.", rebuttal_strategy: "Add a thermal throttling and real-device memory profile table to Section 5.3." }
       ],
       copy_paste_fixes: generateDefaultSuggestions(title)
     };
+  }
+
+  function generateDefaultSuggestions(title) {
+    return {
+      revised_abstract: `We investigate the computational trade-offs of ${title}. While prior methods suffer from significant memory overhead or latency degradation, our proposed formulation establishes provable convergence bounds. Across rigorous evaluations on standard benchmark suites with 5 independent random seeds, our approach achieves a 2.4x latency speedup while strictly matching baseline accuracy.`,
+      methodology_defense: `To address potential baseline sensitivity concerns, we conduct comprehensive ablation studies over all hyperparameter dimensions. Specifically, we evaluate sensitivity under varying noise thresholds, proving that our objective maintains robust convergence without hyperparameter tuning.`
+    };
+  }
+
+  function generateDefaultDraft(title, fixes) {
+    return `# ${title}\n\n## Abstract\n${fixes.revised_abstract}\n\n## 1. Introduction\nRecent advancements have highlighted key trade-offs in this domain.\n\n## 2. Methodology & Formal Proofs\n${fixes.methodology_defense}\n\n## 3. Experimental Evaluation\nEvaluated across multiple standard suites with N=5 random seeds.\n`;
   }
 
   function clearProfFebCache() {
@@ -797,6 +902,10 @@
     document.getElementById('review-results').classList.add('hidden');
     clearRebuttalChat();
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) lucide.createIcons();
+  });
 </script>
 
 </body>
