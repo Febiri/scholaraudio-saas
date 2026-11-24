@@ -11,6 +11,10 @@ if str(_ROOT) not in sys.path:
 
 from typing import Dict, Any, Optional, Tuple, List, Callable
 try:
+    import pypdf
+except (ImportError, Exception):
+    pypdf = None
+try:
     import fitz  # PyMuPDF
 except (ImportError, Exception):
     fitz = None
@@ -39,48 +43,78 @@ class PDFProcessor:
         if not os.path.exists(pdf_path):
             raise FileNotFoundError(f"PDF file not found at: {pdf_path}")
 
-        if fitz is None:
-            raise RuntimeError("PyMuPDF is not installed or available in this serverless environment.")
+        if fitz is not None:
+            doc = fitz.open(pdf_path)
+            total_pages = len(doc)
+            pages_to_read = min(total_pages, max_pages)
 
-        doc = fitz.open(pdf_path)
-        total_pages = len(doc)
-        pages_to_read = min(total_pages, max_pages)
+            extracted_chunks = []
+            stop_extraction = False
 
-        extracted_chunks = []
-        stop_extraction = False
-
-        for page_idx in range(pages_to_read):
-            if stop_extraction:
-                break
-
-            page = doc[page_idx]
-            text = page.get_text("text")
-
-            # Basic page sanitization
-            lines = text.split("\n")
-            cleaned_lines = []
-
-            for line in lines:
-                stripped = line.strip()
-                # Skip isolated page numbers (e.g. "1", "12", "Page 4")
-                if re.match(r"^(?:page\s+)?\d+(?:\s+of\s+\d+)?$", stripped, re.IGNORECASE):
-                    continue
-                # Skip repetitive short headers
-                if len(stripped) < 4 and not stripped.isalpha():
-                    continue
-
-                # Detect beginning of References / Bibliography to avoid wasting tokens on citations
-                if page_idx > 3 and re.match(r"^(?:references|bibliography|works cited)\s*$", stripped, re.IGNORECASE):
-                    stop_extraction = True
+            for page_idx in range(pages_to_read):
+                if stop_extraction:
                     break
 
-                cleaned_lines.append(line)
+                page = doc[page_idx]
+                text = page.get_text("text")
 
-            page_text = "\n".join(cleaned_lines)
-            if page_text.strip():
-                extracted_chunks.append(page_text)
+                # Basic page sanitization
+                lines = text.split("\n")
+                cleaned_lines = []
 
-        doc.close()
+                for line in lines:
+                    stripped = line.strip()
+                    # Skip isolated page numbers (e.g. "1", "12", "Page 4")
+                    if re.match(r"^(?:page\s+)?\d+(?:\s+of\s+\d+)?$", stripped, re.IGNORECASE):
+                        continue
+                    # Skip repetitive short headers
+                    if len(stripped) < 4 and not stripped.isalpha():
+                        continue
+
+                    # Detect beginning of References / Bibliography to avoid wasting tokens on citations
+                    if page_idx > 3 and re.match(r"^(?:references|bibliography|works cited)\s*$", stripped, re.IGNORECASE):
+                        stop_extraction = True
+                        break
+
+                    cleaned_lines.append(line)
+
+                page_text = "\n".join(cleaned_lines)
+                if page_text.strip():
+                    extracted_chunks.append(page_text)
+
+            doc.close()
+        elif pypdf is not None:
+            reader = pypdf.PdfReader(pdf_path)
+            total_pages = len(reader.pages)
+            pages_to_read = min(total_pages, max_pages)
+
+            extracted_chunks = []
+            stop_extraction = False
+
+            for page_idx in range(pages_to_read):
+                if stop_extraction:
+                    break
+
+                text = reader.pages[page_idx].extract_text() or ""
+                lines = text.split("\n")
+                cleaned_lines = []
+
+                for line in lines:
+                    stripped = line.strip()
+                    if re.match(r"^(?:page\s+)?\d+(?:\s+of\s+\d+)?$", stripped, re.IGNORECASE):
+                        continue
+                    if len(stripped) < 4 and not stripped.isalpha():
+                        continue
+                    if page_idx > 3 and re.match(r"^(?:references|bibliography|works cited)\s*$", stripped, re.IGNORECASE):
+                        stop_extraction = True
+                        break
+                    cleaned_lines.append(line)
+
+                page_text = "\n".join(cleaned_lines)
+                if page_text.strip():
+                    extracted_chunks.append(page_text)
+        else:
+            raise RuntimeError("Neither PyMuPDF nor pypdf is installed in this environment.")
         full_text = "\n\n".join(extracted_chunks)
 
         # Remove excessive whitespace
@@ -104,40 +138,54 @@ class PDFProcessor:
         if not os.path.exists(pdf_path):
             raise FileNotFoundError(f"PDF file not found at: {pdf_path}")
 
-        if fitz is None:
-            raise RuntimeError("PyMuPDF is not installed or available in this serverless environment.")
+        if fitz is not None:
+            doc = fitz.open(pdf_path)
+            total_pages = len(doc)
+            full_pages = []
 
-        doc = fitz.open(pdf_path)
-        total_pages = len(doc)
-        full_pages = []
+            for p_idx in range(total_pages):
+                page = doc[p_idx]
 
-        for p_idx in range(total_pages):
-            page = doc[p_idx]
+                # In article scope for long papers (> 20 pages), stop when References / Bibliography starts
+                if scope == "article" and total_pages > 20 and p_idx > 5:
+                    page_text_lower = page.get_text("text").lower()
+                    first_lines = [l.strip() for l in page_text_lower.splitlines()[:8] if l.strip()]
+                    if any(h in ["references", "bibliography", "works cited", "literature cited"] for h in first_lines):
+                        logger.info(f"Article scope: identified References at page {p_idx + 1}. Audio focused on complete article body ({p_idx} pages).")
+                        break
 
-            # In article scope for long papers (> 20 pages), stop when References / Bibliography starts
-            if scope == "article" and total_pages > 20 and p_idx > 5:
-                page_text_lower = page.get_text("text").lower()
-                first_lines = [l.strip() for l in page_text_lower.splitlines()[:8] if l.strip()]
-                if any(h in ["references", "bibliography", "works cited", "literature cited"] for h in first_lines):
-                    logger.info(f"Article scope: identified References at page {p_idx + 1}. Audio focused on complete article body ({p_idx} pages).")
-                    break
+                blocks = page.get_text("blocks", sort=True)
+                page_blocks = []
+                for b in blocks:
+                    if b[6] != 0:  # Skip raw image binary block metadata
+                        continue
+                    text = b[4].strip()
+                    if not text:
+                        continue
+                    # Rejoin hyphenated words split across line breaks (e.g. 'pre-\nprocessing' -> 'preprocessing')
+                    text = re.sub(r'(\w+)-\n(\w+)', r'\1\2', text)
+                    page_blocks.append(text)
 
-            blocks = page.get_text("blocks", sort=True)
-            page_blocks = []
-            for b in blocks:
-                if b[6] != 0:  # Skip raw image binary block metadata
-                    continue
-                text = b[4].strip()
-                if not text:
-                    continue
-                # Rejoin hyphenated words split across line breaks (e.g. 'pre-\nprocessing' -> 'preprocessing')
-                text = re.sub(r'(\w+)-\n(\w+)', r'\1\2', text)
-                page_blocks.append(text)
+                if page_blocks:
+                    full_pages.append("\n\n".join(page_blocks))
 
-            if page_blocks:
-                full_pages.append("\n\n".join(page_blocks))
+            doc.close()
+        elif pypdf is not None:
+            reader = pypdf.PdfReader(pdf_path)
+            total_pages = len(reader.pages)
+            full_pages = []
 
-        doc.close()
+            for p_idx in range(total_pages):
+                page_text = reader.pages[p_idx].extract_text() or ""
+                if scope == "article" and total_pages > 20 and p_idx > 5:
+                    first_lines = [l.strip() for l in page_text.lower().splitlines()[:8] if l.strip()]
+                    if any(h in ["references", "bibliography", "works cited", "literature cited"] for h in first_lines):
+                        logger.info(f"Article scope: identified References at page {p_idx + 1}. Audio focused on complete article body ({p_idx} pages).")
+                        break
+                if page_text.strip():
+                    full_pages.append(page_text.strip())
+        else:
+            raise RuntimeError("Neither PyMuPDF nor pypdf is installed in this environment.")
         full_text = "\n\n".join(full_pages)
         logger.info(f"Extracted verbatim text ({len(full_text)} chars, {len(full_pages)}/{total_pages} pages) from {pdf_path}")
         return full_text.strip(), len(full_pages)
@@ -172,6 +220,9 @@ class PDFProcessor:
                     "title": f"{kind} (Page {page_num})"
                 })
             return results
+
+        if fitz is None:
+            return []
 
         doc = fitz.open(pdf_path)
         extracted = []

@@ -25,6 +25,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_, desc, func
 
 try:
+    import pypdf
+except (ImportError, Exception):
+    pypdf = None
+
+try:
     import fitz  # PyMuPDF
 except (ImportError, Exception):
     fitz = None
@@ -1202,18 +1207,29 @@ async def upload_pdf(
     abstract_preview = ""
 
     try:
-        doc = fitz.open(target_path)
-        meta = doc.metadata or {}
-        if not doc_title:
-            doc_title = meta.get("title") or file.filename.replace(".pdf", "").replace("_", " ").title()
-        if not authors and meta.get("author"):
-            doc_authors = meta.get("author")
+        if fitz is not None:
+            doc = fitz.open(target_path)
+            meta = doc.metadata or {}
+            if not doc_title:
+                doc_title = meta.get("title") or file.filename.replace(".pdf", "").replace("_", " ").title()
+            if not authors and meta.get("author"):
+                doc_authors = meta.get("author")
 
-        # Grab first 800 chars for preview
-        if len(doc) > 0:
-            first_page_text = doc[0].get_text("text")
-            abstract_preview = first_page_text[:1200].strip()
-        doc.close()
+            # Grab first 800 chars for preview
+            if len(doc) > 0:
+                first_page_text = doc[0].get_text("text")
+                abstract_preview = first_page_text[:1200].strip()
+            doc.close()
+        elif pypdf is not None:
+            reader = pypdf.PdfReader(target_path)
+            meta = reader.metadata
+            if not doc_title:
+                doc_title = getattr(meta, 'title', None) or file.filename.replace(".pdf", "").replace("_", " ").title()
+            if not authors and getattr(meta, 'author', None):
+                doc_authors = getattr(meta, 'author', None)
+            if len(reader.pages) > 0:
+                first_page_text = reader.pages[0].extract_text() or ""
+                abstract_preview = first_page_text[:1200].strip()
     except Exception as e:
         logger.warning(f"Could not read PDF metadata: {e}")
         if not doc_title:
@@ -1684,6 +1700,14 @@ async def upload_pdf_for_radar(
                 text_parts.append(page.get_text("text"))
             full_text = "\n\n".join(text_parts).strip()
             doc.close()
+        elif pypdf is not None:
+            import io
+            reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+            total_pages = len(reader.pages)
+            meta = reader.metadata
+            extracted_title = (getattr(meta, 'title', None) if meta else None) or ""
+            text_parts = [p.extract_text() or "" for p in reader.pages]
+            full_text = "\n\n".join(text_parts).strip()
     except Exception as e:
         logger.warning(f"Error extracting PDF text for radar: {e}")
 
@@ -1773,6 +1797,14 @@ async def upload_pdf_for_reviewer(
                 text_parts.append(page.get_text("text"))
             full_text = "\n\n".join(text_parts).strip()
             doc.close()
+        elif pypdf is not None:
+            import io
+            reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+            total_pages = len(reader.pages)
+            meta = reader.metadata
+            extracted_title = (getattr(meta, 'title', None) if meta else None) or ""
+            text_parts = [p.extract_text() or "" for p in reader.pages]
+            full_text = "\n\n".join(text_parts).strip()
     except Exception as e:
         logger.warning(f"Error extracting PDF text for reviewer: {e}")
 

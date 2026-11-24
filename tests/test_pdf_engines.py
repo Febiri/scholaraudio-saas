@@ -4,17 +4,40 @@ import io
 sys.path.insert(0, os.path.abspath("."))
 from fastapi.testclient import TestClient
 from backend.main import app
-import fitz
+try:
+    import pypdf
+except (ImportError, Exception):
+    pypdf = None
+
+try:
+    import fitz
+except (ImportError, Exception):
+    fitz = None
 
 client = TestClient(app)
 
 def create_mock_pdf() -> bytes:
-    doc = fitz.open()
-    page = doc.new_page()
-    page.insert_text((50, 72), "ProfFeb Research Benchmark: Scalable Multimodal Neural Transformers\n\nAbstract:\nWe present a scalable methodology for neural audio synthesis and mathematical formula deconstruction in scholarly literature.")
-    pdf_bytes = doc.tobytes()
-    doc.close()
-    return pdf_bytes
+    if fitz is not None:
+        doc = fitz.open()
+        page = doc.new_page()
+        page.insert_text((50, 72), "ProfFeb Research Benchmark: Scalable Multimodal Neural Transformers\n\nAbstract:\nWe present a scalable methodology for neural audio synthesis and mathematical formula deconstruction in scholarly literature.")
+        pdf_bytes = doc.tobytes()
+        doc.close()
+        return pdf_bytes
+    
+    # Standalone valid PDF with readable text stream
+    return (
+        b"%PDF-1.4\n"
+        b"1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n"
+        b"2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n"
+        b"3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj\n"
+        b"4 0 obj << /Length 72 >> stream\n"
+        b"BT /F1 12 Tf 50 700 Td (ProfFeb Research Benchmark: Neural Transformers) Tj ET\n"
+        b"endstream\nendobj\n"
+        b"5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n"
+        b"xref\n0 6\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \n0000000244 00000 n \n0000000366 00000 n \n"
+        b"trailer << /Size 6 /Root 1 0 R >>\nstartxref\n445\n%%EOF\n"
+    )
 
 def test_all():
     print("1. Testing HTML routes...")

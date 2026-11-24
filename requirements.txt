@@ -1,6 +1,6 @@
 fastapi>=0.100.0
-uvicorn[standard]>=0.22.0
-pymupdf>=1.23.0
+uvicorn>=0.22.0
+pypdf>=4.0.0
 pyzotero>=1.5.0
 google-genai>=0.1.0
 edge-tts>=6.1.0

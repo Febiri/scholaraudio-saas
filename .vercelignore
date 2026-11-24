@@ -1,0 +1,32 @@
+# Exclude local database files and temporary audio cache
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+zotero_audio.db
+zotero_audio.db-wal
+zotero_audio.db-shm
+backend/zotero_audio.db*
+
+# Exclude generated audio files and uploaded PDFs
+static/audio/*.mp3
+backend/static/audio/*.mp3
+static/pdfs/*.pdf
+backend/static/pdfs/*.pdf
+
+# Exclude test files, mock data, and development caches
+tests/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.git/
+.github/
+.vscode/
+.idea/
+*.md
+!README.md
+.env*
+*.backup
+*.bak
