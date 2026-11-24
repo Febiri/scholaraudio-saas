@@ -362,7 +362,7 @@
       <!-- Action items in Topbar -->
       <div style="display:flex;align-items:center;gap:8px;">
         <!-- Ghana Abeo / Voice accent pill -->
-        <div class="hidden xs:flex sm:flex" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--pf-radius-md);background:var(--pf-bg-surface);border:1px solid var(--pf-border-default);" title="Neural Voice Accent">
+        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-[var(--pf-radius-md)] border border-[var(--pf-border-default)]" style="background:var(--pf-bg-surface);" title="Neural Voice Accent">
           <i data-lucide="volume-2" style="width:14px;height:14px;color:var(--pf-engine-studio);"></i>
           <select id="quick-voice-select" onchange="handleQuickVoiceChange(this.value)" style="background:transparent;border:none;font-size: 13px;font-weight:600;color:var(--pf-text-primary);cursor:pointer;outline:none;max-width:130px;">
             <optgroup label="West African Accents">
@@ -391,7 +391,8 @@
 
         <button onclick="openUploadModal()" class="pf-btn pf-btn-primary pf-btn-sm" style="background:var(--pf-engine-studio);border-color:var(--pf-engine-studio);">
           <i data-lucide="upload-cloud"></i>
-          <span>Upload PDF</span>
+          <span class="hidden sm:inline">Upload PDF</span>
+          <span class="sm:hidden">Upload</span>
         </button>
 
         <div style="display:flex;align-items:center;gap:4px;">
@@ -432,7 +433,7 @@
             <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;" class="animate-pulse"></span>
             <span>Edge-TTS Free</span>
           </div>
-          <div class="hidden lg:flex" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--pf-primary-subtle);border:1px solid var(--pf-primary-border);color:var(--pf-primary);font-size: 13px;font-weight:600;">
+          <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[var(--pf-primary-border)]" style="background:var(--pf-primary-subtle);color:var(--pf-primary);font-size: 13px;font-weight:600;">
             <span>⚡ Gemini 2.5 Flash</span>
           </div>
         </div>

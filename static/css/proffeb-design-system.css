@@ -787,7 +787,19 @@ html, body {
   }
   .pf-modal {
     max-height: 94vh;
+    overflow-y: auto;
     border-radius: var(--pf-radius-lg);
+  }
+  #pf-toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    align-items: stretch;
+  }
+  .pf-toast {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
   }
 }
 
