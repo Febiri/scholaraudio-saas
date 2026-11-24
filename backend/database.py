@@ -147,6 +147,7 @@ class Paper(Base):
     __tablename__ = "papers"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(String(64), nullable=True, index=True)
     zotero_item_key = Column(String(64), unique=True, index=True, nullable=True)
     title = Column(String(512), nullable=False, index=True)
     authors = Column(String(512), default="")
@@ -204,6 +205,7 @@ class Paper(Base):
 
         d = {
             "id": self.id,
+            "user_id": getattr(self, "user_id", None),
             "zotero_item_key": self.zotero_item_key,
             "title": self.title,
             "authors": self.authors,
@@ -253,6 +255,7 @@ def init_db():
                 cursor.execute("PRAGMA table_info(papers)")
                 existing_cols = [row[1] for row in cursor.fetchall()]
                 new_cols = [
+                    ("user_id", "VARCHAR(64)"),
                     ("full_text", "TEXT"),
                     ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
                     ("summary_audio_path", "VARCHAR(512)"),
@@ -269,6 +272,7 @@ def init_db():
         elif dialect_name == "postgresql":
             with engine.begin() as conn:
                 pg_cols = [
+                    ("user_id", "VARCHAR(64)"),
                     ("full_text", "TEXT"),
                     ("audio_mode", "VARCHAR(32) DEFAULT 'summary'"),
                     ("summary_audio_path", "VARCHAR(512)"),

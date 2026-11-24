@@ -138,7 +138,7 @@ class ZoteroSyncService:
 
         return None
 
-    def sync_library(self, db: Session, limit: int = 30) -> Dict[str, Any]:
+    def sync_library(self, db: Session, limit: int = 30, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Fetch recent items from Zotero and upsert into database."""
         if not self.client:
             return {
@@ -175,7 +175,10 @@ class ZoteroSyncService:
                 journal = data.get("publicationTitle") or data.get("conferenceName") or data.get("proceedingsTitle") or ""
 
                 # Check if paper already exists in DB
-                paper = db.query(Paper).filter(Paper.zotero_item_key == item_key).first()
+                filter_cond = [Paper.zotero_item_key == item_key]
+                if user_id:
+                    filter_cond.append(Paper.user_id == user_id)
+                paper = db.query(Paper).filter(*filter_cond).first()
 
                 # Attempt PDF download if not already downloaded
                 pdf_path = None
@@ -196,12 +199,15 @@ class ZoteroSyncService:
                     paper.abstract = abstract
                     paper.publication_year = publication_year
                     paper.journal = journal
+                    if user_id and not paper.user_id:
+                        paper.user_id = user_id
                     if pdf_path:
                         paper.pdf_path = pdf_path
                         paper.has_pdf = has_pdf
                     stats["updated"] += 1
                 else:
                     new_paper = Paper(
+                        user_id=user_id,
                         zotero_item_key=item_key,
                         title=title,
                         authors=authors,

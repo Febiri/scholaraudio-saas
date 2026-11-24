@@ -1865,6 +1865,10 @@
       fetchPapers();
       setupAudioListeners();
       initTextSelectionWatcher();
+
+      window.addEventListener('proffeb-auth-changed', () => {
+        fetchPapers();
+      });
     });
 
     // View Mode Toggle (Grid vs Table)
@@ -2092,9 +2096,12 @@
       if (text) text.textContent = 'Syncing...';
 
       try {
+        const authHeaders = (window.ProfFebAuth && typeof window.ProfFebAuth.getAuthHeaders === 'function') 
+          ? window.ProfFebAuth.getAuthHeaders() 
+          : {};
         const res = await fetch('/api/sync', {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {'Content-Type': 'application/json', ...authHeaders},
           body: JSON.stringify({
             library_id: zoteroId || undefined,
             api_key: zoteroKey || undefined,
@@ -2186,7 +2193,13 @@
       const timeoutId = setTimeout(() => controller.abort(), 6000);
 
       try {
-        const res = await fetch('/api/papers', { signal: controller.signal });
+        const authHeaders = (window.ProfFebAuth && typeof window.ProfFebAuth.getAuthHeaders === 'function') 
+          ? window.ProfFebAuth.getAuthHeaders() 
+          : {};
+        const res = await fetch('/api/papers', { 
+          signal: controller.signal,
+          headers: { ...authHeaders }
+        });
         clearTimeout(timeoutId);
         
         if (!res.ok) throw new Error(`Server returned HTTP ${res.status}`);
@@ -4743,8 +4756,12 @@
       `;
 
       try {
+        const authHeaders = (window.ProfFebAuth && typeof window.ProfFebAuth.getAuthHeaders === 'function') 
+          ? window.ProfFebAuth.getAuthHeaders() 
+          : {};
         const res = await fetch('/api/upload', {
           method: 'POST',
+          headers: { ...authHeaders },
           body: formData
         });
         const data = await res.json();

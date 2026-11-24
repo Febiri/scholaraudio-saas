@@ -960,7 +960,8 @@ async def sync_zotero(
             detail="Zotero credentials missing. Please enter your Zotero User ID and API Key to sync."
         )
 
-    result = service.sync_library(db=db, limit=req.limit or 25)
+    user_id = str(current_user["id"]) if current_user and current_user.get("id") else None
+    result = service.sync_library(db=db, limit=req.limit or 25, user_id=user_id)
     return result
 
 
@@ -971,10 +972,28 @@ def list_papers(
     has_pdf: Optional[bool] = Query(None, description="Filter papers having PDF"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
+    scope: Optional[str] = Query(None, description="Scope filter: 'user', 'demo', or 'all'"),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None,
     db: Session = Depends(get_db)
 ):
-    """Returns list of ingested papers with summaries, audio paths, and metadata."""
+    """Returns list of ingested papers scoped to authenticated user."""
     query = db.query(Paper)
+
+    if current_user and current_user.get("id"):
+        user_id = str(current_user["id"])
+        query = query.filter(Paper.user_id == user_id)
+    elif scope in ("demo", "all"):
+        query = query.filter(or_(Paper.user_id == None, Paper.user_id == "demo"))
+    else:
+        # Unauthenticated: do not expose random seed papers
+        return {
+            "total": 0,
+            "ready_count": 0,
+            "total_audio_minutes": 0,
+            "papers": [],
+            "authenticated": False,
+            "message": "Sign in to view your personalized ingested papers."
+        }
 
     if status:
         query = query.filter(Paper.status == status)
@@ -996,8 +1015,8 @@ def list_papers(
     papers = query.order_by(desc(Paper.created_at)).offset(offset).limit(limit).all()
 
     # Fast SQL aggregate metrics (sub-millisecond)
-    ready_count = db.query(Paper).filter(Paper.status == "Ready").count()
-    total_audio_seconds = db.query(func.coalesce(func.sum(Paper.audio_duration), 0.0)).filter(Paper.status == "Ready").scalar() or 0.0
+    ready_count = query.filter(Paper.status == "Ready").count()
+    total_audio_seconds = query.filter(Paper.status == "Ready").with_entities(func.coalesce(func.sum(Paper.audio_duration), 0.0)).scalar() or 0.0
 
     paper_list = []
     for p in papers:
@@ -1011,7 +1030,8 @@ def list_papers(
         "total": total_count,
         "ready_count": ready_count,
         "total_audio_minutes": round(total_audio_seconds / 60.0, 1),
-        "papers": paper_list
+        "papers": paper_list,
+        "authenticated": True
     }
 
 
@@ -1389,6 +1409,7 @@ async def upload_pdf(
     auto_process: bool = Form(False),
     mode: Optional[str] = Form("summary"),
     voice: Optional[str] = Form(None),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None,
     db: Session = Depends(get_db)
 ):
     """Directly upload a research PDF file without requiring Zotero setup."""
@@ -1446,7 +1467,9 @@ async def upload_pdf(
         logger.warning(f"Could not extract verbatim text upon upload: {e}")
 
     initial_status = "Processing" if auto_process else "Pending"
+    user_id = str(current_user["id"]) if current_user and current_user.get("id") else None
     paper = Paper(
+        user_id=user_id,
         zotero_item_key=file_id,
         title=doc_title,
         authors=doc_authors,

@@ -784,12 +784,109 @@
       if (tooltip) tooltip.style.opacity = '0';
     }
 
-    // Telemetry & Real Papers Loader
+    // Ingested Papers Shelf (User-Scoped / Auth-Gated)
+    async function loadRecentPapersShelf(token = null) {
+      const container = document.getElementById('home-recent-papers');
+      const papersStat = document.getElementById('stat-papers-count');
+      const audioStat = document.getElementById('stat-audio-time');
+      if (!container) return;
+
+      const user = window.ProfFebAuth?.currentUser;
+      const authToken = token || window.ProfFebAuth?.token;
+
+      // 1. If user is NOT logged in: Show personal library prompt (do not show random seed papers)
+      if (!user && !authToken) {
+        if (papersStat) papersStat.textContent = 'Personal Library';
+        if (audioStat) audioStat.textContent = 'Sign in to access';
+        container.innerHTML = `
+          <div class="col-span-full pf-card p-8 sm:p-10 text-center bg-white/80 border border-slate-200/90 rounded-2xl shadow-sm">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shadow-sm">
+              <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-[var(--pf-text-primary)] font-display">Personal Ingested Papers</h3>
+            <p class="text-sm text-[var(--pf-text-muted)] max-w-md mx-auto mt-1 mb-5">
+              Sign in to view your ingested manuscripts, personal Zotero library, and synthesized neural audio briefings.
+            </p>
+            <div class="flex items-center justify-center gap-3">
+              <button onclick="window.ProfFebAuth?.openAuthModal('signin')" class="pf-btn pf-btn-primary pf-btn-sm inline-flex items-center gap-2">
+                <i data-lucide="log-in" class="w-4 h-4"></i>
+                <span>Sign In to Access Papers</span>
+              </button>
+              <button onclick="window.ProfFebAuth?.openAuthModal('signup')" class="pf-btn pf-btn-secondary pf-btn-sm inline-flex items-center gap-2">
+                <span>Create Account</span>
+              </button>
+            </div>
+          </div>
+        `;
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+        return;
+      }
+
+      // 2. If user IS logged in: Fetch user-scoped papers
+      try {
+        const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+        const res = await fetch('/api/papers', { headers });
+        if (!res.ok) throw new Error('Could not load user papers');
+        const data = await res.json();
+        const papers = Array.isArray(data) ? data : (data.papers || []);
+        const totalCount = (data.total !== undefined) ? data.total : papers.length;
+        const totalAudioMins = data.total_audio_minutes || Math.round(papers.reduce((acc, p) => acc + (p.full_audio_duration || 0), 0) / 60);
+
+        if (papersStat) {
+          papersStat.textContent = `${totalCount} Papers Synced`;
+        }
+        if (audioStat) {
+          audioStat.textContent = totalAudioMins > 0 ? `${totalAudioMins} mins audio ready` : 'Neural audio ready';
+        }
+
+        if (papers.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full pf-empty-state py-8">
+              <div class="pf-empty-icon"><i data-lucide="file-text" class="w-6 h-6 text-slate-400"></i></div>
+              <div class="pf-empty-title">No papers ingested in your account yet</div>
+              <div class="pf-empty-desc">Upload a PDF or sync your personal Zotero library in the Research Studio to start spoken briefings and KaTeX deconstruction.</div>
+              <a href="/app" class="pf-btn pf-btn-primary pf-btn-sm mt-3 inline-flex items-center gap-2">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span>Ingest Your First Paper</span>
+              </a>
+            </div>
+          `;
+        } else {
+          container.innerHTML = papers.slice(0, 6).map(p => `
+            <a href="/app" class="pf-card pf-card-interactive p-4 block text-decoration-none group">
+              <div class="flex items-center justify-between mb-2">
+                <span class="pf-badge ${p.status === 'Ready' ? 'pf-badge-emerald' : 'pf-badge-indigo'}" style="font-size: 11px;">
+                  ${p.status || 'Ready'}
+                </span>
+                <span class="text-[11px] font-mono text-[var(--pf-text-muted)] flex items-center gap-1">
+                  ${(p.full_audio_duration || p.summary_audio_duration) ? '<i data-lucide="volume-2" class="w-3 h-3 text-indigo-600"></i> Audio Ready' : '<i data-lucide="file" class="w-3 h-3 text-slate-400"></i> PDF Ingested'}
+                </span>
+              </div>
+              <div class="font-bold text-sm text-[var(--pf-text-primary)] group-hover:text-indigo-600 transition truncate" title="${p.title || 'Untitled Paper'}">
+                ${p.title || 'Untitled Paper'}
+              </div>
+              <div class="text-xs text-[var(--pf-text-muted)] mt-1 truncate">
+                ${p.authors || 'Authors indexed in metadata'}
+              </div>
+            </a>
+          `).join('');
+        }
+      } catch (err) {
+        console.warn('Error loading user papers:', err);
+      } finally {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      }
+    }
+
+    // Telemetry & Platform Stats
     async function loadHomeTelemetry() {
       try {
-        const [healthRes, papersRes, confsRes] = await Promise.allSettled([
+        const [healthRes, confsRes] = await Promise.allSettled([
           fetch('/api/health'),
-          fetch('/api/papers'),
           fetch('/api/conferences/featured')
         ]);
 
@@ -812,59 +909,8 @@
           }
         }
 
-        // Ingested Papers Shelf & Stats
-        const papersStat = document.getElementById('stat-papers-count');
-        const audioStat = document.getElementById('stat-audio-time');
-        const container = document.getElementById('home-recent-papers');
-
-        if (papersRes.status === 'fulfilled' && papersRes.value.ok) {
-          const data = await papersRes.value.json();
-          const papers = Array.isArray(data) ? data : (data.papers || []);
-          const totalCount = (data.total !== undefined) ? data.total : papers.length;
-          const totalAudioMins = data.total_audio_minutes || Math.round(papers.reduce((acc, p) => acc + (p.full_audio_duration || 0), 0) / 60);
-
-          if (papersStat) {
-            papersStat.textContent = `${totalCount} Papers Synced`;
-          }
-          if (audioStat) {
-            audioStat.textContent = totalAudioMins > 0 ? `${totalAudioMins} mins audio ready` : 'Neural audio ready';
-          }
-
-          if (container) {
-            if (!papers || papers.length === 0) {
-              container.innerHTML = `
-                <div class="col-span-full pf-empty-state py-8">
-                  <div class="pf-empty-icon"><i data-lucide="file-text" class="w-6 h-6 text-slate-400"></i></div>
-                  <div class="pf-empty-title">No papers ingested yet</div>
-                  <div class="pf-empty-desc">Upload your first research paper in the Research Studio to start spoken audio briefings and KaTeX deconstruction.</div>
-                  <a href="/app" class="pf-btn pf-btn-primary pf-btn-sm mt-2">
-                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                    <span>Ingest First Paper</span>
-                  </a>
-                </div>
-              `;
-            } else {
-              container.innerHTML = papers.slice(0, 6).map(p => `
-                <a href="/app" class="pf-card pf-card-interactive p-4 block text-decoration-none group">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="pf-badge ${p.status === 'Ready' ? 'pf-badge-emerald' : 'pf-badge-indigo'}" style="font-size: 11px;">
-                      ${p.status || 'Ready'}
-                    </span>
-                    <span class="text-[11px] font-mono text-[var(--pf-text-muted)] flex items-center gap-1">
-                      ${(p.full_audio_duration || p.summary_audio_duration) ? '<i data-lucide="volume-2" class="w-3 h-3 text-indigo-600"></i> Audio Ready' : '<i data-lucide="file" class="w-3 h-3 text-slate-400"></i> PDF Ingested'}
-                    </span>
-                  </div>
-                  <div class="font-bold text-sm text-[var(--pf-text-primary)] group-hover:text-indigo-600 transition truncate" title="${p.title || 'Untitled Paper'}">
-                    ${p.title || 'Untitled Paper'}
-                  </div>
-                  <div class="text-xs text-[var(--pf-text-muted)] mt-1 truncate">
-                    ${p.authors || 'Authors indexed in metadata'}
-                  </div>
-                </a>
-              `).join('');
-            }
-          }
-        }
+        // Load Recent Papers based on auth state
+        await loadRecentPapersShelf();
       } catch (err) {
         console.warn('Telemetry load notice:', err);
       } finally {
@@ -873,6 +919,11 @@
         }
       }
     }
+
+    // Listen for reactive auth login/logout events to automatically refresh recent papers
+    window.addEventListener('proffeb-auth-changed', (e) => {
+      loadRecentPapersShelf(e.detail?.token);
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       loadHomeTelemetry();

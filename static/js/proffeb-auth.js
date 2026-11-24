@@ -43,6 +43,13 @@
     currentMode: 'signin',
     _audioPreview: null,
 
+    getAuthHeaders() {
+      if (this.token) {
+        return { 'Authorization': `Bearer ${this.token}` };
+      }
+      return {};
+    },
+
     async init() {
       try {
         // 1. Fetch public platform config from backend
