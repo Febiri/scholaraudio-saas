@@ -468,9 +468,115 @@ def get_saas_config():
         "tagline": APP_TAGLINE,
         "supabase_url": SUPABASE_URL,
         "supabase_key": SUPABASE_KEY,
+        "supabase_anon_key": SUPABASE_KEY,
+        "has_zotero": bool(os.getenv("ZOTERO_API_KEY", ZOTERO_API_KEY)),
         "available_voices": AVAILABLE_VOICES,
         "default_voice": DEFAULT_TTS_VOICE,
         "version": "2.0.0"
+    }
+
+
+@app.get("/api/user/zotero")
+async def get_user_zotero_config(
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None
+):
+    """Returns user's saved Zotero credentials status (keys masked) or global defaults."""
+    library_id = ""
+    library_type = "user"
+    has_key = False
+
+    if current_user and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            user_id = current_user.get("id")
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(
+                    f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                    params={"id": f"eq.{user_id}", "select": "zotero_user_id,zotero_api_key"},
+                    headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"}
+                )
+                if resp.status_code == 200 and resp.json():
+                    p = resp.json()[0]
+                    library_id = p.get("zotero_user_id") or ""
+                    has_key = bool(p.get("zotero_api_key"))
+        except Exception as e:
+            logger.warning(f"Could not load user zotero profile: {e}")
+
+    # Fallback to server environment if not individually set
+    if not library_id:
+        library_id = os.getenv("ZOTERO_LIBRARY_ID", ZOTERO_LIBRARY_ID or "")
+    if not has_key:
+        has_key = bool(os.getenv("ZOTERO_API_KEY", ZOTERO_API_KEY or ""))
+
+    return {
+        "authenticated": bool(current_user),
+        "library_id": library_id,
+        "library_type": os.getenv("ZOTERO_LIBRARY_TYPE", ZOTERO_LIBRARY_TYPE or "user"),
+        "has_key": has_key,
+        "configured": bool(library_id and has_key)
+    }
+
+
+class UserZoteroUpdateRequest(BaseModel):
+    library_id: str
+    api_key: Optional[str] = None
+    library_type: Optional[str] = "user"
+
+
+@app.post("/api/user/zotero")
+async def save_user_zotero_config(
+    payload: UserZoteroUpdateRequest,
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None
+):
+    """Persists user's Zotero credentials to their Supabase profile and verifies connection."""
+    lib_id = payload.library_id.strip()
+    key = (payload.api_key or "").strip()
+    ltype = (payload.library_type or "user").strip()
+
+    if not lib_id:
+        raise HTTPException(status_code=400, detail="Zotero User/Library ID is required.")
+
+    # Test credentials first with Zotero API
+    test_key = key or os.getenv("ZOTERO_API_KEY", ZOTERO_API_KEY or "")
+    if test_key:
+        test_service = ZoteroSyncService(library_id=lib_id, library_type=ltype, api_key=test_key)
+        test_res = test_service.test_connection()
+        if not test_res.get("success"):
+            return {
+                "success": False,
+                "message": f"Zotero verification failed: {test_res.get('message')}"
+            }
+
+    saved_to_cloud = False
+    if current_user and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            user_id = current_user.get("id")
+            update_data = {"zotero_user_id": lib_id, "updated_at": "now()"}
+            if key:
+                update_data["zotero_api_key"] = key
+            
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.patch(
+                    f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                    params={"id": f"eq.{user_id}"},
+                    json=update_data,
+                    headers={
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": f"Bearer {SUPABASE_KEY}",
+                        "Content-Type": "application/json",
+                        "Prefer": "return=minimal"
+                    }
+                )
+                if resp.status_code in [200, 204]:
+                    saved_to_cloud = True
+        except Exception as e:
+            logger.warning(f"Failed to patch user profile: {e}")
+
+    return {
+        "success": True,
+        "message": f"Connected to Zotero API successfully for Library ID {lib_id}!",
+        "library_id": lib_id,
+        "library_type": ltype,
+        "saved_to_cloud": saved_to_cloud
     }
 
 
@@ -599,21 +705,51 @@ def test_gemini_connection(payload: Dict[str, str]):
 
 
 @app.post("/api/sync")
-def sync_zotero(
+async def sync_zotero(
     req: SyncRequest = SyncRequest(),
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user) if get_current_user else None,
     db: Session = Depends(get_db)
 ):
-    """Triggers a sync with Zotero using credentials from request or environment."""
+    """Triggers a sync with Zotero using credentials from request, user profile, or environment."""
+    lib_id = (req.library_id or "").strip()
+    api_key = (req.api_key or "").strip()
+    lib_type = (req.library_type or "user").strip()
+
+    # Check authenticated user's profile if credentials not in payload
+    if (not lib_id or not api_key) and current_user and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            user_id = current_user.get("id")
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(
+                    f"{SUPABASE_URL.rstrip('/')}/rest/v1/profiles",
+                    params={"id": f"eq.{user_id}", "select": "zotero_user_id,zotero_api_key"},
+                    headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"}
+                )
+                if resp.status_code == 200 and resp.json():
+                    p = resp.json()[0]
+                    if not lib_id and p.get("zotero_user_id"):
+                        lib_id = p.get("zotero_user_id")
+                    if not api_key and p.get("zotero_api_key"):
+                        api_key = p.get("zotero_api_key")
+        except Exception as e:
+            logger.warning(f"Error fetching profile credentials for sync: {e}")
+
+    # Fallback to server environment variables
+    if not lib_id:
+        lib_id = os.getenv("ZOTERO_LIBRARY_ID", ZOTERO_LIBRARY_ID or "")
+    if not api_key:
+        api_key = os.getenv("ZOTERO_API_KEY", ZOTERO_API_KEY or "")
+
     service = ZoteroSyncService(
-        library_id=req.library_id,
-        library_type=req.library_type,
-        api_key=req.api_key
+        library_id=lib_id,
+        library_type=lib_type,
+        api_key=api_key
     )
 
     if not service.client:
         raise HTTPException(
             status_code=400,
-            detail="Zotero credentials missing. Please configure Library ID and API Key in Settings or .env."
+            detail="Zotero credentials missing. Please enter your Zotero User ID and API Key to sync."
         )
 
     result = service.sync_library(db=db, limit=req.limit or 25)

@@ -374,10 +374,15 @@
           <span>Upload PDF</span>
         </button>
 
-        <button id="btn-sync-zotero" onclick="triggerZoteroSync()" class="pf-btn pf-btn-secondary pf-btn-sm">
-          <i data-lucide="refresh-cw" id="sync-spinner"></i>
-          <span id="sync-btn-text" class="hidden sm:inline">Sync Zotero</span>
-        </button>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <button id="btn-sync-zotero" onclick="triggerZoteroSync()" class="pf-btn pf-btn-secondary pf-btn-sm" title="Sync papers from connected Zotero library">
+            <i data-lucide="refresh-cw" id="sync-spinner"></i>
+            <span id="sync-btn-text" class="hidden sm:inline">Sync Zotero</span>
+          </button>
+          <button type="button" onclick="if(window.ProfFebUI&&ProfFebUI.zotero)ProfFebUI.zotero.open();" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" title="Configure personal Zotero User ID & API Key" style="border:1px solid var(--pf-border-subtle);">
+            <i data-lucide="library" style="width:14px;height:14px;"></i>
+          </button>
+        </div>
 
         <button onclick="toggleShortcutsModal()" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon hidden lg:inline-flex" title="Keyboard Shortcuts (?)">
           <i data-lucide="command"></i>
@@ -2065,9 +2070,25 @@
 
       const zoteroId = localStorage.getItem('zam_zotero_id') || '';
       const zoteroKey = localStorage.getItem('zam_zotero_key') || '';
+      const zoteroType = localStorage.getItem('zam_zotero_type') || 'user';
 
-      btn.disabled = true;
-      spinner.classList.add('animate-spin');
+      // If user hasn't configured credentials yet, open the friendly configuration modal
+      if (!zoteroId) {
+        if (window.ProfFebUI && ProfFebUI.toast) {
+          ProfFebUI.toast({
+            title: 'Zotero Setup Required',
+            message: 'Please enter your personal Zotero User ID and API Key to connect your library.',
+            type: 'info'
+          });
+        }
+        if (window.ProfFebUI && ProfFebUI.zotero) {
+          ProfFebUI.zotero.open();
+        }
+        return;
+      }
+
+      if (btn) btn.disabled = true;
+      if (spinner) spinner.classList.add('animate-spin');
       if (text) text.textContent = 'Syncing...';
 
       try {
@@ -2077,6 +2098,7 @@
           body: JSON.stringify({
             library_id: zoteroId || undefined,
             api_key: zoteroKey || undefined,
+            library_type: zoteroType,
             limit: 30
           })
         });
@@ -2086,13 +2108,16 @@
           showToast(data.message, 'success');
           await fetchPapers();
         } else {
-          showToast(data.detail || data.message || 'Sync failed. Check credentials in Settings.', 'error');
+          showToast(data.detail || data.message || 'Sync failed. Check your Zotero credentials.', 'error');
+          if (data.detail && (data.detail.toLowerCase().includes('credential') || data.detail.toLowerCase().includes('missing') || data.detail.toLowerCase().includes('unauthorized'))) {
+            if (window.ProfFebUI && ProfFebUI.zotero) ProfFebUI.zotero.open();
+          }
         }
       } catch (err) {
         showToast('Sync network error: ' + err.message, 'error');
       } finally {
-        btn.disabled = false;
-        spinner.classList.remove('animate-spin');
+        if (btn) btn.disabled = false;
+        if (spinner) spinner.classList.remove('animate-spin');
         if (text) text.textContent = 'Sync Zotero';
       }
     }

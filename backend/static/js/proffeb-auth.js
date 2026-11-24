@@ -45,10 +45,11 @@
         this.config = await res.json();
 
         // 2. Initialize Supabase Client
-        if (window.supabase && this.config.supabase_url && this.config.supabase_anon_key) {
+        const anonKey = this.config.supabase_anon_key || this.config.supabase_key;
+        if (window.supabase && this.config.supabase_url && anonKey) {
           this.supabase = window.supabase.createClient(
             this.config.supabase_url,
-            this.config.supabase_anon_key
+            anonKey
           );
 
           // Check current active session
@@ -112,41 +113,45 @@
 
         container.innerHTML = `
           <div class="relative inline-block text-left" id="user-menu-root">
-            <button id="user-menu-btn" type="button" class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-dark-850 dark:hover:bg-dark-800 border border-slate-200 dark:border-dark-700/80 transition text-xs shadow-xs">
-              <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-brand-600 to-scholar-600 text-white flex items-center justify-center font-bold text-[11px] shadow-xs">
+            <button id="user-menu-btn" type="button" class="pf-btn pf-btn-secondary pf-btn-sm" style="display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:12px;">
+              <div style="width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--pf-primary),var(--pf-accent-scout));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;">
                 ${initials}
               </div>
-              <div class="text-left hidden sm:block">
-                <div class="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-none truncate max-w-[110px]">${name}</div>
-                <span class="text-[9px] font-mono uppercase font-bold text-brand-600 dark:text-brand-400">${tier}</span>
+              <div class="text-left hidden sm:block" style="text-align:left;">
+                <div style="font-size:12px;font-weight:600;color:var(--pf-text-primary);line-height:1.2;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>
+                <span style="font-size:9px;font-family:var(--pf-font-mono);font-weight:700;color:var(--pf-primary);text-transform:uppercase;">${tier}</span>
               </div>
-              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <i data-lucide="chevron-down" style="width:14px;height:14px;color:var(--pf-text-muted);"></i>
             </button>
 
             <!-- Dropdown Menu -->
-            <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-dark-900 shadow-xl border border-slate-100 dark:border-dark-700 py-2 z-50 animate-in fade-in zoom-in-95 duration-100 text-slate-700 dark:text-slate-200">
-              <div class="px-4 py-2 border-b border-slate-100 dark:border-dark-800">
-                <p class="text-[10px] text-slate-400 font-medium">Signed in as</p>
-                <p class="text-xs font-bold text-slate-800 dark:text-white truncate">${this.currentUser.email}</p>
+            <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-64 rounded-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100" style="background:var(--pf-bg-surface-elevated);border:1px solid var(--pf-border-subtle);color:var(--pf-text-primary);box-shadow:var(--pf-shadow-lg);">
+              <div class="px-4 py-2 border-b" style="border-color:var(--pf-border-subtle);">
+                <p style="font-size:10px;color:var(--pf-text-muted);font-weight:500;margin:0;">Signed in as</p>
+                <p style="font-size:12px;font-weight:700;color:var(--pf-text-primary);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${this.currentUser.email}</p>
               </div>
-              <a href="/app" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-800 hover:text-brand-600 dark:hover:text-brand-400 transition">
-                <span>📖</span> Research Library
+              <a href="/app" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium transition" style="color:var(--pf-text-secondary);text-decoration:none;">
+                <i data-lucide="headphones" style="width:14px;height:14px;color:var(--pf-engine-studio);"></i> Research Studio
               </a>
-              <a href="/conferences" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-800 hover:text-brand-600 dark:hover:text-brand-400 transition">
-                <span>🌐</span> Conference Watchlist
+              <a href="/conferences" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium transition" style="color:var(--pf-text-secondary);text-decoration:none;">
+                <i data-lucide="calendar" style="width:14px;height:14px;color:var(--pf-engine-scout);"></i> Conference Scout
               </a>
-              <a href="/agent" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-800 hover:text-brand-600 dark:hover:text-brand-400 transition">
-                <span>🎓</span> Academic Co-Pilot
+              <a href="/agent" class="flex items-center gap-2.5 px-4 py-2 text-xs font-medium transition" style="color:var(--pf-text-secondary);text-decoration:none;">
+                <i data-lucide="bot" style="width:14px;height:14px;color:var(--pf-engine-copilot);"></i> Academic Co-Pilot
               </a>
-              <div class="border-t border-slate-100 dark:border-dark-800 my-1"></div>
-              <button onclick="ProfFebAuth.clearCache()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-dark-800 transition">
-                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                Clear Cache & Refresh
+              <div class="border-t my-1" style="border-color:var(--pf-border-subtle);"></div>
+              <button type="button" onclick="if(window.ProfFebUI&&ProfFebUI.zotero)ProfFebUI.zotero.open()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-medium transition" style="color:var(--pf-text-secondary);background:transparent;border:none;cursor:pointer;">
+                <i data-lucide="library" style="width:14px;height:14px;color:var(--pf-primary);"></i> Zotero Account Setup
               </button>
-              <div class="border-t border-slate-100 dark:border-dark-800 my-1"></div>
-              <button onclick="ProfFebAuth.signOut()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                Sign Out
+              <button type="button" onclick="if(window.ProfFebUI&&ProfFebUI.settings)ProfFebUI.settings.open()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-medium transition" style="color:var(--pf-text-secondary);background:transparent;border:none;cursor:pointer;">
+                <i data-lucide="settings" style="width:14px;height:14px;color:var(--pf-text-muted);"></i> Workstation Settings
+              </button>
+              <button type="button" onclick="ProfFebAuth.clearCache()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-medium transition" style="color:var(--pf-text-muted);background:transparent;border:none;cursor:pointer;">
+                <i data-lucide="refresh-cw" style="width:14px;height:14px;color:var(--pf-text-muted);"></i> Clear Cache & Reload
+              </button>
+              <div class="border-t my-1" style="border-color:var(--pf-border-subtle);"></div>
+              <button type="button" onclick="ProfFebAuth.signOut()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-semibold transition" style="color:var(--pf-danger);background:transparent;border:none;cursor:pointer;">
+                <i data-lucide="log-out" style="width:14px;height:14px;color:var(--pf-danger);"></i> Sign Out
               </button>
             </div>
           </div>
@@ -163,17 +168,21 @@
         }
       } else {
         container.innerHTML = `
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <button onclick="ProfFebAuth.openModal('signin')" class="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-xl transition">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="ProfFebAuth.openModal('signin')" class="pf-btn pf-btn-ghost pf-btn-sm" style="font-weight:600;font-size:13px;padding:6px 12px;border:1px solid var(--pf-border-subtle);">
               Sign In
             </button>
-            <button onclick="ProfFebAuth.openModal('signup')" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white shadow-xs transition">
-              Get Started
+            <button type="button" onclick="ProfFebAuth.openModal('signup')" class="pf-btn pf-btn-primary pf-btn-sm shadow-xs" style="font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;padding:6px 14px;">
+              <span>Get Started</span>
+              <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
             </button>
           </div>
         `;
       }
-    },
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
     },
 
     injectAuthModal() {
