@@ -2365,6 +2365,70 @@ def get_favicon():
     raise HTTPException(status_code=404, detail="Favicon not found")
 
 
+@app.get("/favicon.svg", include_in_schema=False)
+def get_favicon_svg():
+    p = STATIC_DIR / "favicon.svg"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="Favicon SVG not found")
+
+
+@app.get("/favicon-16x16.png", include_in_schema=False)
+def get_favicon_16():
+    p = STATIC_DIR / "favicon-16x16.png"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/png")
+    raise HTTPException(status_code=404, detail="Favicon 16 not found")
+
+
+@app.get("/favicon-32x32.png", include_in_schema=False)
+def get_favicon_32():
+    p = STATIC_DIR / "favicon-32x32.png"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/png")
+    raise HTTPException(status_code=404, detail="Favicon 32 not found")
+
+
+@app.get("/apple-touch-icon.png", include_in_schema=False)
+def get_apple_touch_icon():
+    p = STATIC_DIR / "apple-touch-icon.png"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/png")
+    raise HTTPException(status_code=404, detail="Apple touch icon not found")
+
+
+@app.get("/icon-192.png", include_in_schema=False)
+def get_icon_192():
+    p = STATIC_DIR / "icon-192.png"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/png")
+    raise HTTPException(status_code=404, detail="Icon 192 not found")
+
+
+@app.get("/icon-512.png", include_in_schema=False)
+def get_icon_512():
+    p = STATIC_DIR / "icon-512.png"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/png")
+    raise HTTPException(status_code=404, detail="Icon 512 not found")
+
+
+@app.get("/site.webmanifest", include_in_schema=False)
+def get_manifest():
+    p = STATIC_DIR / "site.webmanifest"
+    if p.exists():
+        return FileResponse(str(p), media_type="application/manifest+json")
+    raise HTTPException(status_code=404, detail="Manifest not found")
+
+
+@app.get("/og-image.png", include_in_schema=False)
+def get_og_image():
+    p = STATIC_DIR / "og-image.png"
+    if p.exists():
+        return FileResponse(str(p), media_type="image/png")
+    raise HTTPException(status_code=404, detail="OG image not found")
+
+
 # Serve modern white Home page
 @app.get("/")
 def serve_home():

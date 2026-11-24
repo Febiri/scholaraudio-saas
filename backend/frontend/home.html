@@ -3,10 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProfFeb — The Global AI Research Workstation & Spoken Audio Operating System</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-  <meta name="description" content="ProfFeb translates complex research manuscripts into spoken neural audio briefings, KaTeX mathematical breakdowns, adversarial peer reviews, and automated application dossiers for PhD scholars.">
+  <title>ProfFeb — The Spoken Research OS for PhD Scholars</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#4F46E5">
+  <meta name="description" content="Turn any research paper into a spoken audio briefing, deconstruct complex math into KaTeX, simulate adversarial peer reviews, and match grants automatically.">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scholaraudio-saas.vercel.app/">
+  <meta property="og:title" content="ProfFeb — The Spoken Research OS for PhD Scholars">
+  <meta property="og:description" content="Turn any research paper into a spoken audio briefing, deconstruct complex math into KaTeX, simulate adversarial peer reviews, and match grants automatically.">
+  <meta property="og:image" content="https://scholaraudio-saas.vercel.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ProfFeb — Spoken Research OS">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ProfFeb — The Spoken Research OS for PhD Scholars">
+  <meta name="twitter:description" content="Turn any research paper into a spoken audio briefing, deconstruct complex math into KaTeX, simulate adversarial peer reviews, and match grants automatically.">
+  <meta name="twitter:image" content="https://scholaraudio-saas.vercel.app/og-image.png">
 
   <!-- Typography: Fraunces (Editorial Display Serif) & Plus Jakarta Sans (Clean UI Sans) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -151,25 +170,10 @@
   <header class="sticky top-0 z-40 bg-[var(--pf-bg-glass)] backdrop-blur-md border-b border-[var(--pf-border-subtle)]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 flex-nowrap">
       
-      <!-- Brand & Signature Waveform Motif -->
-      <a href="/" class="flex items-center gap-2.5 text-decoration-none group shrink-0">
-        <!-- Custom Signature Waveform-to-Paper SVG Mark -->
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105 p-2">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 7h3.5"/>
-            <path d="M3 12h2"/>
-            <path d="M3 17h3"/>
-            <path d="M8.5 12v0"/>
-            <path d="M11.5 6v12"/>
-            <path d="M14.5 3v18"/>
-            <path d="M17.5 7v10"/>
-            <path d="M20.5 10v4"/>
-          </svg>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="font-bold text-lg tracking-tight text-[var(--pf-text-primary)] font-display">ProfFeb</span>
-          <span class="hidden sm:inline-flex text-[13px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/70">Research OS</span>
-        </div>
+      <!-- Official Brand Logo Lockup -->
+      <a href="/" class="flex items-center shrink-0 transition-opacity hover:opacity-90" aria-label="ProfFeb Home">
+        <img src="/static/brand/proffeb-logo.svg" alt="ProfFeb" class="pf-logo-img pf-logo-light" style="height: 36px; width: auto;" />
+        <img src="/static/brand/proffeb-logo-dark.svg" alt="ProfFeb" class="pf-logo-img pf-logo-dark" style="height: 36px; width: auto;" />
       </a>
 
       <!-- Center Links: 4 Primary Links + Engines Mega-Menu Dropdown (Desktop) -->
@@ -949,21 +953,10 @@
         
         <!-- Brand Column -->
         <div class="col-span-2 space-y-4">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-white font-bold p-1.5 shadow-xs">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 7h3.5"/>
-                <path d="M3 12h2"/>
-                <path d="M3 17h3"/>
-                <path d="M8.5 12v0"/>
-                <path d="M11.5 6v12"/>
-                <path d="M14.5 3v18"/>
-                <path d="M17.5 7v10"/>
-                <path d="M20.5 10v4"/>
-              </svg>
-            </div>
-            <span class="font-bold text-lg text-[var(--pf-text-primary)] font-display">ProfFeb</span>
-          </div>
+          <a href="/" class="inline-flex items-center transition-opacity hover:opacity-90" aria-label="ProfFeb Home">
+            <img src="/static/brand/proffeb-logo.svg" alt="ProfFeb" class="pf-logo-img pf-logo-light" style="height: 34px; width: auto;" />
+            <img src="/static/brand/proffeb-logo-dark.svg" alt="ProfFeb" class="pf-logo-img pf-logo-dark" style="height: 34px; width: auto;" />
+          </a>
           <p class="text-xs text-[var(--pf-text-muted)] max-w-sm leading-relaxed">
             The global neural audio operating system and research co-pilot for PhD students, academic fellows, and scholarly authors worldwide.
           </p>

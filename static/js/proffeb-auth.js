@@ -312,14 +312,9 @@
           <div class="pf-modal" style="max-width: 440px; border-radius: 24px; box-shadow: var(--pf-shadow-2xl); background: var(--pf-bg-surface-elevated);">
             <!-- Modal Header -->
             <div style="padding: 1.25rem 1.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pf-border-subtle);">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, var(--pf-primary), var(--pf-accent-scout)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px; box-shadow: var(--pf-shadow-sm);">
-                  P
-                </div>
-                <div>
-                  <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: var(--pf-text-primary); line-height: 1.2;">ProfFeb</h3>
-                  <p style="font-size: 11px; margin: 0; color: var(--pf-text-muted);">Neural Research Workstation</p>
-                </div>
+              <div style="display: flex; align-items: center;">
+                <img src="/static/brand/proffeb-logo.svg" alt="ProfFeb" class="pf-logo-img pf-logo-light" style="height: 32px; width: auto;" />
+                <img src="/static/brand/proffeb-logo-dark.svg" alt="ProfFeb" class="pf-logo-img pf-logo-dark" style="height: 32px; width: auto;" />
               </div>
               <button type="button" onclick="ProfFebAuth.closeModal()" class="pf-btn pf-btn-ghost pf-btn-sm" style="border-radius: 50%; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--pf-text-muted);" aria-label="Close">
                 ✕

@@ -280,6 +280,45 @@ code, pre, .font-mono {
   display: block !important;
 }
 
+/* ================= PROF FEB OFFICIAL BRAND LOGO COMPONENT ================= */
+.pf-logo-img {
+  height: 34px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Light / Dark Mode Toggle for Brand Logo Lockups */
+.pf-logo-dark {
+  display: none !important;
+}
+.pf-logo-light {
+  display: block !important;
+}
+
+[data-theme="dark"] .pf-logo-dark,
+.dark .pf-logo-dark {
+  display: block !important;
+}
+[data-theme="dark"] .pf-logo-light,
+.dark .pf-logo-light {
+  display: none !important;
+}
+
+/* Sidebar Logo Variations (Expanded vs Collapsed) */
+.pf-sidebar .pf-sidebar-brand-mark {
+  display: none !important;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.pf-sidebar.collapsed .pf-sidebar-brand-full {
+  display: none !important;
+}
+.pf-sidebar.collapsed .pf-sidebar-brand-mark {
+  display: block !important;
+}
+
 .pf-sidebar-header {
   height: 64px;
   padding: 0 1.25rem;

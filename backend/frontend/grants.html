@@ -3,9 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProfFeb — Funding & Travel Grant Radar (Engine 05)</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <title>Autonomous Grant Dossier Generator — ProfFeb Research OS</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#4F46E5">
+  <meta name="description" content="Match scholarly proposals with NSF, NIH, and Horizon funding opportunities and draft compliant grant dossiers automatically.">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scholaraudio-saas.vercel.app/grants">
+  <meta property="og:title" content="Autonomous Grant Dossier Generator — ProfFeb Research OS">
+  <meta property="og:description" content="Match scholarly proposals with NSF, NIH, and Horizon funding opportunities and draft compliant grant dossiers automatically.">
+  <meta property="og:image" content="https://scholaraudio-saas.vercel.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ProfFeb — Spoken Research OS">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Autonomous Grant Dossier Generator — ProfFeb Research OS">
+  <meta name="twitter:description" content="Match scholarly proposals with NSF, NIH, and Horizon funding opportunities and draft compliant grant dossiers automatically.">
+  <meta name="twitter:image" content="https://scholaraudio-saas.vercel.app/og-image.png">
 
   <!-- Typography: Fraunces (Editorial Display), Plus Jakarta Sans (UI), JetBrains Mono (Data/Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,12 +69,12 @@
   <!-- ================= UNIFIED LEFT SIDEBAR ================= -->
   <aside id="pf-app-sidebar" class="pf-sidebar">
     <div class="pf-sidebar-header">
-      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;font-family:var(--pf-font-display);box-shadow:0 4px 12px rgba(217,119,6,0.25);">P</div>
-        <div class="pf-brand-full">
-          <div style="font-weight:700;font-size:15px;color:var(--pf-text-primary);letter-spacing:-0.01em;">ProfFeb</div>
-          <div style="font-size: 13px;color:var(--pf-text-muted);font-family:var(--pf-font-mono);letter-spacing:0.04em;">NEURAL OS</div>
+      <a href="/" style="display:flex;align-items:center;text-decoration:none;" aria-label="ProfFeb Home">
+        <div class="pf-sidebar-brand-full">
+          <img src="/static/brand/proffeb-logo.svg" alt="ProfFeb" class="pf-logo-img pf-logo-light" style="height:34px;width:auto;" />
+          <img src="/static/brand/proffeb-logo-dark.svg" alt="ProfFeb" class="pf-logo-img pf-logo-dark" style="height:34px;width:auto;" />
         </div>
+        <img src="/static/brand/proffeb-mark.svg" alt="ProfFeb" class="pf-sidebar-brand-mark" style="width:34px;height:34px;" />
       </a>
       <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm pf-btn-icon" onclick="ProfFebUI.sidebar.toggle()" title="Toggle Sidebar">
         <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
